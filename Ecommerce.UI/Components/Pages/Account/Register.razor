@@ -1,0 +1,60 @@
+﻿@page "/account/dang-ky"
+
+<link href="/css/auth.css" rel="stylesheet" />
+<link href="/assets/css/style.min.css" rel="stylesheet">
+
+<main class="main login-page">
+    <div class="page-header">
+        <div class="container">
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="container">
+            <div class="login-popup">
+                <div class="tab tab-nav-boxed tab-nav-center tab-nav-underline">
+                    <ul class="nav nav-tabs text-uppercase" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link">Đăng ký</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <form id="form_data" class="tab-pane active needs-validation" asp-antiforgery="true" method="post" validation>
+                            <div class="form-group mb-5">
+                                <label>Tên *</label>
+                                <input asp-for="userName" type="text" class="form-control" name="last-name" id="last-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input asp-for="email" type="text" class="form-control" placeholder="Nhập đia chỉ email" name="email_1" id="email_1" required>
+                            </div>
+                            <div class="form-group mb-5">
+                                <label>Password *</label>
+                                <input asp-for="password" type="password" autocomplete="new-password" class="form-control" name="password_1" id="password_1" maxlength="50" pattern="^([^'ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳýỵỷỹ\-\s]+)$" required>
+                            </div>
+                            <div class="form-group mb-5">
+                                <label>ConfirmPassWord *</label>
+                                <input asp-for="confirmPassword" type="password" autocomplete="new-password" class="form-control" name="password_1" id="password_1" maxlength="50" pattern="^([^'ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳýỵỷỹ\-\s]+)$" required>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-black">Bạn đã có tài khoản ? </p>
+                                <a class="text-primary mx-2" href="/dang-nhap"><p>Đăng nhập tại đây</p></a>
+                            </div>
+                            
+                            <div class="form-checkbox d-flex align-items-center justify-content-between mb-5">
+                                <input type="checkbox" class="custom-checkbox" id="remember" name="remember" required="">
+                                <label for="remember" class="font-size-md">Bằng cách ấn vào nút “ĐĂNG KÝ”, tôi đồng ý với 
+                                    <a target="_blank" href="~/pdf/20230701_chinh_sach_bao_mat.pdf" class="text-danger font-size-md input_text">Điều Khoản Sử Dụng</a>
+                                    và 
+                                    <a target="_blank" href="~/pdf/20230701_dieu_khoan_dich_vu.pdf" class="text-danger font-size-md input_text">Chính Sách Bảo Mật</a>
+                                </label>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Đăng Ký</button>
+                        </form>
+                    </div>
+                  
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
