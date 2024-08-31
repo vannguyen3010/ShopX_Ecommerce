@@ -6,7 +6,7 @@ namespace Shared.DTO.User
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
-        [Required(ErrorMessage ="User is required.")]
+        [Required(ErrorMessage = "User is required.")]
         public string? UserName { get; set; }
         [Required(ErrorMessage = "Email là bắt buộc.")]
         public string? Email { get; set; }

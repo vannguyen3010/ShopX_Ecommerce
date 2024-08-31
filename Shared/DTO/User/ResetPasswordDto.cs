@@ -7,9 +7,8 @@ namespace Shared.DTO.User
         [Required(ErrorMessage = "Password is required")]
         public string? Password { get; set; }
 
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "Mật khẩu và mật khẩu xác nhận không khớp.")]
         public string? ConfirmPassword { get; set; }
-
         public string? Email { get; set; }
         public string? Token { get; set; }
     }
