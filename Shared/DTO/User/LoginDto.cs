@@ -8,7 +8,7 @@ namespace Shared.DTO.User
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
-        public string? Password { get; set; }
+        public string? Password { get; set; } 
 
     }
 }
