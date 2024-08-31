@@ -1,4 +1,5 @@
 using Ecommerce_Wolmart.API.JwtFeatures;
+using EmailService;
 using InventrySystem.Extensions;
 using Microsoft.AspNetCore.Identity;
 
@@ -19,7 +20,6 @@ builder.Services.AddAuthentication();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromHours(2));
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,7 +27,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromHours(2));
 
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
 
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -41,8 +46,6 @@ app.UseSwaggerUI(s =>
     s.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory System API v1");
     s.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
 });
-
-
 
 app.MapControllers();
 

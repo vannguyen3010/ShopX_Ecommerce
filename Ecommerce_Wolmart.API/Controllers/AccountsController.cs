@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Ecommerce_Wolmart.API.JwtFeatures;
+using EmailService;
 using Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTO.User;
 
@@ -15,12 +17,14 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
+        private readonly IEmailSender _emailSender;
 
-        public AccountsController(UserManager<User> userManager, IMapper mapper, JwtHandler jwtHandler)
+        public AccountsController(UserManager<User> userManager, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender)
         {
             _userManager = userManager;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
+            _emailSender = emailSender;
         }
 
         [HttpPost("RegisterUser")]
@@ -40,14 +44,15 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
             await _userManager.AddToRoleAsync(user, "User");
 
-            return Ok(new RegisterResponseDto()
-            {
-                IsSuccessfulRegistration = true,
-                Message = new List<string>
-                {
-                    "User Registered",
-                }
-            });
+            //Tạo Token xác thực 
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            //Send the email
+            var message = new Message(new string[] { user.Email! }, "Confirm your email", $"Your email confirmation token is: {token}", null!);
+
+            await _emailSender.SendEmailAsync(message);
+
+            return StatusCode(201);
         }
 
         [HttpPost("LoginUser")]
@@ -56,6 +61,9 @@ namespace Ecommerce_Wolmart.API.Controllers
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
             if (user == null)
                 return BadRequest("Invalid Request");
+
+            if (user.EmailConfirmed == false)
+                return BadRequest("Email cần phải xác nhận.");
 
             var token = await _jwtHandler.GenerateToken(user);
 
@@ -87,7 +95,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpGet("{id}", Name = "UserById")]
+        [HttpGet("GetUserById/{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             try
@@ -111,7 +119,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdateUser/{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUser)
         {
             try
@@ -142,7 +150,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteUser/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             try
@@ -166,6 +174,69 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 return StatusCode(500, "Đã xảy ra lỗi khi xử lý yêu cầu của bạn.");
             }
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email!);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var param = new Dictionary<string, string>
+            {
+                { "token", token },
+                { "email", forgotPasswordDto.Email! }
+            };
+
+            var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURL!,param!);
+            var message = new Message(new string[] { user.Email! }, "Reset password token", callback, null!);
+
+            await _emailSender.SendEmailAsync(message);
+
+            return Ok();
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email!);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+
+            //Đặt Lại Mật Khẩu
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token!, resetPasswordDto.Password!);
+            if(!resetPassResult.Succeeded)
+            {
+                var errors = resetPassResult.Errors.Select(x => x.Description);
+
+                return BadRequest(new { Errors = errors });
+            }
+            await _userManager.SetLockoutEndDateAsync(user, new DateTime(2000, 1, 1));
+            //Nếu việc đặt lại mật khẩu thành công, thiết lập ngày khóa tài khoản của người dùng thành một ngày trong quá khứ để mở khóa tài khoản nếu nó bị khóa trước đó.
+            return Ok();
+        }
+
+        [HttpGet("EmailConfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest("Invalid Email Confirmation Request");
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                return BadRequest("Invalid Email Confirmation Request");
+
+            return Ok();
         }
 
     }
