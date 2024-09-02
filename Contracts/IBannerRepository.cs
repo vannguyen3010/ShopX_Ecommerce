@@ -7,5 +7,6 @@ namespace Contracts
     {
         Task<Banner> CreateBanner(Banner banner);
         Task<IEnumerable<Banner>> GetAllBrandsAsync(BannerPosition position);
+        Task<Banner> GetBrandByIdAsync(Guid brandId, bool trackChanges);
     }
 }

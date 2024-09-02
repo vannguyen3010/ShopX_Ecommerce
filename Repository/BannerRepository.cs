@@ -43,5 +43,10 @@ namespace Repository
         {
             return await _dbContext.Banners.Where(x => x.Position == position).ToListAsync();
         }
+
+        public async Task<Banner> GetBrandByIdAsync(Guid brandId, bool trackChanges)
+        {
+            return await FindByCondition(x => x.Id.Equals(brandId), trackChanges).FirstOrDefaultAsync();
+        }
     }
 }
