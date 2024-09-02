@@ -38,15 +38,37 @@ namespace Repository
 
             return banner;
         }
-
-        public async Task<IEnumerable<Banner>> GetAllBrandsAsync(BannerPosition position)
+        public async Task<IEnumerable<Banner>> GetAllBannersAsync(BannerPosition? position = null)
         {
-            return await _dbContext.Banners.Where(x => x.Position == position).ToListAsync();
+            if(position.HasValue)
+            {
+                return await _dbContext.Banners.Where(x => x.Position == position).ToListAsync();
+            }
+            else
+            {
+                return await _dbContext.Banners.ToListAsync();
+            }
         }
 
-        public async Task<Banner> GetBrandByIdAsync(Guid brandId, bool trackChanges)
+        public async Task<Banner> GetBannerByIdAsync(Guid brandId, bool trackChanges)
         {
             return await FindByCondition(x => x.Id.Equals(brandId), trackChanges).FirstOrDefaultAsync();
         }
+
+        public async Task UpdateBanner(Banner banner)
+        {
+            _dbContext.Banners.Update(banner);
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task DeleteBanner(Guid id)
+        {
+            var banner = await _dbContext.Banners.FindAsync(id);
+            if(banner != null)
+            {
+                _dbContext.Banners.Remove(banner);
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+
     }
 }
