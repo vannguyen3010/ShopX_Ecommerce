@@ -1,4 +1,5 @@
 ﻿using Entities.Identity;
+using Entities.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repository.Configuration;
@@ -21,6 +22,9 @@ namespace Repository
 
         }
 
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Banner> Banners { get; set; }
 
     }
 }

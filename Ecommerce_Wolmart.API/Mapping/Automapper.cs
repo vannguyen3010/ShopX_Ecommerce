@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Entities.Identity;
+using Entities.Models;
+using Shared.DTO.Banner;
+using Shared.DTO.Category;
 using Shared.DTO.User;
 
 namespace Ecommerce_Wolmart.API.Mapping
@@ -13,6 +16,14 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<User, UserDto>();
 
             CreateMap<UpdateUserDto, User>();
+
+            CreateMap<CreateBannerDto, Banner>();
+
+            CreateMap<CreateCategoryDto, Category>();
+
+            CreateMap<Category, CategoryDto>();
+
+            CreateMap<Banner, BannerDto>();
         }
     }
 }
