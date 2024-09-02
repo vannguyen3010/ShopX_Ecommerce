@@ -2,7 +2,8 @@
 using Entities.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-
+using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace Repository
 {
@@ -36,6 +37,11 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
 
             return banner;
+        }
+
+        public async Task<IEnumerable<Banner>> GetAllBrandsAsync(BannerPosition position)
+        {
+            return await _dbContext.Banners.Where(x => x.Position == position).ToListAsync();
         }
     }
 }

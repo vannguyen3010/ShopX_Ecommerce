@@ -26,10 +26,10 @@ namespace Shared.DTO.Banner
         public string filePath { get; set; }
         public BannerPosition Position { get; set; }
     }
-    public enum BannerPosition
-    {
-        Top,
-        Right,
-        Left
-    }
+    //public enum BannerPosition
+    //{
+    //    Top,
+    //    Right,
+    //    Left
+    //}
 }
