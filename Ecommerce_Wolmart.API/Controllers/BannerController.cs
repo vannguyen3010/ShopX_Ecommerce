@@ -3,8 +3,9 @@ using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Banner;
-using static System.Net.Mime.MediaTypeNames;
-using Image = Entities.Models.Image;
+using Shared;
+//using BannerPosition = Entities.Models.BannerPosition;
+//using BannerDto = Shared.DTO.Banner.BannerPosition;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -22,6 +23,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             _bannerRepository = bannerRepository;
             _mapper = mapper;
         }
+
+        #region CreateBanner
         [HttpPost]
         [Route("CreateBanner")]
         public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto request)
@@ -51,6 +54,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
             return BadRequest(ModelState);
         }
+
         private void ValidateFileUpload(CreateBannerDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
@@ -67,17 +71,25 @@ namespace Ecommerce_Wolmart.API.Controllers
                 ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
             }
         }
-        private Entities.Models.BannerPosition MapBannerPosition(Shared.DTO.Banner.BannerPosition position)
+        private BannerPosition MapBannerPosition(BannerPosition position)
         {
             return position switch
             {
-                Shared.DTO.Banner.BannerPosition.Top => Entities.Models.BannerPosition.Top,
-                Shared.DTO.Banner.BannerPosition.Right => Entities.Models.BannerPosition.Right,
-                Shared.DTO.Banner.BannerPosition.Left => Entities.Models.BannerPosition.Left,
+                BannerPosition.Top => BannerPosition.Top,
+                BannerPosition.Right => BannerPosition.Right,
+                BannerPosition.Left => BannerPosition.Left,
                 _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
             };
         }
+        #endregion
 
+        [HttpGet]
+        [Route("GetAllBannerPosition")]
+        public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition position)
+        {
+            var banners = await _bannerRepository.GetAllBrandsAsync(position);
+            return Ok(banners);
+        }
 
     }
 }
