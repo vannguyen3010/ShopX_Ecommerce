@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
 {
-    public class Banner
+    public class Image
     {
         public Guid Id { get; set; }
-        public string Title { get; set; }
-        public string Desc { get; set; }
 
         [NotMapped] // Sẽ ko lưu ảnh vào Db
         public IFormFile File { get; set; }
@@ -17,13 +14,5 @@ namespace Entities.Models
         public string FileExtension { get; set; }
         public long FileSizeInBytes { get; set; }
         public string FilePath { get; set; }
-        [Required]
-        public BannerPosition Position { get; set; }
-    }
-    public enum BannerPosition
-    {
-        Top,
-        Right,
-        Left
     }
 }

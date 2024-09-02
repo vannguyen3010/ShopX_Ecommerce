@@ -1,39 +1,41 @@
 ﻿using Contracts;
 using Entities.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+
 
 namespace Repository
 {
     public class BannerRepository : RepositoryBase<Banner>, IBannerRepository
     {
-        public BannerRepository(RepositoryContext repositoryContext) : base(repositoryContext)
+        private readonly RepositoryContext _dbContext;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public BannerRepository(RepositoryContext dbContext, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment) : base(dbContext)
         {
-            
+            _dbContext = dbContext;
+            _webHostEnvironment = webHostEnvironment;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public void CreateBanner(Banner banner)
+        public async Task<Banner> CreateBanner(Banner banner)
         {
-            Create(banner);
-        }
+            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Banner", $"{banner.FileName}{banner.FileExtension}");
 
-        public void DeleteBrand(Banner banner)
-        {
-            Delete(banner);
-        }
+            //Upload Image to local Path
+            using var stream = new FileStream(localFilePath, FileMode.Create);
+            await banner.File.CopyToAsync(stream);
 
-        public async Task<IEnumerable<Banner>> GetAllBannersAsync(bool trackChanges)
-        {
-            return await FindAll(trackChanges).OrderBy(x => x.Id).ToListAsync();
-        }
+            var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Banner/{banner.FileName}{banner.FileExtension}";
 
-        public async Task<Banner> GetBannerByIdAsync(Guid bannerId, bool trackChanges)
-        {
-            return await FindByCondition(brand => brand.Id.Equals(bannerId), trackChanges).FirstOrDefaultAsync();
-        }
+            banner.FilePath = urlFilePath;
 
-        public void UpdateBrand(Banner banner)
-        {
-            Update(banner);
+            //Add Image to the Images table
+            await _dbContext.Banners.AddAsync(banner);
+            await _dbContext.SaveChangesAsync();
+
+            return banner;
         }
     }
 }
