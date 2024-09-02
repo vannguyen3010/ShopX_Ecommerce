@@ -14,13 +14,13 @@ namespace Ecommerce_Wolmart.API.Controllers
     public class BannerController : ControllerBase
     {
         private readonly ILoggerManager _logger;
-        private readonly IBannerRepository _bannerRepository;
+        private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
 
-        public BannerController(ILoggerManager logger, IBannerRepository bannerRepository, IMapper mapper)
+        public BannerController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper)
         {
             _logger = logger;
-            _bannerRepository = bannerRepository;
+            _repository = repository;
             _mapper = mapper;
         }
 
@@ -47,7 +47,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 };
 
                 //User repository to upload image
-                var bannerEntity = await _bannerRepository.CreateBanner(imageDomainModel);
+                var bannerEntity = await _repository.Banner.CreateBanner(imageDomainModel);
                 return Ok(_mapper.Map<BannerDto>(bannerEntity));
 
 
@@ -87,8 +87,33 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("GetAllBannerPosition")]
         public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition position)
         {
-            var banners = await _bannerRepository.GetAllBrandsAsync(position);
-            return Ok(banners);
+            var bannerEntity = await _repository.Banner.GetAllBrandsAsync(position);
+            return Ok(bannerEntity);
+        }
+
+        [HttpGet]
+        [Route("GetBannerById{id}")]
+        public async Task<IActionResult> GetBannerById(Guid id)
+        {
+            try
+            {
+                var banner = await _repository.Banner.GetBrandByIdAsync(id, trackChanges: false);
+                if (banner == null)
+                {
+                    _logger.LogError($"Brand with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                _logger.LogInfo($"Returned brand with id: {id}");
+
+                return Ok(_mapper.Map<BannerDto>(banner));
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetBrandById action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
     }
