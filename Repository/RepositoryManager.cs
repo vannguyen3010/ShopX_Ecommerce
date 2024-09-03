@@ -12,6 +12,7 @@ namespace Repository
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IBannerRepository _banner;
         private ICategoryRepository _category;
+        private IContactRepository _contact;
 
         public RepositoryManager(RepositoryContext repositoryContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
@@ -30,6 +31,18 @@ namespace Repository
                 }
 
                 return _banner;
+            }
+        }
+        public IContactRepository Contact
+        {
+            get
+            {
+                if (_contact == null)
+                {
+                    _contact = new ContactRepository(_repoContext);
+                }
+
+                return _contact;
             }
         }
 
