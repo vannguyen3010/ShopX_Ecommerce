@@ -11,7 +11,7 @@ namespace Repository
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IBannerRepository _banner;
-        private ICategoryRepository _category;
+        private ICateProductsRepository _categoryProduct;
         private IContactRepository _contact;
 
         public RepositoryManager(RepositoryContext repositoryContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
@@ -46,16 +46,16 @@ namespace Repository
             }
         }
 
-        public ICategoryRepository Category
+        public ICateProductsRepository CateProduct
         {
             get
             {
-                if (_category == null)
+                if (_categoryProduct == null)
                 {
-                    _category = new CategoryRepository(_repoContext);
+                    _categoryProduct = new CateProductsRepository(_repoContext);
                 }
 
-                return _category;
+                return _categoryProduct;
             }
         }
 

@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Img_Repository\Banner\" />
+    <Folder Include="Img_Repository\CateProduct\" />
   </ItemGroup>
 
 </Project>
