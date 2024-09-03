@@ -50,9 +50,9 @@ namespace Repository
             }
         }
 
-        public async Task<Banner> GetBannerByIdAsync(Guid brandId, bool trackChanges)
+        public async Task<Banner> GetBannerByIdAsync(Guid id, bool trackChanges)
         {
-            return await FindByCondition(x => x.Id.Equals(brandId), trackChanges).FirstOrDefaultAsync();
+            return await FindByCondition(x => x.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
         }
 
         public async Task UpdateBanner(Banner banner)
