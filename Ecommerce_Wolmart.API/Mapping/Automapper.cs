@@ -20,9 +20,9 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CreateBannerDto, Banner>();
 
-            CreateMap<CreateCategoryDto, Category>();
+            //CreateMap<CreateCateProductDto, CateProduct>();
 
-            CreateMap<Category, CategoryDto>();
+            //CreateMap<CateProduct, CategoryDto>();
 
             CreateMap<Banner, BannerDto>();
 
@@ -31,6 +31,11 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<Contact, ContactDto>();
 
             CreateMap<UpdateContactDto, Contact>();
+
+            CreateMap<CreateCateProductDto, CateProduct>()
+              .ForMember(dest => dest.File, opt => opt.Ignore());
+
+            CreateMap<CateProduct, CateProductDto>();
         }
     }
 }

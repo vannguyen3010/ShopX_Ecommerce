@@ -4,7 +4,7 @@
     {
         IBannerRepository Banner { get; }
 
-        ICategoryRepository Category { get; }
+        ICateProductsRepository CateProduct { get; }
         IContactRepository Contact { get; }
 
         void SaveAsync();

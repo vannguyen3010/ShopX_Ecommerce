@@ -22,7 +22,7 @@ namespace Repository
 
         }
 
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<CateProduct> CateProducts { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<Contact> Contacts { get; set; }
