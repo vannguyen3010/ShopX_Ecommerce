@@ -92,12 +92,12 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
         private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         {
-            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Banner", $"{fileName}{fileExtension}");
+            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/CateProduct", $"{fileName}{fileExtension}");
 
             using var stream = new FileStream(localFilePath, FileMode.Create);
             await file.CopyToAsync(stream);
 
-            var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Banner/{fileName}{fileExtension}";
+            var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/CateProduct/{fileName}{fileExtension}";
 
             return urlFilePath;
         }

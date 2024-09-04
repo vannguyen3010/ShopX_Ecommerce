@@ -30,6 +30,7 @@
   <ItemGroup>
     <Folder Include="Img_Repository\Banner\" />
     <Folder Include="Img_Repository\CateProduct\" />
+    <Folder Include="Img_Repository\Product\" />
   </ItemGroup>
 
 </Project>

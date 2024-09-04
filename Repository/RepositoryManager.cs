@@ -13,6 +13,7 @@ namespace Repository
         private IBannerRepository _banner;
         private ICateProductsRepository _categoryProduct;
         private IContactRepository _contact;
+        private IProductRepository _Product;
 
         public RepositoryManager(RepositoryContext repositoryContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
@@ -58,7 +59,18 @@ namespace Repository
                 return _categoryProduct;
             }
         }
+        public IProductRepository Product
+        {
+            get
+            {
+                if (_Product == null)
+                {
+                    _Product = new ProductRepository(_repoContext);
+                }
 
+                return _Product;
+            }
+        }
         public void SaveAsync() => _repoContext.SaveChanges();
     }
 }
