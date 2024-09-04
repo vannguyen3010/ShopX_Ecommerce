@@ -7,6 +7,11 @@ namespace Entities.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+
+        [ForeignKey("ParentCategory")]
+        public Guid? ParentCategoryId { get; set; }
+        public CateProduct ParentCategory { get; set; }
+        public ICollection<CateProduct> CategoriesObjs { get; set; }
         [NotMapped] // Sẽ ko lưu ảnh vào Db
         public IFormFile File { get; set; }
         public string FileName { get; set; }

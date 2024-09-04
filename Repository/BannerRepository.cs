@@ -49,12 +49,10 @@ namespace Repository
                 return await _dbContext.Banners.ToListAsync();
             }
         }
-
         public async Task<Banner> GetBannerByIdAsync(Guid id, bool trackChanges)
         {
             return await FindByCondition(x => x.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
         }
-
         public async Task UpdateBanner(Banner banner)
         {
             _dbContext.Banners.Update(banner);
