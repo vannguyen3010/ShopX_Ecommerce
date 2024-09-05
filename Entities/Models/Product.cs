@@ -18,6 +18,7 @@ namespace Entities.Models
         public string ImageFileExtension { get; set; }
         public long ImageFileSizeInBytes { get; set; }
         public string ImageFilePath { get; set; }
+        public bool IsHot { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
