@@ -20,11 +20,23 @@ namespace Repository
             return product;
         }
 
+       
         public async Task<IEnumerable<Product>> GetAllProductAsync()
         {
             return await _dbContext.Products
                 .Include(x => x.Category)   // Bao gồm thông tin danh mục sản phẩm nếu cần
                 .ToListAsync();
         }
+
+        public async Task<Product> GetProductByIdAsync(Guid id, bool trackChanges)
+        {
+            return await _dbContext.Products.FindAsync(id);
+        }
+        public async Task DeleteProductAsync(Product product)
+        {
+            _dbContext.Products.Remove(product);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }
