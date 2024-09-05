@@ -145,6 +145,43 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllProductIsHot")]
+        public async Task<IActionResult> GetAllProductIsHot()
+        {
+            try
+            {
+                // Lấy tất cả sản phẩm có IsHot là true
+                var hotProducts = await _repository.Product.GetAllProductIsHot();
+
+                if (hotProducts == null || !hotProducts.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy sản phẩm hot",
+                        Data = null
+                    });
+                }
+
+                // Ánh xạ từ entity sang DTO nếu cần thiết
+                var hotProductsDto = _mapper.Map<IEnumerable<ProductDto>>(hotProducts);
+
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Hot products retrieved successfully.",
+                    Data = hotProductsDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProductIsHot action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
         [Route("GetProductById/{id}")]
         public async Task<IActionResult> GetProductById(Guid id)
         {
@@ -208,6 +245,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 product.Name = updateProductDto.Name;
                 product.Description = updateProductDto.Description;
                 product.Price = updateProductDto.Price;
+                product.IsHot = updateProductDto.IsHot;
+
 
                 // Nếu có file ảnh mới, cập nhật file if (updateProductDto.ImageFile != null)
                 if (updateProductDto.File != null)

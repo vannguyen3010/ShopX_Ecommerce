@@ -43,5 +43,10 @@ namespace Repository
             _dbContext.Products.Update(product);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Product>> GetAllProductIsHot()
+        {
+            return await _dbContext.Products.Where(x => x.IsHot == true).ToListAsync();
+        }
     }
 }
