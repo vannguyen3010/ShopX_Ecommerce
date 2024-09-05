@@ -113,6 +113,40 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet]
+        [Route("GetAllProducts")]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            try
+            {
+                var products = await _repository.Product.GetAllProductAsync();
+                if(products == null)
+                {
+                    _logger.LogInfo("No products found.");
+                    return NotFound(new ApiResponse<IEnumerable<ProductDto>>
+                    {
+                        Success = false,
+                        Message = "No products found.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Products retrieved successfully.",
+                    Data = productDtos
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProducts action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
         private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         {
             var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Product", $"{fileName}{fileExtension}");

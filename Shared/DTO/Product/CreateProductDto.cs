@@ -19,6 +19,7 @@ namespace Shared.DTO.Product
         public string Description { get; set; }
         public decimal Price { get; set; }
         public Guid CategoryId { get; set; }
+        public string ImageFilePath { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
