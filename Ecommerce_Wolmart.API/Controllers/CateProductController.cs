@@ -263,15 +263,30 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var categoryProduct = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
+                // Kiểm tra xem danh mục có sản phẩm không
+                var hasProducts = await _repository.CateProduct.HasProductsInCategoryAsync(id);
 
-                if (categoryProduct == null)
+                if(hasProducts)
                 {
-                    _logger.LogError($"Category with id {id} not found.");
+                    _logger.LogError($"Không thể xóa danh mục có id {id} vì nó chứa sản phẩm.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không thể xóa danh mục có id {id} vì nó chứa sản phẩm.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra xem danh mục có tồn tại không
+                var category = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
+
+                if (category == null)
+                {
+                    _logger.LogError($"Không tìm thấy danh mục có id {id}.");
                     return NotFound(new ApiResponse<object>
                     {
                         Success = false,
-                        Message = $"Category with id {id} not found.",
+                        Message = $"Không tìm thấy danh mục có id {id}.",
                         Data = null
                     });
 
@@ -291,9 +306,14 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                await _repository.CateProduct.DeleteCategoryAsync(categoryProduct);
+                await _repository.CateProduct.DeleteCategoryAsync(category);
 
-                return Ok();
+                return Ok(new ApiResponse<Object>
+                {
+                    Success = true,
+                    Message = "Category deleted successfully.",
+                    Data = null
+                });
             }
             catch (Exception ex)
             {

@@ -20,6 +20,11 @@ namespace Repository
             return product;
         }
 
-     
+        public async Task<IEnumerable<Product>> GetAllProductAsync()
+        {
+            return await _dbContext.Products
+                .Include(x => x.Category)   // Bao gồm thông tin danh mục sản phẩm nếu cần
+                .ToListAsync();
+        }
     }
 }
