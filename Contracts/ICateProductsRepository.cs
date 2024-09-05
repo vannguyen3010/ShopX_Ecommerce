@@ -11,5 +11,8 @@ namespace Contracts
         Task DeleteCategoryAsync(CateProduct category);
         Task<IEnumerable<CateProduct>> GetChildCategoriesAsync(Guid parentId);
         Task UpdateCategoryAsync(CateProduct cateProduct);
+        Task<IEnumerable<CateProduct>> GetChildCategoriesByParentIdAsync(Guid parentcategoryProductId, bool trackChanges);
+        Task<bool> HasChildCategoriesAsync(Guid categoryId);
+        Task<bool> HasProductsInCategoryAsync(Guid categoryId);
     }
 }

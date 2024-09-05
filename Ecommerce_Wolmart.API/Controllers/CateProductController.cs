@@ -8,6 +8,7 @@ using Shared.DTO.Banner;
 using Shared.DTO.Category;
 using Shared.DTO.Contact;
 using Shared.DTO.Product;
+using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -32,57 +33,111 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateCategoryProduct")]
-        public async Task<IActionResult> CreateCategoryProduct([FromForm] CreateCateProductDto cateProductDto)
+        public async Task<IActionResult> CreateCategoryProduct([FromForm] CreateCateProductDto createCategoryDto)
         {
             try
             {
-                if (cateProductDto == null)
+                // Kiểm tra xem đối tượng CategoryProduct gửi từ client có hợp lệ không
+                if (createCategoryDto == null)
                 {
                     _logger.LogError("CategoryProduct object sent from client is null.");
-                    return BadRequest("CategoryProduct object is null");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"CategoryProduct object is null",
+                        Data = null
+                    });
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid CategoryProduct object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Invalid model object",
+                        Data = null
+                    });
                 }
-
                 // Kiểm tra nếu tên danh mục đã tồn tại
-                var existingCategory = await _repository.CateProduct.GetCategoryByNameAsync(cateProductDto.Name!);
+                var existingCategory = await _repository.CateProduct.GetCategoryByNameAsync(createCategoryDto.Name!);
                 if (existingCategory != null)
                 {
-                    _logger.LogError($"Category with name '{cateProductDto.Name}' already exists.");
-                    return BadRequest($"Category with name '{cateProductDto.Name}' already exists.");
+                    _logger.LogError($"Category with name '{createCategoryDto.Name}' already exists.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Category with name '{createCategoryDto.Name}' already exists.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra xem CategoryProduct có phải là cấp 2 không
+                if (createCategoryDto.ParentCategoryId.HasValue)
+                {
+                    // Nếu có parentCategoryId, kiểm tra xem danh mục cấp 1 có tồn tại không
+                    var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync(createCategoryDto.ParentCategoryId.Value, trackChanges: false);
+                    if (parentCategory == null)
+                    {
+                        _logger.LogError($"Parent category with id {createCategoryDto.ParentCategoryId.Value} not found.");
+                        return NotFound(new ApiResponse<Object>
+                        {
+                            Success = false,
+                            Message = $"Parent category with id {createCategoryDto.ParentCategoryId.Value} not found.",
+                            Data = null
+                        });
+                    }
+                    // Kiểm tra xem danh mục cấp 1 có sản phẩm không
+                    var hasProducts = await _repository.CateProduct.HasProductsInCategoryAsync(createCategoryDto.ParentCategoryId.Value);
+                    if(hasProducts)
+                    {
+                        _logger.LogError("Không thể tạo danh mục con trong danh mục có sản phẩm hiện có.");
+                        return NotFound(new ApiResponse<Object>
+                        {
+                            Success = false,
+                            Message = $"Không thể tạo danh mục con trong danh mục có sản phẩm hiện có.",
+                            Data = null
+                        });
+                    }
                 }
 
                 // Nếu ParentCategoryId có giá trị, kiểm tra xem danh mục cha có tồn tại hay không
-                if (cateProductDto.ParentCategoryId.HasValue)
+                if (createCategoryDto.ParentCategoryId.HasValue)
                 {
-                    var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync(cateProductDto.ParentCategoryId.Value, trackChanges: false);
+                    var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync(createCategoryDto.ParentCategoryId.Value, trackChanges: false);
                     if (parentCategory == null)
                     {
-                        _logger.LogError($"Parent category with id: {cateProductDto.ParentCategoryId.Value} not found.");
-                        return BadRequest($"Parent category with id: {cateProductDto.ParentCategoryId.Value} not found.");
+                        _logger.LogError($"Parent category with id: {createCategoryDto.ParentCategoryId.Value} not found.");
+                        return NotFound(new ApiResponse<Object>
+                        {
+                            Success = false,
+                            Message = $"Parent category with id: {createCategoryDto.ParentCategoryId.Value} not found.",
+                            Data = null
+                        });
                     }
                 }
 
                 // Ánh xạ Dto thành entity
-                var cateProductEntity = _mapper.Map<CateProduct>(cateProductDto);
+                var cateProductEntity = _mapper.Map<CateProduct>(createCategoryDto);
                 // Xử lý tập tin hình ảnh
-                if (cateProductDto.File != null)
+                if (createCategoryDto.File != null)
                 {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(cateProductDto.File.FileName)}";
-                    var fileExtension = Path.GetExtension(cateProductDto.File.FileName);
-                    cateProductEntity.FilePath = await SaveFileAndGetUrl(cateProductDto.File, fileName, fileExtension);
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createCategoryDto.File.FileName)}";
+                    var fileExtension = Path.GetExtension(createCategoryDto.File.FileName);
+                    cateProductEntity.FilePath = await SaveFileAndGetUrl(createCategoryDto.File, fileName, fileExtension);
                     cateProductEntity.FileName = fileName;
                     cateProductEntity.FileExtension = fileExtension;
-                    cateProductEntity.FileSizeInBytes = cateProductDto.File.Length;
+                    cateProductEntity.FileSizeInBytes = createCategoryDto.File.Length;
                 }
 
                 // Lưu danh mục vào cơ sở dữ liệu
                 await _repository.CateProduct.CreateCategoryAsync(cateProductEntity);
 
-                return Ok(_mapper.Map<CateProductDto>(cateProductEntity));
+                return Ok(new ApiResponse<CateProductDto>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = _mapper.Map<CateProductDto>(cateProductEntity)
+                });
             }
             catch (Exception ex)
             {
@@ -97,20 +152,55 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var cateProduct = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
-                if (cateProduct == null)
+                // Lấy category cấp 1 theo id
+                var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
+                if (parentCategory == null)
                 {
                     _logger.LogError($"Category with id: {id} not found.");
-                    return NotFound($"Category with id: {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Category with id: {id} not found.",
+                        Data = null
+                    });
                 }
 
-                return Ok(_mapper.Map<CateProductDto>(cateProduct));
+                // Lấy danh sách các cấp con của category cấp 1
+                var childCategories = await _repository.CateProduct.GetChildCategoriesByParentIdAsync(id, trackChanges: false);
+
+
+                //Chuyển đổi dữ liệu sang DTO
+                var parentCategoryProductDto = _mapper.Map<CateProductDto>(parentCategory);
+
+                //Nếu có các cấp con, thêm chúng vào trong categoriesObj
+                if(childCategories != null && childCategories.Any())
+                {
+                    var childCategoriesDto = _mapper.Map<IEnumerable<CateProductDto>>(childCategories);
+
+                    parentCategoryProductDto.CategoriesObjs = childCategoriesDto.ToList();
+                }
+                else
+                {
+                    // Nếu không có cấp con, trả về mảng rỗng
+                    parentCategoryProductDto.CategoriesObjs = new List<CateProductDto>();
+                }
+                return Ok(new ApiResponse<CateProductDto>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = parentCategoryProductDto
+                });
             }
             catch (Exception ex)
             {
 
                 _logger.LogError($"Something went wrong inside GetCategoryById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Internal server error",
+                    Data = null
+                });
             }
         }
 
@@ -147,13 +237,23 @@ namespace Ecommerce_Wolmart.API.Controllers
                             .ToList()
                     })
                     .ToList();
-
-                return Ok(result);
+                var apiResponse = new ApiResponse<IEnumerable<object>>
+                {
+                    Success = true,
+                    Message = "Categories retrieved successfully.",
+                    Data = result
+                };
+                return Ok(apiResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetAllCategories action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Internal server error",
+                    Data = null
+                });
             }
         }
 
@@ -168,7 +268,13 @@ namespace Ecommerce_Wolmart.API.Controllers
                 if (categoryProduct == null)
                 {
                     _logger.LogError($"Category with id {id} not found.");
-                    return NotFound($"Category with id {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Category with id {id} not found.",
+                        Data = null
+                    });
+
                 }
 
                 //kiểm tra nếu cấp 1 có cấp con thì không cho xóa
@@ -176,7 +282,13 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 if (childCategories.Any())
                 {
-                    return BadRequest("Không thể xóa danh mục vì nó có các danh mục con. Vui lòng xóa tất cả các danh mục con trước.");
+                    _logger.LogError($"Category with id {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Không thể xóa danh mục vì nó có các danh mục con. Vui lòng xóa tất cả các danh mục con trước.",
+                        Data = null
+                    });
                 }
 
                 await _repository.CateProduct.DeleteCategoryAsync(categoryProduct);
@@ -201,19 +313,35 @@ namespace Ecommerce_Wolmart.API.Controllers
                 if (updateCateProduct == null)
                 {
                     _logger.LogError("CategoryProduct object sent from client is null.");
-                    return BadRequest("CategoryProduct object is null");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"CategoryProduct object is null",
+                        Data = null
+                    });
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid CategoryProduct object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Invalid model object",
+                        Data = null
+                    });
                 }
 
                 var existingCateProduct = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
                 if(existingCateProduct == null)
                 {
                     _logger.LogError($"Category with id {id} not found.");
-                    return NotFound($"Category with id {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Category with id {id} not found.",
+                        Data = null
+                    });
+
                 }
 
                 // Update category properties
@@ -228,7 +356,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                 existingCateProduct.DateTime = DateTime.UtcNow; // Update the DateTime field
 
                 await _repository.CateProduct.UpdateCategoryAsync(existingCateProduct);
-                return Ok(_mapper.Map<CateProductDto>(existingCateProduct));
+                return Ok(new ApiResponse<CateProductDto>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = _mapper.Map<CateProductDto>(existingCateProduct)
+                });
             }
             catch (Exception ex)
             {
