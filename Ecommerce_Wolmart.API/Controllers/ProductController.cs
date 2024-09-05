@@ -111,16 +111,17 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllProducts")]
-        public async Task<IActionResult> GetAllProducts()
+        [Route("GetAllProductsPagination")]
+        public async Task<IActionResult> GetAllProductsPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var products = await _repository.Product.GetAllProductAsync();
-                if (products == null)
+                // Gọi repository để lấy sản phẩm với phân trang
+                var (products, totalCount) = await _repository.Product.GetAllProductPagination(pageNumber, pageSize);
+
+                if (!products.Any())
                 {
-                    _logger.LogInfo("No products found.");
-                    return NotFound(new ApiResponse<IEnumerable<ProductDto>>
+                    return NotFound(new ApiResponse<object>
                     {
                         Success = false,
                         Message = "No products found.",
@@ -129,11 +130,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
-                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+
+                // Trả về response với data và số lượng sản phẩm
+                return Ok(new
                 {
-                    Success = true,
-                    Message = "Products retrieved successfully.",
-                    Data = productDtos
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        products = productDtos
+                    }
                 });
             }
             catch (Exception ex)

@@ -10,5 +10,6 @@ namespace Contracts
         Task DeleteProductAsync(Product product);
         Task<Product> GetProductByIdAsync(Guid id, bool trackChanges);
         Task UpdateProductAsync(Product product);
+        Task<(IEnumerable<Product> Products, int Total)> GetAllProductPagination(int pageNumber, int pageSize);
     }
 }
