@@ -327,9 +327,10 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("UpdateCategoryProduct/{id}")]
         public async Task<IActionResult> UpdateCategoryProduct(Guid id, [FromForm] UpdateCateProductDto updateCateProduct)
         {
-            UpdateFileUpload(updateCateProduct);
             try
             {
+                UpdateFileUpload(updateCateProduct);
+
                 if (updateCateProduct == null)
                 {
                     _logger.LogError("CategoryProduct object sent from client is null.");

@@ -21,10 +21,6 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CreateBannerDto, Banner>();
 
-            //CreateMap<CreateCateProductDto, CateProduct>();
-
-            //CreateMap<CateProduct, CategoryDto>();
-
             CreateMap<Banner, BannerDto>();
 
             CreateMap<CreateContactDto, Contact>();
@@ -39,7 +35,9 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<CateProduct, CateProductDto>();
 
             CreateMap<CreateProductDto, Product>();
+
             CreateMap<Product, ProductDto>();
+
         }
     }
 }

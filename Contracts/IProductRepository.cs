@@ -8,5 +8,6 @@ namespace Contracts
         Task<IEnumerable<Product>> GetAllProductAsync();
         Task DeleteProductAsync(Product product);
         Task<Product> GetProductByIdAsync(Guid id, bool trackChanges);
+        Task UpdateProductAsync(Product product);
     }
 }
