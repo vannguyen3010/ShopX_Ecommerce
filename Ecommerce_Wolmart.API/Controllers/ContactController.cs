@@ -127,7 +127,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateContact/{id}")]
-        public async Task<IActionResult> DeleteContact(Guid id, [FromBody] UpdateContactDto contactDto)
+        public async Task<IActionResult> UpdateContact(Guid id, [FromBody] UpdateContactDto contactDto)
         {
             try
             {
