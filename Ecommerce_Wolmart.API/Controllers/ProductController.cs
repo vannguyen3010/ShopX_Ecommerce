@@ -147,6 +147,81 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet]
+        [Route("GetProductById/{id}")]
+        public async Task<IActionResult> GetProductById(Guid id)
+        {
+            try
+            {
+                //Lấy sản phẩm từ repository
+                var product = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
+
+                if(product == null)
+                {
+                    _logger.LogError($"Product with id {id} not found.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Product with id {id} not found.",
+                        Data = null
+                    });
+                }
+
+                //Ánh xạ sản phẩm sang DTO để trả về client
+                var productDto = _mapper.Map<ProductDto>(product);
+
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Product retrieved successfully.",
+                    Data = productDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetProductById action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteProductById/{id}")]
+        public async Task<IActionResult> DeleteProductById(Guid id)
+        {
+            try
+            {
+                //kiểm tra sản phẩm có tồn tại không
+                var product = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
+                if(product == null)
+                {
+                    _logger.LogError($"Product with id {id} not found.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Product with id {id} not found.",
+                        Data = null
+                    });
+                }
+
+                //Xóa Sản phẩm
+                await _repository.Product.DeleteProductAsync(product);
+                return Ok(new ApiResponse<Object>
+                {
+                    Success = true,
+                    Message = "Product deleted successfully.",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside DeleteProductById action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         {
             var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Product", $"{fileName}{fileExtension}");
