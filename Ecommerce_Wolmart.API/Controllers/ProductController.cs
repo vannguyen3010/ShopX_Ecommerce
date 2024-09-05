@@ -226,6 +226,46 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetProductsByCategoryId/{categoryId}")]
+        public async Task<IActionResult> GetProductsByCategoryId(Guid categoryId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                // Gọi repository để lấy sản phẩm theo CategoryId với phân trang
+                var (products, totalCount) = await _repository.Product.GetProductsByCategoryIdAsync(categoryId, pageNumber, pageSize);
+
+                if(!products.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "No products found for the given category.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+                // Trả về response với dữ liệu phân trang và số lượng sản phẩm
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        products = productDtos
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetProductsByCategoryId action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
         [HttpPut]
         [Route("UpdateProduct/{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductDto updateProductDto)
