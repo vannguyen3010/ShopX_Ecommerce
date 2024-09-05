@@ -5,5 +5,6 @@ namespace Contracts
     public interface IProductRepository
     {
         Task<Product> CreateProductAsync(Product product);
+       
     }
 }

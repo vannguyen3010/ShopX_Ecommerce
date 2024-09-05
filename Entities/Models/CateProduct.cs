@@ -12,6 +12,8 @@ namespace Entities.Models
         public Guid? ParentCategoryId { get; set; }
         public CateProduct ParentCategory { get; set; }
         public ICollection<CateProduct> CategoriesObjs { get; set; }
+        public ICollection<Product> Products { get; set; }
+
         [NotMapped] // Sẽ ko lưu ảnh vào Db
         public IFormFile File { get; set; }
         public string FileName { get; set; }

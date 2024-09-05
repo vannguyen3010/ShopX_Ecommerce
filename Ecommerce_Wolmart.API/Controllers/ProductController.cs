@@ -4,7 +4,9 @@ using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Banner;
+using Shared.DTO.Category;
 using Shared.DTO.Product;
+using Shared.DTO.Response;
 using System.Net.Http;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -30,38 +32,79 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateProduct")]
-        public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto productDto)
+        public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto createProductDto)
         {
-            ValidateFileUpload(productDto);
+            ValidateFileUpload(createProductDto);
             try
             {
-                if (productDto == null)
+                if (createProductDto == null)
                 {
                     _logger.LogError("Product object sent from client is null.");
-                    return BadRequest("Product object is null");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Product object is null",
+                        Data = null
+                    });
                 }
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid Product object sent from client.");
-                    return BadRequest("Invalid model object");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Invalid Product object sent from client.",
+                        Data = null
+                    });
                 }
-                var productEntity = _mapper.Map<Product>(productDto);
+
+                //Kiểm id Danh muc có hợp lệ ko 
+                var category = await _repository.CateProduct.GetCategoryProductByIdAsync(createProductDto.CategoryId, trackChanges: false);
+                if(category == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Invalid category ID.",
+                        Data = null
+                    });
+                }
+
+                //Kiểm tra danh mục 1 có danh mục con không
+                var hasChildCategories = await _repository.CateProduct.HasChildCategoriesAsync(createProductDto.CategoryId);
+                if(hasChildCategories)
+                {
+                    _logger.LogError("Không thể tạo danh mục con trong danh mục có sản phẩm hiện có.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không thể tạo danh mục con trong danh mục có sản phẩm hiện có.",
+                        Data = null
+                    });
+                }
+
+                var productEntity = _mapper.Map<Product>(createProductDto);
 
                 //Xử lý hình ảnh
-                if (productDto.ImageFile != null)
+                if (createProductDto.ImageFile != null)
                 {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(productDto.ImageFile.FileName)}";
-                    var fileExtension = Path.GetExtension(productDto.ImageFile.FileName);
-                    productEntity.ImageFilePath = await SaveFileAndGetUrl(productDto.ImageFile, fileName, fileExtension);
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createProductDto.ImageFile.FileName)}";
+                    var fileExtension = Path.GetExtension(createProductDto.ImageFile.FileName);
+                    productEntity.ImageFilePath = await SaveFileAndGetUrl(createProductDto.ImageFile, fileName, fileExtension);
                     productEntity.ImageFileName = fileName;
                     productEntity.ImageFileExtension = fileExtension;
-                    productEntity.ImageFileSizeInBytes = productDto.ImageFile.Length;
+                    productEntity.ImageFileSizeInBytes = createProductDto.ImageFile.Length;
                 }
 
                 //Save product to db
                 await _repository.Product.CreateProductAsync(productEntity);
 
-                return Ok(_mapper.Map<ProductDto>(productEntity));
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Category created successfully.",
+                    Data = _mapper.Map<ProductDto>(productEntity)
+                });
             }
             catch (Exception ex)
             {

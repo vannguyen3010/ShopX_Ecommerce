@@ -15,6 +15,7 @@ namespace Repository
 
         public async Task<CateProduct> CreateCategoryAsync(CateProduct cateProducs)
         {
+         
             await _dbContext.CateProducts.AddAsync(cateProducs);
             await _dbContext.SaveChangesAsync();
             return cateProducs;
@@ -51,6 +52,21 @@ namespace Repository
         {
             _dbContext.CateProducts.Update(cateProduct);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<CateProduct>> GetChildCategoriesByParentIdAsync(Guid parentcategoryProductId, bool trackChanges)
+        {
+            return await FindByCondition(x => x.ParentCategoryId == parentcategoryProductId, trackChanges).ToListAsync();
+        }
+        public async Task<bool> HasChildCategoriesAsync(Guid categoryId)
+        {
+            // Kiểm tra xem danh mục cấp 1 có các cấp con hay không
+            return await _dbContext.CateProducts.AnyAsync(x => x.ParentCategoryId == categoryId);
+        }
+
+        public async Task<bool> HasProductsInCategoryAsync(Guid categoryId)
+        {
+            return await _dbContext.Products.AnyAsync(x => x.CategoryId == categoryId);
         }
     }
 }

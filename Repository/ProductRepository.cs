@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -18,5 +19,7 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
             return product;
         }
+
+     
     }
 }
