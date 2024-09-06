@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities.Models
@@ -19,6 +20,7 @@ namespace Entities.Models
         public long ImageFileSizeInBytes { get; set; }
         public string ImageFilePath { get; set; }
         public bool IsHot { get; set; }
+        public int Rating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
