@@ -3,6 +3,7 @@ using Entities.Identity;
 using Entities.Models;
 using Shared.DTO.Banner;
 using Shared.DTO.Category;
+using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.Product;
 using Shared.DTO.User;
@@ -37,6 +38,10 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<CreateProductDto, Product>();
 
             CreateMap<Product, ProductDto>();
+
+            CreateMap<CreateCommentProductDto, CommentProduct>();
+
+            CreateMap<CommentProduct, CommentProductDto>();
 
         }
     }

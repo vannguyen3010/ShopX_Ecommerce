@@ -27,6 +27,7 @@ namespace Repository
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<CateProduct> CateProducts { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<CommentProduct> CommentProducts { get; set; }
 
     }
 }

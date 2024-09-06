@@ -13,7 +13,8 @@ namespace Repository
         private IBannerRepository _banner;
         private ICateProductsRepository _categoryProduct;
         private IContactRepository _contact;
-        private IProductRepository _Product;
+        private IProductRepository _product;
+        private ICommentProductRepository _commentProduct;
 
         public RepositoryManager(RepositoryContext repositoryContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
@@ -63,14 +64,28 @@ namespace Repository
         {
             get
             {
-                if (_Product == null)
+                if (_product == null)
                 {
-                    _Product = new ProductRepository(_repoContext);
+                    _product = new ProductRepository(_repoContext);
                 }
 
-                return _Product;
+                return _product;
             }
         }
+
+        public ICommentProductRepository CommentProduct
+        {
+            get
+            {
+                if (_commentProduct == null)
+                {
+                    _commentProduct = new CommentProductRepository(_repoContext);
+                }
+
+                return _commentProduct;
+            }
+        }
+
         public void SaveAsync() => _repoContext.SaveChanges();
     }
 }
