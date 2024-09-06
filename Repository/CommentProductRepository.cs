@@ -57,5 +57,15 @@ namespace Repository
                 : _dbContext.CommentProducts.AsNoTracking().Include(x => x.User).Include(x => x.Product))
                 .ToListAsync();
         }
+
+        public async void DeleteComment(CommentProduct comment)
+        {
+            _dbContext.CommentProducts.Remove(comment);
+        }
+
+        public async Task SaveAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }

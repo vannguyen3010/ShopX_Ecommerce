@@ -11,5 +11,7 @@ namespace Contracts
         Task<CommentProduct> GetCommentByIdAsync(Guid commentId, bool trackChanges);
         Task<IEnumerable<CommentProduct>> GetAllCommentsByProductIdAsync(Guid productId, bool trackChanges);
         Task<IEnumerable<CommentProduct>> GetAllCommentsAsync(bool trackChanges);
+        void DeleteComment(CommentProduct comment);
+        Task SaveAsync();
     }
 }

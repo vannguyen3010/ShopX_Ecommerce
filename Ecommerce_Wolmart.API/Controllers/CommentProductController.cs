@@ -3,8 +3,10 @@ using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Response;
+using System.Security.Claims;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -236,6 +238,52 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
 
                 throw;
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteComment/{commentId}")]
+        public async Task<IActionResult> DeleteComment(Guid commentId)
+        {
+            try
+            {
+                // Kiểm tra bình luận có tồn tại không
+                var comment = await _repository.CommentProduct.GetCommentByIdAsync(commentId, trackChanges: false);
+                if(comment == null)
+                {
+                    _logger.LogError($"Comment with id: {commentId} doesn't exist.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Comment not found.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra quyền hạn (ví dụ: chỉ cho phép người tạo bình luận hoặc admin xóa)
+                //var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // Lấy ID người dùng từ JWT token
+                //if (comment.UserId != userId && !User.IsInRole("Admin"))
+                //{
+                //    _logger.LogError("Unauthorized access attempt to delete comment.");
+                //    return Forbid("You don't have permission to delete this comment.");
+                //}
+
+                // Thực hiện xóa bình luận
+                _repository.CommentProduct.DeleteComment(comment);
+                await _repository.CommentProduct.SaveAsync();
+
+                return Ok(new ApiResponse<object>
+                {
+                    Success = true,
+                    Message = "Comment deleted successfully.",
+                    Data = null
+                });
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteCommentProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
             }
         }
     }
