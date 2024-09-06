@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
 
 namespace Repository
 {
@@ -81,6 +82,16 @@ namespace Repository
                 .ToListAsync();
 
             return (products, totalCount);
+        }
+
+        public async Task<IEnumerable<Product>> SearchProductsByNameAsync(string keyword, bool trackChanges)
+        {
+            var lowerCaseName = keyword.ToLower();
+
+            // Sử dụng tìm kiếm không phân biệt chữ hoa và chữ thường, đồng thời tìm kiếm các chuỗi con
+            return await _dbContext.Products
+                .Where(x => x.Name.ToLower().Contains(lowerCaseName))
+                .ToListAsync();
         }
     }
 }

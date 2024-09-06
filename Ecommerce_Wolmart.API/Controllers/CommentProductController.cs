@@ -89,11 +89,11 @@ namespace Ecommerce_Wolmart.API.Controllers
                     var timeSinceLastComment = DateTime.UtcNow - lastComment.CreatedAt;
                     if (timeSinceLastComment.TotalMinutes < 1)
                     {
-                        _logger.LogError("Người dùng không thể bình luận lại trong vòng 3 phút trên cùng một sản phẩm.");
+                        _logger.LogError("Người dùng không thể bình luận lại trong vòng 1 phút trên cùng một sản phẩm.");
                         return NotFound(new ApiResponse<object>
                         {
                             Success = false,
-                            Message = $"Người dùng không thể bình luận lại trong vòng 3 phút trên cùng một sản phẩm.",
+                            Message = $"Người dùng không thể bình luận lại trong vòng 1 phút trên cùng một sản phẩm.",
                             Data = null
                         });
                     }

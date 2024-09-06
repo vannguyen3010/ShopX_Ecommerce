@@ -359,6 +359,53 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("SearchProduct")]
+        public async Task<IActionResult> SearchProduct([FromQuery] string keyWord)
+        {
+            try
+            {
+                if(string.IsNullOrWhiteSpace(keyWord))
+                {
+                    _logger.LogError("Tên tìm kiếm không được để trống.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Tên tìm kiếm không được để trống..",
+                        Data = null
+                    });
+                }
+
+                // Tìm kiếm sản phẩm theo tên với chuỗi con
+                var products = await _repository.Product.SearchProductsByNameAsync(keyWord, trackChanges: false);
+                if(products == null || !products.Any())
+                {
+                    _logger.LogInfo($"Không tìm thấy sản phẩm nào có tên '{keyWord}'.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy sản phẩm nào có tên '{keyWord}'.",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Products retrieved successfully.",
+                    Data = products.Select(p => _mapper.Map<ProductDto>(p))
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside SearchProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+
         private void UpdateFileUpload(UpdateProductDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };

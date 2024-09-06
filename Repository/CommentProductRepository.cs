@@ -24,14 +24,6 @@ namespace Repository
         {
             return await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
         }
-        //public async Task<IEnumerable<CommentProduct>> GetRecentCommentsByUserAsync(string userId, int limit)
-        //{
-        //    return await _dbContext.CommentProducts
-        //       .Where(c => c.UserId == userId)
-        //       .OrderByDescending(c => c.CreatedAt)
-        //       .Take(limit)
-        //       .ToListAsync();
-        //}
 
         public async Task<CommentProduct> GetCommentByIdAsync(Guid commentId, bool trackChanges)
         {
