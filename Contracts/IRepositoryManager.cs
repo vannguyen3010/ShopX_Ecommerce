@@ -7,6 +7,7 @@
         ICateProductsRepository CateProduct { get; }
         IContactRepository Contact { get; }
         IProductRepository Product { get; }
+        ICommentProductRepository CommentProduct { get; }
 
         void SaveAsync();
     }
