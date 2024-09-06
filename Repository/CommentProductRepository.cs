@@ -33,5 +33,29 @@ namespace Repository
                .ToListAsync();
         }
 
+        public async Task<CommentProduct> GetCommentByIdAsync(Guid commentId, bool trackChanges)
+        {
+            return await (trackChanges
+                ? _dbContext.CommentProducts
+                : _dbContext.CommentProducts.AsNoTracking())
+                .SingleOrDefaultAsync(x => x.Id == commentId);
+        }
+
+        public async Task<IEnumerable<CommentProduct>> GetAllCommentsByProductIdAsync(Guid productId, bool trackChanges)
+        {
+            return await (trackChanges
+                ? _dbContext.CommentProducts.Include(x => x.User)
+                : _dbContext.CommentProducts.AsNoTracking().Include(x => x.User))
+                .Where(x => x.ProductId == productId)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<CommentProduct>> GetAllCommentsAsync(bool trackChanges)
+        {
+            return await (trackChanges
+                ? _dbContext.CommentProducts.Include(x => x.User).Include(x => x.Product)
+                : _dbContext.CommentProducts.AsNoTracking().Include(x => x.User).Include(x => x.Product))
+                .ToListAsync();
+        }
     }
 }

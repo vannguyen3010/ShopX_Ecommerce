@@ -15,7 +15,6 @@ namespace Shared.DTO.CommentProduct
         public Guid ProductId { get; set; } // ID sản phẩm được comment
         [Required]
         public string Content { get; set; } // Nội dung comment
-        public string UserName { get; set; } // Tên người dùng đăng comment
         public int Rating { get; set; }
     }
     public class CommentProductDto
@@ -24,6 +23,7 @@ namespace Shared.DTO.CommentProduct
         public string UserId { get; set; }
         public Guid ProductId { get; set; }
         public string Content { get; set; }
+        public string ProductName { get; set; }
         public string UserName { get; set; }
         public int Rating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
