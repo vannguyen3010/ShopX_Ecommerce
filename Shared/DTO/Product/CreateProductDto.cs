@@ -11,6 +11,9 @@ namespace Shared.DTO.Product
         [Required]
         public Guid CategoryId { get; set; }
         public IFormFile ImageFile { get; set; }
+
+        [Range(1, 5)]
+        public int Rating { get; set; }
         public bool IsHot { get; set; }
     }
     public class ProductDto
@@ -22,6 +25,7 @@ namespace Shared.DTO.Product
         public Guid CategoryId { get; set; }
         public string ImageFilePath { get; set; }
         public bool IsHot { get; set; }
+        public int Rating { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
@@ -32,6 +36,8 @@ namespace Shared.DTO.Product
         public decimal Price { get; set; }
         //public Guid CategoryId { get; set; }
         public IFormFile? File { get; set; }
+        [Range(1, 5)]
+        public int Rating { get; set; }
         public bool IsHot { get; set; }
     }
 }

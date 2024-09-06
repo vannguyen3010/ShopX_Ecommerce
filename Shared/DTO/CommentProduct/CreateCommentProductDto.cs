@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTO.CommentProduct
 {
@@ -15,7 +10,6 @@ namespace Shared.DTO.CommentProduct
         public Guid ProductId { get; set; } // ID sản phẩm được comment
         [Required]
         public string Content { get; set; } // Nội dung comment
-        public int Rating { get; set; }
     }
     public class CommentProductDto
     {
@@ -25,7 +19,6 @@ namespace Shared.DTO.CommentProduct
         public string Content { get; set; }
         public string ProductName { get; set; }
         public string UserName { get; set; }
-        public int Rating { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }
