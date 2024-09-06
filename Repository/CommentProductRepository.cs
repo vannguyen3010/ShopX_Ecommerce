@@ -24,14 +24,14 @@ namespace Repository
         {
             return await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
         }
-        public async Task<IEnumerable<CommentProduct>> GetRecentCommentsByUserAsync(string userId, int limit)
-        {
-            return await _dbContext.CommentProducts
-               .Where(c => c.UserId == userId)
-               .OrderByDescending(c => c.CreatedAt)
-               .Take(limit)
-               .ToListAsync();
-        }
+        //public async Task<IEnumerable<CommentProduct>> GetRecentCommentsByUserAsync(string userId, int limit)
+        //{
+        //    return await _dbContext.CommentProducts
+        //       .Where(c => c.UserId == userId)
+        //       .OrderByDescending(c => c.CreatedAt)
+        //       .Take(limit)
+        //       .ToListAsync();
+        //}
 
         public async Task<CommentProduct> GetCommentByIdAsync(Guid commentId, bool trackChanges)
         {
@@ -63,9 +63,18 @@ namespace Repository
             _dbContext.CommentProducts.Remove(comment);
         }
 
+        public async Task<CommentProduct> GetLastCommentByUserAndProductAsync(string userId, Guid productId)
+        {
+            return await _dbContext.CommentProducts
+           .Where(x => x.UserId == userId && x.ProductId == productId)
+           .OrderByDescending(x => x.CreatedAt)
+           .FirstOrDefaultAsync();
+        }
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
+
+       
     }
 }

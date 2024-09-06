@@ -67,10 +67,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-
                 //Kiểm tra sự tồn tại của sản phẩm
                 var productExits = await _repository.Product.GetProductByIdAsync(createCommentDto.ProductId, trackChanges: false);
-
                 if (productExits == null)
                 {
                     _logger.LogError($"Product with id {createCommentDto.ProductId} not found.");
@@ -82,22 +80,20 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Kiểm tra số lượng bình luận gần đây của người dùng
-                var recentCommnets = await _repository.CommentProduct.GetRecentCommentsByUserAsync(createCommentDto.UserId, 3);
-                var now = DateTime.UtcNow;
+                // Kiểm tra xem người dùng có được phép bình luận không
+                var lastComment = await _repository.CommentProduct.GetLastCommentByUserAndProductAsync(createCommentDto.UserId, createCommentDto.ProductId);
 
-                if (recentCommnets.Count() >= 3)
+                // Kiểm tra số lượng bình luận và thời gian gần nhất
+                if (lastComment != null)
                 {
-                    var lastCommentTime = recentCommnets.First().CreatedAt;
-                    var timeSinceLastComment = now - lastCommentTime;
-
+                    var timeSinceLastComment = DateTime.UtcNow - lastComment.CreatedAt;
                     if (timeSinceLastComment.TotalMinutes < 1)
                     {
-                        _logger.LogError("Người dùng đang bình luận quá thường xuyên. Vui lòng đợi một lúc trước khi bình luận lại");
-                        return BadRequest(new ApiResponse<object>
+                        _logger.LogError("Người dùng không thể bình luận lại trong vòng 3 phút trên cùng một sản phẩm.");
+                        return NotFound(new ApiResponse<object>
                         {
                             Success = false,
-                            Message = "Người dùng đang bình luận quá thường xuyên. Vui lòng đợi một lúc trước khi bình luận lại.",
+                            Message = $"Người dùng không thể bình luận lại trong vòng 3 phút trên cùng một sản phẩm.",
                             Data = null
                         });
                     }
@@ -105,13 +101,15 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var commentEntity = _mapper.Map<CommentProduct>(createCommentDto);
 
+                commentEntity.CreatedAt = DateTime.UtcNow;
+
                 //Lưu Bình luận
                 await _repository.CommentProduct.CreateCommentAsync(commentEntity);
 
                 return Ok(new ApiResponse<object>
                 {
                     Success = true,
-                    Message = "Comment created successfully.",
+                    Message = "Bình luận đã được tạo thành công.",
                     Data = _mapper.Map<CommentProductDto>(commentEntity)
                 });
             }
