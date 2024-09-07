@@ -59,6 +59,19 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+                // Kiểm tra nếu tên ntroduce đã tồn tại hay chưa
+                var existingIntroduce = await _repository.Introduce.GetIntroduceByNameAsync(createIntroduceDto.Titlte!);
+                if (existingIntroduce != null)
+                {
+                    _logger.LogError($"Title with name '{existingIntroduce.Titlte}' already exists.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Title with name '{existingIntroduce.Titlte}' already exists.",
+                        Data = null
+                    });
+                }
+
                 // Ánh xạ Dto thành entity
                 var introduceEntity = _mapper.Map<Introduce>(createIntroduceDto);
 

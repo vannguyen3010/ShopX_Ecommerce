@@ -93,5 +93,14 @@ namespace Repository
                 .Where(x => x.Name.ToLower().Contains(lowerCaseName))
                 .ToListAsync();
         }
+
+        public async Task<Product> GetProductByNameAsync(string name)
+        {
+            var lowerName = name.ToLower(); // Chuyển đổi tên danh mục về dạng chữ thường
+
+            return await _dbContext.Products
+              .Where(x => x.Name.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
+              .FirstOrDefaultAsync();
+        }
     }
 }
