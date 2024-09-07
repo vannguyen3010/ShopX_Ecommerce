@@ -6,6 +6,8 @@ using Shared.DTO.Banner;
 using Shared;
 using Repository;
 using Microsoft.AspNetCore.Hosting;
+using Shared.DTO.Response;
+using Shared.DTO.BannerProduct;
 //using BannerPosition = Entities.Models.BannerPosition;
 //using BannerDto = Shared.DTO.Banner.BannerPosition;
 
@@ -32,32 +34,65 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateBanner")]
-        public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto request)
-        {
-            ValidateFileUpload(request);
-
-            if (ModelState.IsValid)
+        public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto createbannerDto)
+       {
+            try
             {
-                //Convert DTO to Domain Model
-                var imageDomainModel = new Banner
+                ValidateFileUpload(createbannerDto);
+
+                // Kiểm tra xem đối tượng createBannerDto gửi từ client có hợp lệ không
+                if (createbannerDto == null)
                 {
-                    Title = request.Title,
-                    Desc = request.Desc,
-                    File = request.File,
-                    FileExtension = Path.GetExtension(request.File.FileName),
-                    FileSizeInBytes = request.File.Length,
-                    FileName = request.File.FileName,
-                    FileDescription = request.FileDescription,
-                    Position = MapBannerPosition(request.Position),
-                };
+                    _logger.LogError("Banner object sent from client is null.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Banner object is null",
+                        Data = null
+                    });
+                }
 
-                //User repository to upload image
-                var bannerEntity = await _repository.Banner.CreateBanner(imageDomainModel);
-                return Ok(_mapper.Map<BannerDto>(bannerEntity));
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Banner object sent from client.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Invalid model object",
+                        Data = null
+                    });
+                }
 
+                // Ánh xạ Dto thành entity
+                var bannerEntity = _mapper.Map<Banner>(createbannerDto);
 
+                // Xử lý tập tin hình ảnh
+                if (createbannerDto.File != null)
+                {
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.File.FileName)}";
+                    var fileExtension = Path.GetExtension(createbannerDto.File.FileName);
+                    bannerEntity.FilePath = await SaveFileAndGetUrl(createbannerDto.File, fileName, fileExtension);
+                    bannerEntity.FileName = fileName;
+                    bannerEntity.FileExtension = fileExtension;
+                    bannerEntity.FileSizeInBytes = createbannerDto.File.Length;
+                }
+
+                // tạo danh mục vào cơ sở dữ liệu
+                await _repository.Banner.CreateBanner(bannerEntity);
+
+                return Ok(new ApiResponse<BannerDto>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = _mapper.Map<BannerDto>(bannerEntity)
+                });
             }
-            return BadRequest(ModelState);
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside Banner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [HttpGet]

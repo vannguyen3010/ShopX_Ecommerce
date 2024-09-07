@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.BannerProduct;
-using Shared.DTO.Category;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -30,10 +28,11 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateBannerProduct")]
-        public async Task<IActionResult> CreateBannerProduct([FromForm] CreateBannerProduct createBannerDto)
+        public async Task<IActionResult> CreateBannerProduct([FromForm] CreateBannerProductDto createBannerDto)
         {
             try
             {
+                ValidateFileUpload(createBannerDto);
                 // Kiểm tra xem đối tượng createBannerDto gửi từ client có hợp lệ không
                 if (createBannerDto == null)
                 {
@@ -98,6 +97,26 @@ namespace Ecommerce_Wolmart.API.Controllers
             var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/BannerProduct/{fileName}{fileExtension}";
 
             return urlFilePath;
+        }
+        private void ValidateFileUpload(CreateBannerProductDto request)
+        {
+            var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
+
+            if (request.File != null)
+            {
+                //// Kiểm tra phần mở rộng tệp
+                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
+                {
+                    ModelState.AddModelError("File", "Unsupported file extension");
+                }
+
+                //// Kiểm tra kích thước tệp
+                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
+                {
+                    ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
+                }
+            }
+
         }
     }
 }

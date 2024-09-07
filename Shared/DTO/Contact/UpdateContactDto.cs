@@ -2,7 +2,7 @@
 
 namespace Shared.DTO.Contact
 {
-    public class CreateContactDto
+    public class UpdateContactDto
     {
         [Required]
         public string Name { get; set; }

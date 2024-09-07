@@ -8,8 +8,6 @@ namespace Repository
     public class RepositoryManager : IRepositoryManager
     {
         private readonly RepositoryContext _repoContext;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private IBannerRepository _banner;
         private ICateProductsRepository _categoryProduct;
         private IContactRepository _contact;
@@ -17,11 +15,9 @@ namespace Repository
         private ICommentProductRepository _commentProduct;
         private IBannerProductRepository _bannerProduct;
 
-        public RepositoryManager(RepositoryContext repositoryContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
+        public RepositoryManager(RepositoryContext repositoryContext)
         {
             _repoContext = repositoryContext;
-            _webHostEnvironment = webHostEnvironment;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public IBannerRepository Banner
@@ -30,7 +26,7 @@ namespace Repository
             {
                 if (_banner == null)
                 {
-                    _banner = new BannerRepository(_repoContext, _httpContextAccessor, _webHostEnvironment);
+                    _banner = new BannerRepository(_repoContext);
                 }
 
                 return _banner;

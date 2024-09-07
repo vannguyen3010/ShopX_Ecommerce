@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Shared.DTO.Banner;
 using Shared.DTO.Category;
+using Shared.DTO.CateProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
