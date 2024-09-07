@@ -4,6 +4,7 @@ using Entities.Models;
 using Shared.DTO.Banner;
 using Shared.DTO.BannerProduct;
 using Shared.DTO.Category;
+using Shared.DTO.CateProduct;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.Product;

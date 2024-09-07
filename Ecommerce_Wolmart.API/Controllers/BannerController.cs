@@ -34,14 +34,14 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateBanner")]
-        public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto BannerDto)
+        public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto createbannerDto)
        {
             try
             {
-                ValidateFileUpload(BannerDto);
+                ValidateFileUpload(createbannerDto);
 
                 // Kiểm tra xem đối tượng createBannerDto gửi từ client có hợp lệ không
-                if (BannerDto == null)
+                if (createbannerDto == null)
                 {
                     _logger.LogError("Banner object sent from client is null.");
                     return NotFound(new ApiResponse<Object>
@@ -64,17 +64,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Ánh xạ Dto thành entity
-                var bannerEntity = _mapper.Map<Banner>(BannerDto);
+                var bannerEntity = _mapper.Map<Banner>(createbannerDto);
 
                 // Xử lý tập tin hình ảnh
-                if (BannerDto.File != null)
+                if (createbannerDto.File != null)
                 {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(BannerDto.File.FileName)}";
-                    var fileExtension = Path.GetExtension(BannerDto.File.FileName);
-                    bannerEntity.FilePath = await SaveFileAndGetUrl(BannerDto.File, fileName, fileExtension);
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.File.FileName)}";
+                    var fileExtension = Path.GetExtension(createbannerDto.File.FileName);
+                    bannerEntity.FilePath = await SaveFileAndGetUrl(createbannerDto.File, fileName, fileExtension);
                     bannerEntity.FileName = fileName;
                     bannerEntity.FileExtension = fileExtension;
-                    bannerEntity.FileSizeInBytes = BannerDto.File.Length;
+                    bannerEntity.FileSizeInBytes = createbannerDto.File.Length;
                 }
 
                 // tạo danh mục vào cơ sở dữ liệu

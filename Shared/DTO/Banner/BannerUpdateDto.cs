@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Shared.DTO.Banner
 {
-    public class CreateBannerDto
+    public class BannerUpdateDto
     {
         [Required]
         public string Title { get; set; }
@@ -16,7 +14,5 @@ namespace Shared.DTO.Banner
         public string? FileDescription { get; set; }
         [Required]
         public BannerPosition Position { get; set; }
-
     }
-  
 }
