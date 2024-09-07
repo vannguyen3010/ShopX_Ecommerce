@@ -29,5 +29,6 @@ namespace Repository
         public DbSet<Product> Products { get; set; }
         public DbSet<CommentProduct> CommentProducts { get; set; }
         public DbSet<BannerProduct> BannerProducts { get; set; }
+        public DbSet<Introduce> Introduces { get; set; }
     }
 }

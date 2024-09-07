@@ -7,6 +7,7 @@ using Shared.DTO.Category;
 using Shared.DTO.CateProduct;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
+using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.User;
 
@@ -50,6 +51,12 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<BannerProduct, BannerProductDto>();
 
             CreateMap<UpdateBannerProductDto, BannerProduct>();
+
+            CreateMap<CreateIntroduceDto, Introduce>();
+
+            CreateMap<UpdateIntroduceDto, Introduce>();
+
+            CreateMap<Introduce, IntroduceDto>();
         }
     }
 }
