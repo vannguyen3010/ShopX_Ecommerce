@@ -40,5 +40,13 @@ namespace Repository
             Delete(introduce);
         }
 
+        public async Task<Introduce> GetIntroduceByNameAsync(string name)
+        {
+            var lowerName = name.ToLower(); // Chuyển đổi tên danh mục về dạng chữ thường
+
+            return await _dbContext.Introduces
+              .Where(x => x.Titlte.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
+              .FirstOrDefaultAsync();
+        }
     }
 }
