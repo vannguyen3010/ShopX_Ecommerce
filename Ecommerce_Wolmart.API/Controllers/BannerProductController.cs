@@ -248,6 +248,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return urlFilePath;
         }
+
         private void ValidateFileUpload(CreateBannerProductDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
