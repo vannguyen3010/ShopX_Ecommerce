@@ -15,6 +15,7 @@ namespace Repository
         private IContactRepository _contact;
         private IProductRepository _product;
         private ICommentProductRepository _commentProduct;
+        private IBannerProductRepository _bannerProduct;
 
         public RepositoryManager(RepositoryContext repositoryContext, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
@@ -83,6 +84,19 @@ namespace Repository
                 }
 
                 return _commentProduct;
+            }
+        }
+
+        public IBannerProductRepository BannerProduct
+        {
+            get
+            {
+                if (_bannerProduct == null)
+                {
+                    _bannerProduct = new BannerProductRepository(_repoContext);
+                }
+
+                return _bannerProduct;
             }
         }
 

@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Shared;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Entities.Models
 {
-    public class Banner
+    public class BannerProduct
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -18,8 +18,5 @@ namespace Entities.Models
         public string FileExtension { get; set; }
         public long FileSizeInBytes { get; set; }
         public string FilePath { get; set; }
-        [Required]
-        public BannerPosition Position { get; set; }
     }
-   
 }
