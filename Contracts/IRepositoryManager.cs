@@ -9,6 +9,7 @@
         IProductRepository Product { get; }
         ICommentProductRepository CommentProduct { get; }
         IBannerProductRepository BannerProduct { get; }
+        IIntroduceRepository Introduce { get; }
 
 
         void SaveAsync();

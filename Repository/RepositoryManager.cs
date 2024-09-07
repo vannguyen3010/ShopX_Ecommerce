@@ -14,6 +14,7 @@ namespace Repository
         private IProductRepository _product;
         private ICommentProductRepository _commentProduct;
         private IBannerProductRepository _bannerProduct;
+        private IIntroduceRepository _introduce;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -93,6 +94,19 @@ namespace Repository
                 }
 
                 return _bannerProduct;
+            }
+        }
+
+        public IIntroduceRepository Introduce
+        {
+            get
+            {
+                if (_introduce == null)
+                {
+                    _introduce = new IntroduceRepository(_repoContext);
+                }
+
+                return _introduce;
             }
         }
 

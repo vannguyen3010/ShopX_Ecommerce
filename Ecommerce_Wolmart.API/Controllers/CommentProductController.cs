@@ -232,10 +232,11 @@ namespace Ecommerce_Wolmart.API.Controllers
                     Data = commentDtos
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                throw;
+                _logger.LogError($"Something went wrong inside GetAllComment action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
             }
         }
 

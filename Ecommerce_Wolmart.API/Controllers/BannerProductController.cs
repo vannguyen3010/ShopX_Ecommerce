@@ -104,6 +104,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
             var bannerDto = _mapper.Map<IEnumerable<BannerProductDto>>(banners);
+
             return Ok(new ApiResponse<IEnumerable<BannerProductDto>>
             {
                 Success = true,
