@@ -6,7 +6,7 @@ namespace Shared.DTO.Introduce
     public class UpdateIntroduceDto
     {
         [Required]
-        public string Titlte { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
         [Required]
         public IFormFile File { get; set; }

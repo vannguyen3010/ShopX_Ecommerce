@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Introduce;
@@ -92,6 +93,10 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 var productEntity = _mapper.Map<Product>(createProductDto);
+
+                // Tạo NameSlug từ Title
+                productEntity.NameSlug = SlugGenerator.GenerateSlug(createProductDto.Name);
+
 
                 //Xử lý hình ảnh
                 if (createProductDto.ImageFile != null)

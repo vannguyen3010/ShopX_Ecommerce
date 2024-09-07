@@ -6,7 +6,8 @@ namespace Shared.DTO.Introduce
     public class IntroduceDto
     {
         public Guid id { get; set; }
-        public string Titlte { get; set; }
+        public string Name { get; set; }
+        public string NameSlug { get; set; }
         public string Description { get; set; }
         public string FilePath { get; set; }
         public bool IsHot { get; set; }

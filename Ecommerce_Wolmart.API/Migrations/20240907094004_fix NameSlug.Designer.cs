@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240907094004_fix NameSlug")]
+    partial class fixNameSlug
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "12264a8d-6b3d-495e-9640-83f55cd3e99e",
+                            ConcurrencyStamp = "81343935-400f-47fc-a871-a5eebcb60e78",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -105,7 +108,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPqoaqWTI3eNTQgIQ+KMIQSDT5J2DTDUM7OTI2+aMypmNKewgQRht+1hfeF/zUmAng==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGLWrRdb/JpOKGFv6GbsP//wX0COtg4XOdIQ1BRXKeWfA7+T+vBJ/Af3IoRV3AOhSQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -115,7 +118,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1cc94611-d826-4438-9fe2-04b5fbf057af",
+                            ConcurrencyStamp = "a577e7e9-0331-4775-aefc-9be5e5e14122",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -123,7 +126,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHagtaFEiY5xwa6IO64cZcNAz2dY7P2hJWfRUPUxuoIxDk009NNC64IjaiLkOpWtQg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJ0Zwk87aVYj4j5x7/V3PNBNJl7JUMsSni3chu0am2FpqiK0X799rFd2B20KW63Z1Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -242,10 +245,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NameSlug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -432,10 +431,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NameSlug")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

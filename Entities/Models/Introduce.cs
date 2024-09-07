@@ -6,7 +6,8 @@ namespace Entities.Models
     public class Introduce
     {
         public Guid id { get; set; }
-        public string Titlte { get; set; }
+        public string Name { get; set; }
+        public string NameSlug { get; set; }
         public string Description { get; set; }
         [NotMapped] // Sẽ ko lưu ảnh vào Db
         public IFormFile File { get; set; }
