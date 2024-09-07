@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 
 namespace Repository
 {
@@ -20,14 +21,20 @@ namespace Repository
             return banner;
         }
 
-        public async Task<IEnumerable<BannerProduct>> GetAllBannerProductAsync(bool trackChanges)
-        {
-            return await FindAll(trackChanges).OrderBy(x => x.Id).ToListAsync();
-        }
-
         public async Task<BannerProduct> GetBannerProductbyId(Guid brandId, bool trackChanges)
         {
             return await FindByCondition(banner => banner.Id.Equals(brandId), trackChanges).FirstOrDefaultAsync();
+        }
+        public async Task<IEnumerable<BannerProduct>> GetAllBannerProductAsync(BannerProductWithPopupPosition? position = null)
+        {
+            if(position.HasValue)
+            {
+                return await _dbContext.BannerProducts.Where(x => x.Position == position).ToListAsync();
+            }
+            else
+            {
+                return await _dbContext.BannerProducts.ToListAsync();
+            }
         }
 
         public void UpdateBannerProduct(BannerProduct banner)
@@ -39,5 +46,6 @@ namespace Repository
             Delete(banner);
         }
 
+        
     }
 }

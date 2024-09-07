@@ -2,6 +2,7 @@
 using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 using Shared.DTO.BannerProduct;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
@@ -89,37 +90,27 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllBannerProduct")]
-        public async Task<IActionResult> GetAllBannerProduct()
+        [Route("GetAllBannerPositionProductPopup")]
+        public async Task<IActionResult> GetAllBannerPositionProductPopup([FromQuery] BannerProductWithPopupPosition? position)
         {
-            try
+            IEnumerable<BannerProduct> banners;
+            if (position.HasValue)
             {
-                var banners = await _repository.BannerProduct.GetAllBannerProductAsync(trackChanges: false);
-
-                if (banners == null)
-                {
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = "Không tìm thấy Banner nào!",
-                        Data = null
-                    });
-                }
-
-                var bannerResults = _mapper.Map<IEnumerable<BannerProductDto>>(banners);
-                return Ok(new ApiResponse<IEnumerable<BannerProductDto>>
-                {
-                    Success = true,
-                    Message = "Banner Products retrieved successfully.",
-                    Data = bannerResults
-                });
+                banners = await _repository.BannerProduct.GetAllBannerProductAsync(position);
             }
-            catch (Exception ex)
+            else
             {
-
-                _logger.LogError($"Something went wrong inside GetBrandById action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                banners = await _repository.BannerProduct.GetAllBannerProductAsync();
             }
+
+            var bannerDto = _mapper.Map<IEnumerable<BannerProductDto>>(banners);
+            return Ok(new ApiResponse<IEnumerable<BannerProductDto>>
+            {
+                Success = true,
+                Message = "Banner Products retrieved successfully.",
+                Data = bannerDto
+            });
+
         }
 
         [HttpGet]
