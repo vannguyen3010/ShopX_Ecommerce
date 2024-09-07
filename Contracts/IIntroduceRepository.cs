@@ -10,6 +10,7 @@ namespace Contracts
         Task<IEnumerable<Introduce>> GetAllIntroduceIsHotAsync();
         Task<Introduce> GetIntroduceByIdAsync(Guid introduceId, bool trackChanges);
         Task<Introduce> GetIntroduceByNameAsync(string name);
+        Task<IEnumerable<Introduce>> SearchIntroducesByNameAsync(string keyword, bool trackChanges);
         void UpdateIntroduce(Introduce introduce);
         void DeleteIntroduce(Introduce introduce);
     }

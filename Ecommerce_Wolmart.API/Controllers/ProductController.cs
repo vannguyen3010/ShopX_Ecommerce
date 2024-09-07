@@ -416,7 +416,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-
         private void UpdateFileUpload(UpdateProductDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
