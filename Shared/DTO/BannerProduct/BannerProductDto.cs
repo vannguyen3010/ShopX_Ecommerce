@@ -9,5 +9,6 @@ namespace Shared.DTO.BannerProduct
         public string Title { get; set; }
         public string Desc { get; set; }
         public string FilePath { get; set; }
+        public BannerProductWithPopupPosition Position { get; set; }
     }
 }

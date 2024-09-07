@@ -108,8 +108,13 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 banners = await _repository.Banner.GetAllBannersAsync();
             }
-            //var bannerEntity = await _repository.Banner.GetAllBrandsAsync(position);
-            return Ok(banners);
+            var bannerDto = _mapper.Map<IEnumerable<BannerDto>>(banners);
+            return Ok(new ApiResponse<IEnumerable<BannerDto>>
+            {
+                Success = true,
+                Message = "Banner Products retrieved successfully.",
+                Data = bannerDto
+            });
         }
 
         [HttpGet]

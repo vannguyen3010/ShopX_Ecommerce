@@ -18,5 +18,7 @@ namespace Entities.Models
         public string FileExtension { get; set; }
         public long FileSizeInBytes { get; set; }
         public string FilePath { get; set; }
+        [Required]
+        public BannerProductWithPopupPosition Position { get; set; }
     }
 }
