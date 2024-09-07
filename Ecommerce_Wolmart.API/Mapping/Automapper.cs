@@ -44,7 +44,7 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CommentProduct, CommentProductDto>();
 
-            CreateMap<CreateBannerProduct, BannerProduct>();
+            CreateMap<CreateBannerProductDto, BannerProduct>();
             CreateMap<BannerProduct, BannerProductDto>();
         }
     }

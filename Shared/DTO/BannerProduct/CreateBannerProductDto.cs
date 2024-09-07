@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shared.DTO.BannerProduct
 {
-    public class CreateBannerProduct
+    public class CreateBannerProductDto
     {
         [Required]
         public string Title { get; set; }
