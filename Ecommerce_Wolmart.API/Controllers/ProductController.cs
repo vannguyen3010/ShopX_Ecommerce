@@ -129,7 +129,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             try
             {
                 // Gọi repository để lấy sản phẩm với phân trang
-                var (products, totalCount) = await _repository.Product.GetAllProductPagination(pageNumber, pageSize);
+                var (products, totalCount) = await _repository.Product.GetAllProductPaginationAsync(pageNumber, pageSize);
 
                 if (!products.Any())
                 {
@@ -170,7 +170,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             try
             {
                 // Lấy tất cả sản phẩm có IsHot là true
-                var hotProducts = await _repository.Product.GetAllProductIsHot();
+                var hotProducts = await _repository.Product.GetAllProductIsHotAsync();
 
                 if (hotProducts == null || !hotProducts.Any())
                 {
@@ -415,7 +415,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
 
 
         private void UpdateFileUpload(UpdateProductDto request)
