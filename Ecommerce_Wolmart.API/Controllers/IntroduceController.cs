@@ -297,6 +297,50 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("SearchIntroduce/{keyWord}")]
+        public async Task<IActionResult> SearchIntroduce([FromQuery] string keyWord)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(keyWord))
+                {
+                    _logger.LogError("Tên tìm kiếm không được để trống.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Tên tìm kiếm không được để trống..",
+                        Data = null
+                    });
+                }
+
+                // Tìm kiếm sản phẩm theo tên với chuỗi con
+                var introduces = await _repository.Introduce.SearchIntroducesByNameAsync(keyWord, trackChanges: false);
+                if (introduces == null || !introduces.Any())
+                {
+                    _logger.LogInfo($"Không tìm thấy bài viết nào có tên '{keyWord}'.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy bài viết nào có tên '{keyWord}'.",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ApiResponse<IEnumerable<IntroduceDto>>
+                {
+                    Success = true,
+                    Message = "Products retrieved successfully.",
+                    Data = introduces.Select(p => _mapper.Map<IntroduceDto>(p))
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside SearchProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         private void ValidateFileUpload(CreateIntroduceDto request)
         {

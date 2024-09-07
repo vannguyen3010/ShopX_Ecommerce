@@ -65,6 +65,14 @@ namespace Repository
             return await _dbContext.Introduces.Where(x => x.IsHot).ToListAsync();
         }
 
-      
+        public async Task<IEnumerable<Introduce>> SearchIntroducesByNameAsync(string keyword, bool trackChanges)
+        {
+            var lowerCaseName = keyword.ToLower();
+
+            // Sử dụng tìm kiếm không phân biệt chữ hoa và chữ thường, đồng thời tìm kiếm các chuỗi con
+            return await _dbContext.Introduces
+                .Where(x => x.Titlte.ToLower().Contains(lowerCaseName))
+                .ToListAsync();
+        }
     }
 }
