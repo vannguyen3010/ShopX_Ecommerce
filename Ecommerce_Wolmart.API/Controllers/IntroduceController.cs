@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using Contracts;
+using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTO.Banner;
-using Shared.DTO.BannerProduct;
 using Shared.DTO.Introduce;
-using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -61,20 +59,23 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Kiểm tra nếu tên ntroduce đã tồn tại hay chưa
-                var existingIntroduce = await _repository.Introduce.GetIntroduceByNameAsync(createIntroduceDto.Titlte!);
+                var existingIntroduce = await _repository.Introduce.GetIntroduceByNameAsync(createIntroduceDto.Name!);
                 if (existingIntroduce != null)
                 {
-                    _logger.LogError($"Title with name '{existingIntroduce.Titlte}' already exists.");
+                    _logger.LogError($"Title with name '{existingIntroduce.Name}' already exists.");
                     return NotFound(new ApiResponse<Object>
                     {
                         Success = false,
-                        Message = $"Title with name '{existingIntroduce.Titlte}' already exists.",
+                        Message = $"Title with name '{existingIntroduce.Name}' already exists.",
                         Data = null
                     });
                 }
 
                 // Ánh xạ Dto thành entity
                 var introduceEntity = _mapper.Map<Introduce>(createIntroduceDto);
+
+                // Tạo NameSlug từ Title
+                introduceEntity.NameSlug = SlugGenerator.GenerateSlug(createIntroduceDto.Name);
 
                 // Xử lý tập tin hình ảnh
                 if (createIntroduceDto.File != null)
@@ -341,6 +342,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
 
         private void ValidateFileUpload(CreateIntroduceDto request)
         {

@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace Repository
 {
@@ -56,7 +57,7 @@ namespace Repository
             var lowerName = name.ToLower(); // Chuyển đổi tên danh mục về dạng chữ thường
 
             return await _dbContext.Introduces
-              .Where(x => x.Titlte.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
+              .Where(x => x.Name.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
               .FirstOrDefaultAsync();
         }
 
@@ -71,8 +72,10 @@ namespace Repository
 
             // Sử dụng tìm kiếm không phân biệt chữ hoa và chữ thường, đồng thời tìm kiếm các chuỗi con
             return await _dbContext.Introduces
-                .Where(x => x.Titlte.ToLower().Contains(lowerCaseName))
+                .Where(x => x.Name.ToLower().Contains(lowerCaseName))
                 .ToListAsync();
         }
+
+       
     }
 }

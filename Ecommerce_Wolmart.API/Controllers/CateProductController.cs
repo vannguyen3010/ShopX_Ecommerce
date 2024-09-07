@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -120,6 +121,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ Dto thành entity
                 var cateProductEntity = _mapper.Map<CateProduct>(createCategoryDto);
 
+                // Tạo NameSlug từ Title
+                cateProductEntity.NameSlug = SlugGenerator.GenerateSlug(createCategoryDto.Name);
+
                 // Xử lý tập tin hình ảnh
                 if (createCategoryDto.File != null)
                 {
@@ -220,6 +224,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     {
                         c.Id,
                         c.Name,
+                        c.NameSlug,
                         c.FilePath,
                         c.ParentCategoryId,
                         c.CreateAt,
@@ -230,6 +235,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                             {
                                 child.Id,
                                 child.Name,
+                                child.NameSlug,
                                 child.FilePath,
                                 child.ParentCategoryId,
                                 child.CreateAt,
