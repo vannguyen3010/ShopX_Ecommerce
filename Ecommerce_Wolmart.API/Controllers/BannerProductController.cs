@@ -3,6 +3,7 @@ using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.BannerProduct;
+using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -87,6 +88,155 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetAllBannerProduct")]
+        public async Task<IActionResult> GetAllBannerProduct()
+        {
+            try
+            {
+                var banners = await _repository.BannerProduct.GetAllBannerProductAsync(trackChanges: false);
+
+                if (banners == null)
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy Banner nào!",
+                        Data = null
+                    });
+                }
+
+                var bannerResults = _mapper.Map<IEnumerable<BannerProductDto>>(banners);
+                return Ok(new ApiResponse<IEnumerable<BannerProductDto>>
+                {
+                    Success = true,
+                    Message = "Banner Products retrieved successfully.",
+                    Data = bannerResults
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetBrandById action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetBannerProductById/{id}")]
+        public async Task<IActionResult> GetBannerProductById(Guid id)
+        {
+            try
+            {
+                var banner = await _repository.BannerProduct.GetBannerProductbyId(id, trackChanges: false);
+                if (banner == null)
+                {
+                    _logger.LogError($"Không tìm thấy banner id này {id}");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy banner id này!",
+                        Data = null
+                    });
+                }
+
+                var bannerResult = _mapper.Map<BannerProductDto>(banner);
+                return Ok(new ApiResponse<BannerProductDto>
+                {
+                    Success = true,
+                    Message = "Banner Products retrieved successfully.",
+                    Data = bannerResult
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetBrandById action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateBannerProduct/{id}")]
+        public async Task<IActionResult> UpdateBannerProduct(Guid id, [FromForm] UpdateBannerProductDto updateBannerDto)
+        {
+            try
+            {
+                if (updateBannerDto == null)
+                {
+                    _logger.LogError("Banner object sent from client is null.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy banner id này!",
+                        Data = null
+                    });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Banner object sent from client.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Invalid Banner object sent from client!",
+                        Data = null
+                    });
+                }
+
+                var bannerEntity = await _repository.BannerProduct.GetBannerProductbyId(id, trackChanges: true);
+                if (bannerEntity == null)
+                {
+                    _logger.LogError($"Banner with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Banner with id: {id}, hasn't been found in db!",
+                        Data = null
+                    });
+                }
+
+                _mapper.Map(updateBannerDto, bannerEntity);
+
+                _repository.BannerProduct.UpdateBannerProduct(bannerEntity);
+                _repository.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside UpdateBrand action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteBannerProduct/{id}")]
+        public async Task<IActionResult> DeleteBannerProduct(Guid id)
+        {
+            try
+            {
+                var banner = await _repository.BannerProduct.GetBannerProductbyId(id, trackChanges: false);
+                if (banner == null)
+                {
+                    _logger.LogError($"Brand with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                _repository.BannerProduct.DeleteBannerProduct(banner);
+                _repository.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside DeleteBrand action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         {
             var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/BannerProduct", $"{fileName}{fileExtension}");
@@ -98,6 +248,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return urlFilePath;
         }
+
         private void ValidateFileUpload(CreateBannerProductDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
