@@ -8,6 +8,7 @@
         IContactRepository Contact { get; }
         IProductRepository Product { get; }
         ICommentProductRepository CommentProduct { get; }
+        IBannerProductRepository BannerProduct { get; }
 
 
         void SaveAsync();

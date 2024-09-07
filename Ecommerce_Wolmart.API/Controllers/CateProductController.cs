@@ -118,6 +118,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 // Ánh xạ Dto thành entity
                 var cateProductEntity = _mapper.Map<CateProduct>(createCategoryDto);
+
                 // Xử lý tập tin hình ảnh
                 if (createCategoryDto.File != null)
                 {
