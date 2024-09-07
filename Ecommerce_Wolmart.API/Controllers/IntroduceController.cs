@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Banner;
 using Shared.DTO.BannerProduct;
 using Shared.DTO.Introduce;
+using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -104,26 +105,79 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllIntroduce")]
-        public async Task<IActionResult> GetAllIntroduce()
+        [Route("GetAllIntroducesPagination")]
+        public async Task<IActionResult> GetAllIntroducesPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var introduces = await _repository.Introduce.GetAllIntroduceAsync(trackChanges: false);
-                _logger.LogInfo("Returned all introduce from database.");
+                // Gọi repository để lấy sản phẩm với phân trang
+                var (introduces, totalCount) = await _repository.Introduce.GetAllIntroducePaginationAsync(pageNumber, pageSize);
 
-                var introducesResult = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
-
-                return Ok(new ApiResponse<IEnumerable<IntroduceDto>>
+                if (!introduces.Any())
                 {
-                    Success = true,
-                    Message = "Banner GetallIntroduce retrieved successfully.",
-                    Data = introducesResult
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Trang ảy hiện không có bài viết",
+                        Data = null
+                    });
+                }
+
+                var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
+
+                // Trả về response với data và số lượng sản phẩm
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        introduces = introduceDtos
+                    }
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetAllIntroduces action: {ex.Message}");
+
+                _logger.LogError($"Something went wrong inside GetAllProducts action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllIntroduceIsHot")]
+        public async Task<IActionResult> GetAllIntroduceIsHot()
+        {
+            try
+            {
+                // Lấy tất cả sản phẩm có IsHot là true
+                var hotIntroduces = await _repository.Introduce.GetAllIntroduceIsHotAsync();
+
+                if (hotIntroduces == null || !hotIntroduces.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy bài viết nổi bật.",
+                        Data = null
+                    });
+                }
+
+                // Ánh xạ từ entity sang DTO nếu cần thiết
+                var hotIntroducesDto = _mapper.Map<IEnumerable<IntroduceDto>>(hotIntroduces);
+
+                return Ok(new ApiResponse<IEnumerable<IntroduceDto>>
+                {
+                    Success = true,
+                    Message = "Những bài viết nổi bật.",
+                    Data = hotIntroducesDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProductIsHot action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

@@ -45,12 +45,12 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductIsHot()
+        public async Task<IEnumerable<Product>> GetAllProductIsHotAsync()
         {
             return await _dbContext.Products.Where(x => x.IsHot == true).ToListAsync();
         }
 
-        public async Task<(IEnumerable<Product> Products, int Total)> GetAllProductPagination(int pageNumber, int pageSize)
+        public async Task<(IEnumerable<Product> Products, int Total)> GetAllProductPaginationAsync(int pageNumber, int pageSize)
         {
             var productsQuery = _dbContext.Products.AsQueryable();
 

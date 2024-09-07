@@ -20,9 +20,20 @@ namespace Repository
             return introduce;
         }
 
-        public async Task<IEnumerable<Introduce>> GetAllIntroduceAsync(bool trackChanges)
+        public async Task<(IEnumerable<Introduce> Introducdes, int Total)> GetAllIntroducePaginationAsync(int pageNumber, int pageSize)
         {
-            return await FindAll(trackChanges).OrderBy(x => x.Titlte).ToListAsync();
+            var introducesQuery = _dbContext.Introduces.AsQueryable();
+
+            // Đếm tổng số lượng sản phẩm
+            int totalCount = await introducesQuery.CountAsync();
+
+            // Thực hiện phân trang
+            var introduces = await introducesQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (introduces, totalCount);
         }
 
         public async Task<Introduce> GetIntroduceByIdAsync(Guid introduceId, bool trackChanges)
@@ -48,5 +59,12 @@ namespace Repository
               .Where(x => x.Titlte.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
               .FirstOrDefaultAsync();
         }
+
+        public async Task<IEnumerable<Introduce>> GetAllIntroduceIsHotAsync()
+        {
+            return await _dbContext.Introduces.Where(x => x.IsHot).ToListAsync();
+        }
+
+      
     }
 }
