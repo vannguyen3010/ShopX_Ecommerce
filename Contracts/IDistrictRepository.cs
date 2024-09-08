@@ -6,5 +6,6 @@ namespace Contracts
     {
         Task<District> GetDistrictByCodeAsync(string code);
         Task<IEnumerable<Ward>> GetWardsByDistrictCodeAsync(string districtCode);
+        Task<IEnumerable<District>> GetAllDistrictsAsync(string provinceCode, bool trackChanges);
     }
 }
