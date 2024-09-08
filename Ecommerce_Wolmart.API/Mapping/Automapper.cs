@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Entities.Identity;
 using Entities.Models;
+using Entities.Models.Address;
+using Shared.DTO.Address;
 using Shared.DTO.Banner;
 using Shared.DTO.BannerProduct;
 using Shared.DTO.Category;
@@ -57,6 +59,10 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<UpdateIntroduceDto, Introduce>();
 
             CreateMap<Introduce, IntroduceDto>();
+
+            CreateMap<CreateAddressDto, Location>();
+
+            CreateMap<Location, AddressDto>();
         }
     }
 }

@@ -10,6 +10,10 @@
         ICommentProductRepository CommentProduct { get; }
         IBannerProductRepository BannerProduct { get; }
         IIntroduceRepository Introduce { get; }
+        IAddressRepository Address { get; }
+        IProvinceRepository Province { get; }
+        IDistrictRepository District { get; }
+        IWardRepository Ward { get; }
 
 
         void SaveAsync();

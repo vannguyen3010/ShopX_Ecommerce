@@ -15,6 +15,10 @@ namespace Repository
         private ICommentProductRepository _commentProduct;
         private IBannerProductRepository _bannerProduct;
         private IIntroduceRepository _introduce;
+        private IProvinceRepository _province;
+        private IDistrictRepository _district;
+        private IWardRepository _ward;
+        private IAddressRepository _address;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -107,6 +111,58 @@ namespace Repository
                 }
 
                 return _introduce;
+            }
+        }
+
+        public IProvinceRepository Province
+        {
+            get
+            {
+                if (_province == null)
+                {
+                    _province = new ProvinceRepository(_repoContext);
+                }
+
+                return _province;
+            }
+        }
+
+        public IDistrictRepository District
+        {
+            get
+            {
+                if (_district == null)
+                {
+                    _district = new DistrictRepository(_repoContext);
+                }
+
+                return _district;
+            }
+        }
+        public IWardRepository Ward
+        {
+            get
+            {
+                if (_ward == null)
+                {
+                    _ward = new WardRepository(_repoContext);
+                }
+
+                return _ward;
+            }
+        }
+
+        public IAddressRepository Address
+
+        {
+            get
+            {
+                if (_address == null)
+                {
+                    _address = new AddressRepository(_repoContext);
+                }
+
+                return _address;
             }
         }
 
