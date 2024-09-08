@@ -105,5 +105,89 @@ namespace Ecommerce_Wolmart.API.Controllers
            
 
         }
+
+        [HttpGet]
+        [Route("GetAllProvinces")]
+        public async Task<IActionResult> GetAllProvinces()
+        {
+            try
+            {
+                var provinces = await _repository.Province.GetAllProvinceAsync(trackChanges: false);
+                if (provinces == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Returned all provinces from database.",
+                        Data = null
+                    });
+                }
+
+                return Ok(provinces);
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProvincesaction: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllDistricts/{provinceCode}")]
+        public async Task<IActionResult> GetAllDistricts(string provinceCode)
+        {
+            try
+            {
+                var districts = await _repository.District.GetAllDistrictsAsync(provinceCode, trackChanges: false);
+                if (districts == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Returned all districts from database.",
+                        Data = null
+                    });
+                }
+
+                return Ok(districts);
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAlldistricts: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllWards/{districtCode}")]
+        public async Task<IActionResult> GetAllWards(string districtCode)
+        {
+            try
+            {
+                var wards = await _repository.Ward.GetAllWardsAsync(districtCode, trackChanges: false);
+                if (wards == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Returned all wards from database.",
+                        Data = null
+                    });
+                }
+
+                return Ok(wards);
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllwards: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

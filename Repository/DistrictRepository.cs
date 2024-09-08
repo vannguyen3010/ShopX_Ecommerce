@@ -13,6 +13,13 @@ namespace Repository
             _dbContext = dbContext;
         }
 
+        public async Task<IEnumerable<District>> GetAllDistrictsAsync(string provinceCode, bool trackChanges)
+        {
+            return await _dbContext.Districts
+                .Where(x => x.ProvinceCode == provinceCode)
+                .ToListAsync();
+        }
+
         public async Task<District> GetDistrictByCodeAsync(string code)
         {
             return await _dbContext.Districts.FirstOrDefaultAsync(x => x.Code == code);
