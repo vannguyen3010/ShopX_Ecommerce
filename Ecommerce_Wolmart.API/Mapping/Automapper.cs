@@ -71,7 +71,7 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<Image, ImageProfileDto>();
 
-            CreateMap<ProfileUser, ProfileDto>();
+            CreateMap<UpdateImageProFileDto, Image>();
 
         }
     }
