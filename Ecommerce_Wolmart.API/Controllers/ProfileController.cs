@@ -166,7 +166,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
 
-                _repository.Profile.UpdateImageProfile(profileEntity);
+                _repository.Profile.UpdateImageProfile(profileEntity); 
                 _repository.SaveAsync();
 
                 return NoContent();
