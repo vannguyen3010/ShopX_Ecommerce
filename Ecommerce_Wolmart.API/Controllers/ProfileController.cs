@@ -20,7 +20,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper; 
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
