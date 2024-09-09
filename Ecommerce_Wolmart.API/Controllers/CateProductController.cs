@@ -60,6 +60,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
                 // Kiểm tra nếu tên danh mục đã tồn tại
                 var existingCategory = await _repository.CateProduct.GetCategoryByNameAsync(createCategoryDto.Name!);
                 if (existingCategory != null)

@@ -93,24 +93,33 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("GetAllBannerPositionProductPopup")]
         public async Task<IActionResult> GetAllBannerPositionProductPopup([FromQuery] BannerProductWithPopupPosition? position)
         {
-            IEnumerable<BannerProduct> banners;
-            if (position.HasValue)
+            try
             {
-                banners = await _repository.BannerProduct.GetAllBannerProductAsync(position);
-            }
-            else
-            {
-                banners = await _repository.BannerProduct.GetAllBannerProductAsync();
-            }
+                IEnumerable<BannerProduct> banners;
+                if (position.HasValue)
+                {
+                    banners = await _repository.BannerProduct.GetAllBannerProductAsync(position);
+                }
+                else
+                {
+                    banners = await _repository.BannerProduct.GetAllBannerProductAsync();
+                }
 
-            var bannerDto = _mapper.Map<IEnumerable<BannerProductDto>>(banners);
+                var bannerDto = _mapper.Map<IEnumerable<BannerProductDto>>(banners);
 
-            return Ok(new ApiResponse<IEnumerable<BannerProductDto>>
+                return Ok(new ApiResponse<IEnumerable<BannerProductDto>>
+                {
+                    Success = true,
+                    Message = "Banner Products retrieved successfully.",
+                    Data = bannerDto
+                });
+            }
+            catch (Exception ex)
             {
-                Success = true,
-                Message = "Banner Products retrieved successfully.",
-                Data = bannerDto
-            });
+
+                _logger.LogError($"Something went wrong inside BannerProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
 
         }
 

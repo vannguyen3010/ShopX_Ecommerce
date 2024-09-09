@@ -90,5 +90,6 @@ namespace Repository
         public DbSet<District> Districts { get; set; }
         public DbSet<Ward> Wards { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<ProfileUser> ProfileUsers { get; set; }
     }
 }

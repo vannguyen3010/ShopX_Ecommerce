@@ -9,6 +9,7 @@ using Shared.DTO.Category;
 using Shared.DTO.CateProduct;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
+using Shared.DTO.ImageProfile;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.User;
@@ -65,6 +66,13 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<Address, AddressDto>();
 
             CreateMap<UpdateAddressDto, Address>();
+
+            CreateMap<CreateImagePrifileDto, Image>();
+
+            CreateMap<Image, ImageProfileDto>();
+
+            CreateMap<ProfileUser, ProfileDto>();
+
         }
     }
 }

@@ -32,6 +32,7 @@
     <Folder Include="Img_Repository\CateProduct\" />
     <Folder Include="Img_Repository\BannerProduct\" />
     <Folder Include="Img_Repository\Introduce\" />
+    <Folder Include="Img_Repository\img-Profile\" />
     <Folder Include="Img_Repository\Product\" />
   </ItemGroup>
 
