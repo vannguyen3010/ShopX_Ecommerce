@@ -20,17 +20,19 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Image> GetImageByIdAsync(Guid id)
+        public async Task<Image> GetImageByIdAsync(Guid id, bool trackChanges)
         {
             return await _dbContext.Images.FindAsync(id);
         }
 
-        public async Task<ProfileUser> GetProfileByUserIdAsync(string userId)
+        //public async Task<User> GetUserByIdAsync(string userId)
+        //{
+        //    return await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        //}
+
+        public void UpdateImageProfile(Image image)
         {
-            return await _dbContext.ProfileUsers
-                .Include(x => x.User)
-                .Include(x => x.Image)
-                .FirstOrDefaultAsync(x => x.UserId == userId);
+            Update(image);
         }
     }
 }

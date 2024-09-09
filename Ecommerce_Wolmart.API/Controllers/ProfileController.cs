@@ -113,39 +113,92 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetProfileUserByUserId/{userId}")]
-        public async Task<IActionResult> GetProfileUserByUserId(string userId)
+        [HttpPut]
+        [Route("UpdateImageProfile/{id}")]
+        public async Task<IActionResult> UpdateImageProfile(Guid id, [FromForm] UpdateImageProFileDto updateImageProFileDto)
         {
             try
             {
-                var profileUser = await _repository.Profile.GetProfileByUserIdAsync(userId);
-                if (profileUser == null)
+                UpdateFileUpload(updateImageProFileDto);
+
+                if (updateImageProFileDto == null)
                 {
-                    _logger.LogError("Profile not found");
-                    return NotFound(new ApiResponse<Object>
+                    _logger.LogError("ImageProfile object sent from client is null.");
+                    return NotFound(new ApiResponse<object>
                     {
                         Success = false,
-                        Message = $"Profile not found",
+                        Message = "Không tìm thấy id ImageProfile này!",
                         Data = null
                     });
                 }
 
-                return Ok(new ApiResponse<ProfileDto>
+                if (!ModelState.IsValid)
                 {
-                    Success = true,
-                    Message = "Category retrieved successfully.",
-                    Data = _mapper.Map<ProfileDto>(profileUser)
-                });
+                    _logger.LogError("Invalid ImageProfile object sent from client.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Invalid ImageProfile object sent from client!",
+                        Data = null
+                    });
+                }
+
+                var profileEntity = await _repository.Profile.GetImageByIdAsync(id, trackChanges: true);
+                if (profileEntity == null)
+                {
+                    _logger.LogError($"ImageProfile with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "ImageProfile with id: {id}, hasn't been found in db!",
+                        Data = null
+                    });
+                }
+
+                if (updateImageProFileDto.File != null)
+                {
+                    profileEntity.File = updateImageProFileDto.File;
+                    profileEntity.FileExtension = Path.GetExtension(updateImageProFileDto.File.FileName);
+                    profileEntity.FileSizeInBytes = updateImageProFileDto.File.Length;
+                    profileEntity.FileName = updateImageProFileDto.File.FileName;
+                    profileEntity.FileDescription = updateImageProFileDto.FileDescription;
+                    profileEntity.FilePath = await SaveFileAndGetUrl(updateImageProFileDto.File, profileEntity.FileName, profileEntity.FileExtension);
+                }
+
+
+                _repository.Profile.UpdateImageProfile(profileEntity);
+                _repository.SaveAsync();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside ProfileUSer action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ProfileImage action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
 
+        private void UpdateFileUpload(UpdateImageProFileDto request)
+        {
+            var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
+
+            if (request.File != null)
+            {
+                //// Kiểm tra phần mở rộng tệp
+                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
+                {
+                    ModelState.AddModelError("File", "Unsupported file extension");
+                }
+
+                //// Kiểm tra kích thước tệp
+                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
+                {
+                    ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
+                }
+            }
+
+        }
         private void ValidateFileUpload(CreateImagePrifileDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
