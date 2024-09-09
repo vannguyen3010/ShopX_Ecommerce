@@ -5,7 +5,11 @@ namespace Contracts
 {
     public interface IAddressRepository
     {
-        Task CreateAddressAsync(Location location);
-        Task<Location> GetAddressByNameAsync(string name);
+        Task CreateAddressAsync(Address address);
+        Task<Address> GetAddressByNameAsync(string name);
+        Task UpdateAddressAsync(Address address);
+        Task<Address> GetAddressByIdAsync(Guid addressId, bool trackChanges);
+        Task<IEnumerable<Address>> GetAllAddressAsync(bool trackChanges);
+        Task SaveAsync();
     }
 }

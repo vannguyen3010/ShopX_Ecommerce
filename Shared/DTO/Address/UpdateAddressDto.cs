@@ -1,8 +1,7 @@
 ﻿namespace Shared.DTO.Address
 {
-    public class AddressDto
+    public class UpdateAddressDto
     {
-        public Guid Id { get; set; }
         public string ProvinceCode { get; set; }
         public string ProvinceName { get; set; }
         public string DistrictCode { get; set; }

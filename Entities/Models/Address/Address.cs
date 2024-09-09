@@ -1,8 +1,8 @@
 ﻿namespace Entities.Models.Address
 {
-    public class Location
+    public class Address
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public string ProvinceCode { get; set; }
         public string ProvinceName { get; set; }
         public string DistrictCode { get; set; }

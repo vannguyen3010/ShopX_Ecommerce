@@ -60,9 +60,11 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<Introduce, IntroduceDto>();
 
-            CreateMap<CreateAddressDto, Location>();
+            CreateMap<CreateAddressDto, Address>();
 
-            CreateMap<Location, AddressDto>();
+            CreateMap<Address, AddressDto>();
+
+            CreateMap<UpdateAddressDto, Address>();
         }
     }
 }

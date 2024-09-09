@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Azure;
 using Contracts;
+using Ecommerce_Wolmart.API.Migrations;
 using Entities.Models;
 using Entities.Models.Address;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Shared.DTO.Address;
 using Shared.DTO.Banner;
+using Shared.DTO.CateProduct;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -82,7 +84,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Ánh xạ Dto sang Enity
-                var addressEntities = _mapper.Map<Location>(createAddressDto);
+                var addressEntities = _mapper.Map<Address>(createAddressDto);
 
                 await _repository.Address.CreateAddressAsync(addressEntities);
 
@@ -186,6 +188,95 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
 
                 _logger.LogError($"Something went wrong inside GetAllwards: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateAdress/{id}")]
+        public async Task<IActionResult> UpdateAdress(Guid id, [FromBody] UpdateAddressDto updateAddressDto)
+        {
+            try
+            {
+                if (updateAddressDto == null)
+                {
+                    _logger.LogError("Address object sent from client is null.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Address object is null",
+                        Data = null
+                    });
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Address object sent from client is null.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Invalid model object",
+                        Data = null
+                    });
+                }
+
+
+                var existingAddress = await _repository.Address.GetAddressByIdAsync(id, trackChanges: false);
+                if (existingAddress == null)
+                {
+                    _logger.LogError($"Address with id {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Address with id {id} not found.",
+                        Data = null
+                    });
+                }
+
+                _mapper.Map(updateAddressDto, existingAddress);
+
+                await _repository.Address.UpdateAddressAsync(existingAddress);
+                await _repository.Address.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside UpdateAddress action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllAddress")]
+        public async Task<IActionResult> GetAllAddress()
+        {
+            try
+            {
+                var address = await _repository.Address.GetAllAddressAsync(trackChanges: false);
+                if (address == null)
+                {
+                    _logger.LogError("Address List sent from client is null.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Address List is null",
+                        Data = null
+                    });
+                }
+
+                return Ok(new ApiResponse<IEnumerable<AddressDto>>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = _mapper.Map<IEnumerable<AddressDto>>(address)
+                });
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllAddress action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
