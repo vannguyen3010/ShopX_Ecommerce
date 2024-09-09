@@ -97,7 +97,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f9afc658-d644-4783-8248-8b1726305df1",
+                            ConcurrencyStamp = "83dd4cdd-a662-4402-b6ac-2bb284b45cb3",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -105,7 +105,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELHtGs2TqkcUqWnUYcW8QD9BPnbNkwYgUh72mDhKCs8r7djydqaQh5POzavdZdzz5g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENM8DuYJ2O3wOn3DRfc5KyJ/F4rPscxwSlTQp98rLgqjaoU/mivwsLvB8D8ngYvVyQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -115,7 +115,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dfcad6c0-da45-4e09-96a5-d1345e8d08a0",
+                            ConcurrencyStamp = "c59db5f9-d5df-444e-84ec-25314b075583",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -123,7 +123,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFwaXPJt/Lgl3L9NGqNOXbd4r4cyATIetVaYEboSb/70evW82nhYf95e5A7U8JeFnQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEC3YCSESFXNNv1HObH/z1pOgXsW/iEpoU3uuA8HC1na1xzq/HItGsMhCOs5bC2wirw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -133,11 +133,9 @@ namespace Ecommerce_Wolmart.API.Migrations
 
             modelBuilder.Entity("Entities.Models.Address.Address", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DistrictCode")
                         .IsRequired()
@@ -282,47 +280,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.HasIndex("ProvinceCode1");
 
                     b.ToTable("Districts");
-                });
-
-            modelBuilder.Entity("Entities.Models.Address.Location", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DistrictCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DistrictName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProvinceCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProvinceName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WardCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WardName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("Entities.Models.Address.Province", b =>
