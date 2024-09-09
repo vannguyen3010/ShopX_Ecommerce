@@ -19,6 +19,7 @@ namespace Repository
         private IDistrictRepository _district;
         private IWardRepository _ward;
         private IAddressRepository _address;
+        private IProfileRepository _profile;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -166,6 +167,19 @@ namespace Repository
             }
         }
 
+        public IProfileRepository Profile
+        {
+            get
+            {
+                if (_profile == null)
+                {
+                    _profile = new ProfileRepository(_repoContext);
+                }
+
+                return _profile;
+            }
+
+        }
         public void SaveAsync() => _repoContext.SaveChanges();
     }
 }

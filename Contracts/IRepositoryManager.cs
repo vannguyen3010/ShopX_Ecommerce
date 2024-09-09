@@ -14,6 +14,7 @@
         IProvinceRepository Province { get; }
         IDistrictRepository District { get; }
         IWardRepository Ward { get; }
+        IProfileRepository Profile { get; }
 
 
         void SaveAsync();

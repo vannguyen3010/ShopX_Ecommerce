@@ -55,7 +55,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
-                // Kiểm tra nếu tên ntroduce đã tồn tại hay chưa
+                // Kiểm tra nếu tên user đã tồn tại hay chưa
                 var existingProduct = await _repository.Product.GetProductByNameAsync(createProductDto.Name!);
                 if (existingProduct != null)
                 {
