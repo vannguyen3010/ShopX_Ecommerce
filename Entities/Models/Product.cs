@@ -15,6 +15,7 @@ namespace Entities.Models
         public decimal Discount { get; set; } = 0;
         public Guid CategoryId { get; set; }
         public CateProduct Category { get; set; }
+        public string CategoryName { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }
 

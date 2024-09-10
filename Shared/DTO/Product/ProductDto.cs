@@ -10,6 +10,7 @@
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
         public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; }
         public string ImageFilePath { get; set; }
         public bool IsHot { get; set; }
         public int Rating { get; set; }

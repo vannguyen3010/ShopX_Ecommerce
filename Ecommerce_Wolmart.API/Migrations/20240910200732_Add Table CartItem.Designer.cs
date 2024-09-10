@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240910200732_Add Table CartItem")]
+    partial class AddTableCartItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e871f135-7bcc-4b50-9766-65046eddf4c2",
+                            ConcurrencyStamp = "7a727eb3-3ae2-491e-b76b-eb491ef07ded",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -105,7 +108,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAELHMkG2OS2KP1nuJ0vINwPJB+ZhkO9cPTbJrBP5LFLkch2G5xHe+USmiwWhKKhAzUQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMHqmV28IELwRUe/opIugoIsV9fZg4GL4bSXLs3M/1wUadq/exPq2bPNQGmouAZEzA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -115,7 +118,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b63bfc88-fa99-406c-a4c4-d9c8e5d5e770",
+                            ConcurrencyStamp = "cc0d1c48-a243-4d43-a91a-35aa0f118754",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -123,7 +126,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF/Wu3aNH1uDOIoqwFg7ImmTzJdbFWHym0H4vAC07opYxK+i3Z0TPezfC/1Ze2vWmQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDFRLm/YBli8USd6Rsp7b+/GRbHm6iczC79BKjoUTzZe/Vu+ja9W3up9QDzbOVJ9RQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -458,9 +461,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
@@ -480,9 +480,6 @@ namespace Ecommerce_Wolmart.API.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -687,10 +684,6 @@ namespace Ecommerce_Wolmart.API.Migrations
 
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");

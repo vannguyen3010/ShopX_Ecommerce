@@ -61,7 +61,8 @@ namespace Repository
         public async Task<bool> HasChildCategoriesAsync(Guid categoryId)
         {
             // Kiểm tra xem danh mục cấp 1 có các cấp con hay không
-            return await _dbContext.CateProducts.AnyAsync(x => x.ParentCategoryId == categoryId);
+            return await _dbContext.CateProducts
+                .AnyAsync(x => x.ParentCategoryId == categoryId);
         }
 
         public async Task<bool> HasProductsInCategoryAsync(Guid categoryId)
