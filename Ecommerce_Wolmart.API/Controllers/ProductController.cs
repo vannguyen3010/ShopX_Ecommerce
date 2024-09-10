@@ -112,6 +112,9 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var productEntity = _mapper.Map<Product>(createProductDto);
 
+                // Lấy CategoryName từ danh mục
+                productEntity.CategoryName = category.Name;
+
                 // Tạo NameSlug từ Title
                 productEntity.NameSlug = SlugGenerator.GenerateSlug(createProductDto.Name);
 

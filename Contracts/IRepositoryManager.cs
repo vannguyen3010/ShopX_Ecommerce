@@ -15,6 +15,7 @@
         IDistrictRepository District { get; }
         IWardRepository Ward { get; }
         IProfileRepository Profile { get; }
+        ICartRepository Cart { get; }
 
 
         void SaveAsync();

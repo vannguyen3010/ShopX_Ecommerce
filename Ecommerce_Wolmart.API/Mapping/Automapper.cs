@@ -5,6 +5,7 @@ using Entities.Models.Address;
 using Shared.DTO.Address;
 using Shared.DTO.Banner;
 using Shared.DTO.BannerProduct;
+using Shared.DTO.Cart;
 using Shared.DTO.Category;
 using Shared.DTO.CateProduct;
 using Shared.DTO.CommentProduct;
@@ -82,6 +83,15 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<Image, ImageProfileDto>();
 
             CreateMap<UpdateImageProFileDto, Image>();
+
+            CreateMap<Product, CartItemDto>();
+
+            CreateMap<CartItemDto, CartItem>();
+
+            CreateMap<AddToCartDto, CartItem>();
+
+            CreateMap<CartItem, CartItemDto>();
+
 
         }
     }

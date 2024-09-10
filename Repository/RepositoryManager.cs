@@ -20,6 +20,7 @@ namespace Repository
         private IWardRepository _ward;
         private IAddressRepository _address;
         private IProfileRepository _profile;
+        private ICartRepository _cart;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -180,6 +181,20 @@ namespace Repository
             }
 
         }
+
+        public ICartRepository Cart
+        {
+            get
+            {
+                if (_cart == null)
+                {
+                    _cart = new CartRepository(_repoContext);
+                }
+
+                return _cart;
+            }
+        }
+
         public void SaveAsync() => _repoContext.SaveChanges();
     }
 }

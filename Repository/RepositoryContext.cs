@@ -92,5 +92,6 @@ namespace Repository
         public DbSet<Address> Addresses { get; set; }
         public DbSet<ProfileUser> ProfileUsers { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
     }
 }

@@ -26,7 +26,6 @@ namespace Repository
             return product;
         }
 
-       
         public async Task<IEnumerable<Product>> GetAllProductAsync()
         {
             return await _dbContext.Products
