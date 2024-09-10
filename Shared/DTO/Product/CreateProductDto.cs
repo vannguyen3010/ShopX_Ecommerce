@@ -5,15 +5,19 @@ namespace Shared.DTO.Product
 {
     public class CreateProductDto
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public decimal Price { get; set; }
         [Required]
         public Guid CategoryId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Detail { get; set; }
+        public decimal Price { get; set; } = 0;
+        public decimal Discount { get; set; } = 0;
         public IFormFile ImageFile { get; set; }
-
         [Range(1, 5)]
         public int Rating { get; set; }
         public bool IsHot { get; set; }
+        
+        public List<IFormFile> ImageObjectList { get; set; } = new List<IFormFile>();
     }
+  
 }

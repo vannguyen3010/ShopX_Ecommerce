@@ -43,7 +43,17 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CreateProductDto, Product>();
 
-            CreateMap<Product, ProductDto>();
+            //CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.ProductImages));
+
+            CreateMap<UpdateProductDto, Product>()
+               .ForMember(dest => dest.ImageFilePath, opt => opt.Ignore())
+               .ForMember(dest => dest.ProductImages, opt => opt.Ignore());
+
+            CreateMap<ProductImage, ProductImageDto>();
+
+            CreateMap<ProductImageDto, ProductImage>();
 
             CreateMap<CreateCommentProductDto, CommentProduct>();
 

@@ -18,6 +18,11 @@ namespace Repository
         {
             await _dbContext.Products.AddAsync(product);
             await _dbContext.SaveChangesAsync();
+
+            foreach (var image in product.ProductImages)
+            {
+                await _dbContext.ProductImages.AddAsync(image);
+            }
             return product;
         }
 
@@ -31,7 +36,19 @@ namespace Repository
 
         public async Task<Product> GetProductByIdAsync(Guid id, bool trackChanges)
         {
-            return await _dbContext.Products.FindAsync(id);
+            if (trackChanges)
+            {
+                return await _dbContext.Products
+                    .Include(p => p.ProductImages)  // Load images if needed
+                    .FirstOrDefaultAsync(p => p.Id == id);
+            }
+            else
+            {
+                return await _dbContext.Products
+                    .AsNoTracking()
+                    .Include(p => p.ProductImages)  // Load images if needed
+                    .FirstOrDefaultAsync(p => p.Id == id);
+            }
         }
         public async Task DeleteProductAsync(Product product)
         {
@@ -39,20 +56,20 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateProductAsync(Product product)
-        {
-            _dbContext.Products.Update(product);
-            await _dbContext.SaveChangesAsync();
-        }
-
         public async Task<IEnumerable<Product>> GetAllProductIsHotAsync()
         {
-            return await _dbContext.Products.Where(x => x.IsHot == true).ToListAsync();
+            //return await _dbContext.Products.Where(x => x.IsHot == true).ToListAsync();
+            return await _dbContext.Products
+                .Where(x => x.IsHot == true)
+                .Include(x => x.ProductImages)
+                .ToListAsync();
         }
 
         public async Task<(IEnumerable<Product> Products, int Total)> GetAllProductPaginationAsync(int pageNumber, int pageSize)
         {
-            var productsQuery = _dbContext.Products.AsQueryable();
+            var productsQuery = _dbContext.Products
+                            .Include(x => x.ProductImages)
+                            .AsQueryable();
 
             // Đếm tổng số lượng sản phẩm
             int totalCount = await productsQuery.CountAsync();
@@ -70,6 +87,7 @@ namespace Repository
         {
             var productsQuery = _dbContext.Products
                 .Where(x => x.CategoryId == categoryId)
+                .Include(x => x.ProductImages)
                 .AsQueryable();
 
             // Đếm tổng số lượng sản phẩm trong danh mục
@@ -91,6 +109,7 @@ namespace Repository
             // Sử dụng tìm kiếm không phân biệt chữ hoa và chữ thường, đồng thời tìm kiếm các chuỗi con
             return await _dbContext.Products
                 .Where(x => x.Name.ToLower().Contains(lowerCaseName))
+                .Include(p => p.ProductImages)
                 .ToListAsync();
         }
 
@@ -101,6 +120,53 @@ namespace Repository
             return await _dbContext.Products
               .Where(x => x.Name.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
               .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetAllProductDiscountAsync(bool trackChanges)
+        {
+            return await _dbContext.Products
+                .Where(x => x.Discount > 0)
+                .Include(x => x.ProductImages)
+                .ToListAsync();
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            //_dbContext.Products.Update(product);
+            //await SaveAsync();
+            try
+            {
+                _dbContext.Products.Update(product);
+                await SaveAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                // Log lỗi và xử lý phù hợp
+                // Tùy chọn: bạn có thể tải lại dữ liệu từ DB, thông báo cho người dùng, hoặc bỏ qua
+
+                // Tùy chọn: tải lại dữ liệu từ DB nếu cần
+                var entry = ex.Entries.Single();
+                var databaseValues = await entry.GetDatabaseValuesAsync();
+
+                if (databaseValues == null)
+                {
+                    // Dữ liệu đã bị xóa
+                    throw new Exception("Unable to save changes. The product was deleted by another user.");
+                }
+                else
+                {
+                    // Dữ liệu đã bị thay đổi, xử lý theo logic của bạn
+                    var dbValuesProduct = (Product)databaseValues.ToObject();
+
+                    // Tùy chọn: Thông báo cho người dùng về sự thay đổi và yêu cầu họ xác nhận lại
+                    throw new Exception("Unable to save changes. The product has been modified by another user.");
+                }
+            }
+        }
+
+        public async Task SaveAsync()
+        {
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -91,5 +91,6 @@ namespace Repository
         public DbSet<Ward> Wards { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<ProfileUser> ProfileUsers { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
     }
 }
