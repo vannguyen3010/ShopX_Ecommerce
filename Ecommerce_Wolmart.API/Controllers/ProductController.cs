@@ -3,6 +3,9 @@ using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Repository;
+using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
@@ -13,16 +16,18 @@ namespace Ecommerce_Wolmart.API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private readonly RepositoryContext _dbContext;
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
+        public ProductController(ILoggerManager logger, IRepositoryManager repository, RepositoryContext dbContext, IMapper mapper, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _repository = repository;
+            _dbContext = dbContext;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _webHostEnvironment = webHostEnvironment;
@@ -83,14 +88,27 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var hasChildCategories = await _repository.CateProduct.HasChildCategoriesAsync(createProductDto.CategoryId);
                 if (hasChildCategories)
                 {
-                    _logger.LogError("Không thể tạo danh mục con trong danh mục có sản phẩm hiện có.");
+                    _logger.LogError("Không thể tạo danh mục chứa các danh mục con của danh mục này.");
                     return NotFound(new ApiResponse<Object>
                     {
                         Success = false,
-                        Message = $"Không thể tạo danh mục con trong danh mục có sản phẩm hiện có.",
+                        Message = $"Không thể tạo danh mục chứa các danh mục con của danh mục này.",
                         Data = null
                     });
                 }
+
+                // Kiểm tra Discount lớn hơn Price hay không
+                if(createProductDto.Discount > createProductDto.Price)
+                {
+                    _logger.LogError("Sản phẩm giảm giá không được lớn hơn giá gốc.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Sản phẩm giảm giá không được lớn hơn giá gốc.",
+                        Data = null
+                    });
+                }
+
 
                 var productEntity = _mapper.Map<Product>(createProductDto);
 
@@ -109,13 +127,32 @@ namespace Ecommerce_Wolmart.API.Controllers
                     productEntity.ImageFileSizeInBytes = createProductDto.ImageFile.Length;
                 }
 
+                // Xử lý các hình ảnh con
+                if(createProductDto.ImageObjectList != null)
+                {
+                    foreach (var file in createProductDto.ImageObjectList)
+                    {
+                        var productImage = new ProductImage
+                        {
+                            Id = Guid.NewGuid(),
+                            ProductId = productEntity.Id,
+                            ImageFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}",
+                            ImageFilePath = await SaveFileAndGetUrl(file, $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}", Path.GetExtension(file.FileName)),
+                            ImageFileExtension = Path.GetExtension(file.FileName),
+                            ImageFileSizeInBytes = file.Length
+                        };
+                        productEntity.ProductImages.Add(productImage);
+                    }
+                }
+
+
                 //Save product to db
                 await _repository.Product.CreateProductAsync(productEntity);
 
-                return Ok(new ApiResponse<ProductDto>
+                return CreatedAtAction(nameof(CreateProduct), new ApiResponse<ProductDto>
                 {
                     Success = true,
-                    Message = "Category created successfully.",
+                    Message = "Product created successfully.",
                     Data = _mapper.Map<ProductDto>(productEntity)
                 });
             }
@@ -126,7 +163,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
+       
         [HttpGet]
         [Route("GetAllProductsPagination")]
         public async Task<IActionResult> GetAllProductsPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
@@ -196,6 +233,41 @@ namespace Ecommerce_Wolmart.API.Controllers
                     Message = "Hot products retrieved successfully.",
                     Data = hotProductsDto
                 });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProductIsHot action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllProductDiscount")]
+        public async Task<IActionResult> GetAllProductDiscount()
+        {
+            try
+            {
+                var discountedProducts = await _repository.Product.GetAllProductDiscountAsync(trackChanges: false);
+                if (!discountedProducts.Any())
+                {
+                    _logger.LogInfo("No discounted products found.");
+                    return NotFound(new ApiResponse<IEnumerable<ProductDto>>
+                    {
+                        Success = false,
+                        Message = "No discounted products found",
+                        Data = null
+                    });
+                }
+                // Ánh xạ từ entity sang DTO nếu cần thiết
+                var discountProductDto = _mapper.Map<IEnumerable<ProductDto>>(discountedProducts);
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Discount products retrieved successfully.",
+                    Data = discountProductDto
+                });
+
             }
             catch (Exception ex)
             {
@@ -283,62 +355,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpPut]
-        [Route("UpdateProduct/{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductDto updateProductDto)
-        {
-            try
-            {
-                UpdateFileUpload(updateProductDto);
-
-                //Kiểm tra sản phẩm có tồn tại không
-                var product = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
-
-                if (product == null)
-                {
-                    _logger.LogError($"Không tìm thấy sản phẩm có id {id}");
-                    return NotFound(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = $"Không tìm thấy sản phẩm có id {id}",
-                        Data = null
-                    });
-                }
-
-                // Cập nhật các thông tin sản phẩm
-                product.Name = updateProductDto.Name;
-                product.Description = updateProductDto.Description;
-                product.Price = updateProductDto.Price;
-                product.IsHot = updateProductDto.IsHot;
-
-
-                // Nếu có file ảnh mới, cập nhật file if (updateProductDto.ImageFile != null)
-                if (updateProductDto.File != null)
-                {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(updateProductDto.File.FileName)}";
-                    var fileExtension = Path.GetExtension(updateProductDto.File.FileName);
-                    product.ImageFilePath = await SaveFileAndGetUrl(updateProductDto.File, fileName, fileExtension);
-                }
-
-                // Gọi repository để cập nhật sản phẩm
-                 await _repository.Product.UpdateProductAsync(product);
-
-                return Ok(new ApiResponse<ProductDto>
-                {
-                    Success = true,
-                    Message = "Category retrieved successfully.",
-                    Data = _mapper.Map<ProductDto>(product)
-                });
-
-
-            }
-            catch (Exception ex)
-            {
-
-                _logger.LogError($"Something went wrong inside UpdateProduct action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-        }
 
         [HttpDelete]
         [Route("DeleteProductById/{id}")]
@@ -421,13 +437,108 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("UpdateProduct/{id}")]
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductDto updateProductDto)
+        {
+            try
+            {
+                UpdateFileUpload(updateProductDto);
+
+                //Kiểm tra sản phẩm có tồn tại không
+                var productEntity = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
+
+                if (productEntity == null)
+                {
+                    _logger.LogError($"Không tìm thấy sản phẩm có id {id}");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy sản phẩm có id {id}",
+                        Data = null
+                    });
+                }
+
+                //Cập nhật các thông tin sản phẩm
+                _mapper.Map(updateProductDto, productEntity);
+                productEntity.NameSlug = SlugGenerator.GenerateSlug(updateProductDto.Name);
+                productEntity.UpdatedAt = DateTime.UtcNow;
+
+                // Nếu có file ảnh mới, cập nhật file if (updateProductDto.ImageFile != null)
+                if (updateProductDto.File != null)
+                {
+
+                    string mainImageFileName = $"{Guid.NewGuid()}{Path.GetExtension(updateProductDto.File.FileName)}";
+                    productEntity.ImageFilePath = await SaveFileAndGetUrl(updateProductDto.File, mainImageFileName, Path.GetExtension(updateProductDto.File.FileName));
+                    productEntity.ImageFileName = mainImageFileName;
+                    productEntity.ImageFileExtension = Path.GetExtension(updateProductDto.File.FileName);
+                    productEntity.ImageFileSizeInBytes = updateProductDto.File.Length;
+                }
+
+                // Xử lý hình ảnh con nếu có
+                if (updateProductDto.ImageObjectList != null && updateProductDto.ImageObjectList.Count > 0)
+                {
+                    // Remove existing images
+                    productEntity.ProductImages.Clear();
+
+                    foreach (var file in updateProductDto.ImageObjectList)
+                    {
+                        var productImage = new ProductImage
+                        {
+                            Id = Guid.NewGuid(),
+                            ProductId = productEntity.Id,
+                            ImageFileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}",
+                            ImageFilePath = await SaveFileAndGetUrl(file, $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}", Path.GetExtension(file.FileName)),
+                            ImageFileExtension = Path.GetExtension(file.FileName),
+                            ImageFileSizeInBytes = file.Length
+                        };
+                        productEntity.ProductImages.Add(productImage);
+                    }
+                }
+
+                // Cập nhật sản phẩm trong DB
+                await _repository.Product.UpdateProductAsync(productEntity);
+
+                //var result = await _repository.Product.SaveAsync();
+
+                //if (!result)
+                //{
+                //    _logger.LogError("Error updating the product.");
+                //    return StatusCode(500, "Internal server error");
+                //}
+
+                return Ok(new ApiResponse<ProductDto>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = _mapper.Map<ProductDto>(productEntity)
+                });
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                _logger.LogError($"Concurrency conflict occurred: {ex.Message}");
+                return Conflict(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Concurrency conflict occurred. Please try again.",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         private void UpdateFileUpload(UpdateProductDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
             if (request.File != null)
             {
-                //// Kiểm tra phần mở rộng tệp
+                ////// Kiểm tra phần mở rộng tệp
                 if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");

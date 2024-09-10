@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240909175434_Update Product Details")]
+    partial class UpdateProductDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2715e426-3b51-4a68-a095-0c60429eaf48",
+                            ConcurrencyStamp = "3a489a4c-7987-49d3-9309-52a0939a569f",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -105,7 +108,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENe+kH5LdTSwYWPuHFP4nWaB9OvcpSyggosAe7L5kAf1OvoQ/A/CK2OI3xl08eGNxg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBK6B6sxQUou/bofdSatnLIbTRiU5V7bEjiiSDEIxefDHuLpbKLnCIpXaPZnRi8DwA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -115,7 +118,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1bb1210d-1de6-4e53-b602-49f061416966",
+                            ConcurrencyStamp = "a22885d9-3e54-44c6-a0e0-59c0c881b5d7",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -123,7 +126,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIC2w1eHiKAxLU3eaG/H6I8vxfcblq2aWJeXHV60SwBcxbcJFIg/PZYcxaADQ2tQkw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIk7LjbHq7LpHPJnLhvZs/HFvYLdp/Zvq3L8CogrIifv2XWgfYzQIpPJfo2jzYrSOA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -692,12 +695,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -706,37 +703,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("Entities.Models.ProductImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ImageFileExtension")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageFileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("ImageFileSizeInBytes")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("Entities.Models.ProfileUser", b =>
@@ -1044,17 +1010,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Entities.Models.ProductImage", b =>
-                {
-                    b.HasOne("Entities.Models.Product", "Product")
-                        .WithMany("ProductImages")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Entities.Models.ProfileUser", b =>
                 {
                     b.HasOne("Entities.Models.Image", "Image")
@@ -1138,11 +1093,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.Navigation("CategoriesObjs");
 
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Entities.Models.Product", b =>
-                {
-                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

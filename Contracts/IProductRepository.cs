@@ -14,5 +14,9 @@ namespace Contracts
         Task<(IEnumerable<Product> Products, int Total)> GetAllProductPaginationAsync(int pageNumber, int pageSize);
         Task<(IEnumerable<Product> Products, int Total)> GetProductsByCategoryIdAsync(Guid categoryId, int pageNumber, int pageSize);
         Task<IEnumerable<Product>> SearchProductsByNameAsync(string keyword, bool trackChanges);
+        Task<IEnumerable<Product>> GetAllProductDiscountAsync(bool trackChanges);
+
+        Task SaveAsync();
+
     }
 }
