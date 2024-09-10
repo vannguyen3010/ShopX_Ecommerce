@@ -132,36 +132,8 @@ namespace Repository
 
         public async Task UpdateProductAsync(Product product)
         {
-            //_dbContext.Products.Update(product);
-            //await SaveAsync();
-            try
-            {
-                _dbContext.Products.Update(product);
-                await SaveAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                // Log lỗi và xử lý phù hợp
-                // Tùy chọn: bạn có thể tải lại dữ liệu từ DB, thông báo cho người dùng, hoặc bỏ qua
-
-                // Tùy chọn: tải lại dữ liệu từ DB nếu cần
-                var entry = ex.Entries.Single();
-                var databaseValues = await entry.GetDatabaseValuesAsync();
-
-                if (databaseValues == null)
-                {
-                    // Dữ liệu đã bị xóa
-                    throw new Exception("Unable to save changes. The product was deleted by another user.");
-                }
-                else
-                {
-                    // Dữ liệu đã bị thay đổi, xử lý theo logic của bạn
-                    var dbValuesProduct = (Product)databaseValues.ToObject();
-
-                    // Tùy chọn: Thông báo cho người dùng về sự thay đổi và yêu cầu họ xác nhận lại
-                    throw new Exception("Unable to save changes. The product has been modified by another user.");
-                }
-            }
+            _dbContext.Products.Update(product);
+            await SaveAsync();
         }
 
         public async Task SaveAsync()
