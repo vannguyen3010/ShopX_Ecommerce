@@ -49,5 +49,10 @@ namespace Repository
             _dbContext.Addresses.Update(address);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task DeleteAddress(Address address)
+        {
+            Delete(address);
+        }
     }
 }

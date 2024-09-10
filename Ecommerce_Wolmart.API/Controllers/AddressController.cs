@@ -280,5 +280,30 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpDelete]
+        [Route("DeleteAddress/{id}")]
+        public async Task <IActionResult> DeleteAddress(Guid id)
+        {
+            try
+            {
+                var address = await _repository.Address.GetAddressByIdAsync(id, trackChanges: false);
+                if (address == null)
+                {
+                    _logger.LogError($"Address with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                _repository.Address.DeleteAddress(address);
+                _repository.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteAddress action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
