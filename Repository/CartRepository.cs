@@ -38,11 +38,15 @@ namespace Repository
             _dbContext.CartItems.Update(cartItem);
         }
 
+        public void DeleteCartItem(CartItem cartItem)
+        {
+            _dbContext.CartItems.Remove(cartItem);
+        }
+
         public async Task<bool> SaveAsync()
         {
             var changes = await _dbContext.SaveChangesAsync();
             return changes > 0;
         }
-
     }
 }

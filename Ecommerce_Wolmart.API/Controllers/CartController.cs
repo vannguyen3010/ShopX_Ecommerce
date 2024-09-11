@@ -274,5 +274,60 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpDelete]
+        [Route("DeleteFromCart/{productId}")]
+        public async Task<IActionResult> DeleteFromCart(Guid productId, [FromQuery] string userId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogError("UserId is null or empty.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "UserId is required.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra sản phẩm có tồn tại trong giỏ hàng của người dùng không
+                var cartItem = await _repository.Cart.GetCartItemByProductIdAndUserIdAsync(productId, userId);
+                if (cartItem == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Sản phẩm không có trong giỏ hàng.",
+                        Data = null
+                    });
+                }
+
+                // Xóa sản phẩm khỏi giỏ hàng
+                _repository.Cart.DeleteCartItem(cartItem);
+
+                var result = await _repository.Cart.SaveAsync();
+
+                if (!result)
+                {
+                    _logger.LogError("Error removing item from cart.");
+                    return StatusCode(500, "Internal server error");
+                }
+
+                return Ok(new ApiResponse<Object>
+                {
+                    Success = true,
+                    Message = "Sản phẩm đã được xóa khỏi giỏ hàng.",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Lỗi khi xóa sản phẩm khỏi giỏ hàng: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
