@@ -74,16 +74,29 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Kiểm tra sản phẩm đã có trong giỏ hàng của người dùng chưa
                 var existingCartItem = await _repository.Cart.GetCartItemByProductIdAndUserIdAsync(addToCartDto.ProductId, addToCartDto.UserId);
 
+                // Kiểm tra số lượng sản phẩm phải lớn hơn 0
+                if(addToCartDto.Quantity <= 0)
+                {
+                    _logger.LogError("Số lượng phải lớn hơn 0.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Số lượng phải lớn hơn 0.",
+                        Data = null
+                    });
+                }
 
-                if(existingCartItem != null)
+
+                if (existingCartItem != null)
                 {
                     // Nếu sản phẩm đã có trong giỏ hàng, cộng dồn số lượng
                     existingCartItem.Quantity += addToCartDto.Quantity;
-                    existingCartItem.Price = product.Price;
-                    existingCartItem.Discount = product.Discount;
+
+                    existingCartItem.Price += product.Price * addToCartDto.Quantity;
+                    existingCartItem.Discount += product.Discount * addToCartDto.Quantity;
                     existingCartItem.ImageFilePath = product.ImageFilePath;
                     existingCartItem.ProductName = product.Name;
-                    existingCartItem.CategoryName = product.Category != null ? product.Category.Name : "Unknown";
+                    existingCartItem.CategoryName = product.CategoryName;
 
                     _repository.Cart.UpdateCartItem(existingCartItem);
 
@@ -114,11 +127,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                         UserId = addToCartDto.UserId,
                         ProductId = addToCartDto.ProductId,
                         Quantity = addToCartDto.Quantity,
-                        Price = product.Price,
-                        Discount = product.Discount,
+                        Price = product.Price * addToCartDto.Quantity,
+                        Discount = product.Discount * addToCartDto.Quantity,
                         ImageFilePath = product.ImageFilePath,
                         ProductName = product.Name,
-                        CategoryName = product.CategoryName != null ? product.CategoryName : "Unknown",// Đảm bảo lấy CategoryName từ Product
+                        //CategoryName = product.CategoryName != null ? product.CategoryName : "Unknown",
+                        CategoryName = product.CategoryName,
                     });
 
                     if (cartItem == null)
@@ -189,13 +203,33 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+                //var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+                var cartItemDtos = cartItems.Select(item => new CartItemDto
+                {
+                    Id = item.Id,
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName,
+                    CategoryName = item.CategoryName,
+                    Price = item.Price,
+                    Discount = item.Discount,
+                    FinalPrice = item.Price - item.Discount,
+                    Quantity = item.Quantity,
+                    ImageFilePath = item.ImageFilePath,
+                }).ToList();
 
-                return Ok(new ApiResponse<IEnumerable<CartItemDto>>
+                var totalPrice = cartItemDtos.Sum(item => item.FinalPrice);
+
+                var cartDto = new CartDtos
+                {
+                    Items = cartItemDtos,
+                    TotalPrice = totalPrice,
+                };
+
+                return Ok(new ApiResponse<CartDtos>
                 {
                     Success = true,
                     Message = "Cart retrieved successfully.",
-                    Data = cartItemDtos
+                    Data = cartDto
                 });
             }
             catch (Exception ex)
@@ -277,7 +311,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpDelete]
         [Route("DeleteFromCart/{productId}")]
-        public async Task<IActionResult> DeleteFromCart(Guid productId, [FromQuery] string userId)
+        public async Task<IActionResult> DeleteFromCart([FromQuery] string userId, Guid productId)
         {
             try
             {

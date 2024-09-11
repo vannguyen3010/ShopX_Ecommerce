@@ -38,14 +38,16 @@ namespace Repository
             if (trackChanges)
             {
                 return await _dbContext.Products
-                    .Include(p => p.ProductImages)  // Load images if needed
+                    .Include(p => p.ProductImages)
+                    .Include(p => p.Category)
                     .FirstOrDefaultAsync(p => p.Id == id);
             }
             else
             {
                 return await _dbContext.Products
                     .AsNoTracking()
-                    .Include(p => p.ProductImages)  // Load images if needed
+                    .Include(p => p.ProductImages)
+                    .Include(p => p.Category) 
                     .FirstOrDefaultAsync(p => p.Id == id);
             }
         }
