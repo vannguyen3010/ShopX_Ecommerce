@@ -13,5 +13,8 @@
         public string CategoryName { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+
+        // Điều hướng thuộc tính
+        public Product Product { get; set; } // Liên kết đến Product
     }
 }

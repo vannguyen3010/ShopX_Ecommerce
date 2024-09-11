@@ -99,6 +99,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CartItem, CartItemDto>();
 
+            CreateMap<CartItem, CartItemDto>();
+
 
         }
     }

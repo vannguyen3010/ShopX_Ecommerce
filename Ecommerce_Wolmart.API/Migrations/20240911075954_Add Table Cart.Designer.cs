@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240911075954_Add Table Cart")]
+    partial class AddTableCart
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "58fc05b6-8355-48a7-a2c8-2df63d5e9c53",
+                            ConcurrencyStamp = "71404ed0-ccac-4fae-9536-0265afec9bb5",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -105,7 +108,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGOrLiNjvHEcYoI/wZlHhyocagQuRzGjgy2pyc2mfPARtfBPNlkT5CPzax7RilYXCQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKRz3Mc8/Pde0Src+RlifuyJJGt1V5cFHUij7igI1qhYIDRWHaZ5QPpF6O3nhzBoag==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -115,7 +118,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c4785427-a3bf-4280-a4c4-14276e5f55cf",
+                            ConcurrencyStamp = "bcf7a291-d0ff-499b-b8d9-3eb0e1deed6b",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -123,7 +126,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENjbhugwOAQGYTFefoJJWGF7Pc0AlvLk7N1HldsFbuT5kGPHBXuW/JyI4TVibWEV/g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI+iSqiLZz4Mke5jpbjMxP8z56N9Xy6Nv5M7P5u/bOq0YkQZaLUKSxV1FjFoc76N7g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -509,8 +512,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
                 });
@@ -1123,14 +1124,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.HasOne("Entities.Models.Cart", null)
                         .WithMany("CartItems")
                         .HasForeignKey("CartId");
-
-                    b.HasOne("Entities.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Entities.Models.CateProduct", b =>
