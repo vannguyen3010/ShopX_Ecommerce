@@ -204,5 +204,75 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpPut]
+        [Route("UpdateCartItemQuantity")]
+        public async Task<IActionResult> UpdateCartItemQuantity([FromBody] UpdateCartItemDto updateCartItemDto)
+        {
+            try
+            {
+                if (updateCartItemDto == null)
+                {
+                    _logger.LogError("UpdateCartItemDto is null.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Invalid input.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra sản phẩm đã có trong giỏ hàng của người dùng chưa
+                var cartItem = await _repository.Cart.GetCartItemByProductIdAndUserIdAsync(updateCartItemDto.ProductId, updateCartItemDto.UserId);
+                if (cartItem == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Sản phẩm không có trong giỏ hàng.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra số lượng hợp lệ
+                if (updateCartItemDto.Quantity < 1)
+                {
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Số lượng phải lớn hơn 0.",
+                        Data = null
+                    });
+                }
+
+                // Cập nhật số lượng sản phẩm
+                cartItem.Quantity = updateCartItemDto.Quantity;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                _repository.Cart.UpdateCartItem(cartItem);
+                var result = await _repository.Cart.SaveAsync();
+
+                if (!result)
+                {
+                    _logger.LogError("Error updating item quantity in cart.");
+                    return StatusCode(500, "Internal server error");
+                }
+
+                var cartItemDto = _mapper.Map<CartItemDto>(cartItem);
+
+                return Ok(new ApiResponse<CartItemDto>
+                {
+                    Success = true,
+                    Message = "Số lượng sản phẩm đã được cập nhật.",
+                    Data = cartItemDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Lỗi khi cập nhật số lượng sản phẩm trong giỏ hàng: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
