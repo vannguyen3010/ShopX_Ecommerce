@@ -16,6 +16,7 @@
         IWardRepository Ward { get; }
         IProfileRepository Profile { get; }
         ICartRepository Cart { get; }
+        ICategoryIntroduceRepository CategoryIntroduce { get; }
 
 
         void SaveAsync();

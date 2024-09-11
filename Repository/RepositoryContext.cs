@@ -93,5 +93,6 @@ namespace Repository
         public DbSet<ProfileUser> ProfileUsers { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<CategoryIntroduce> CategoryIntroduces { get; set; }
     }
 }

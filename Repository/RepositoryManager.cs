@@ -21,6 +21,7 @@ namespace Repository
         private IAddressRepository _address;
         private IProfileRepository _profile;
         private ICartRepository _cart;
+        private ICategoryIntroduceRepository _categoryIntroduce;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -192,6 +193,19 @@ namespace Repository
                 }
 
                 return _cart;
+            }
+        }
+
+        public ICategoryIntroduceRepository CategoryIntroduce
+        {
+            get
+            {
+                if (_categoryIntroduce == null)
+                {
+                    _categoryIntroduce = new CategoryIntroduceRepository(_repoContext);
+                }
+
+                return _categoryIntroduce;
             }
         }
 

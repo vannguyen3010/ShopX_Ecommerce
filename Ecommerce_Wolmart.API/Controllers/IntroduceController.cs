@@ -4,6 +4,7 @@ using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Introduce;
+using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -58,7 +59,19 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Kiểm tra nếu tên ntroduce đã tồn tại hay chưa
+                //Kiểm id Danh muc có hợp lệ ko 
+                var category = await _repository.CategoryIntroduce.GetCategoryIntroduceByIdAsync(createIntroduceDto.CategoryId, trackChanges: false);
+                if (category == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy id này",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra nếu tên bài viết đã tồn tại hay chưa
                 var existingIntroduce = await _repository.Introduce.GetIntroduceByNameAsync(createIntroduceDto.Name!);
                 if (existingIntroduce != null)
                 {
@@ -73,6 +86,9 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 // Ánh xạ Dto thành entity
                 var introduceEntity = _mapper.Map<Introduce>(createIntroduceDto);
+
+                // Gán CategoryName cho Introduce entity
+                introduceEntity.CategoryName = category.Name;
 
                 // Tạo NameSlug từ Title
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(createIntroduceDto.Name);
@@ -119,7 +135,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     return NotFound(new ApiResponse<object>
                     {
                         Success = false,
-                        Message = "Trang ảy hiện không có bài viết",
+                        Message = "Không có bài viết",
                         Data = null
                     });
                 }
@@ -142,6 +158,47 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
 
                 _logger.LogError($"Something went wrong inside GetAllProducts action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllIntroducesByCategoryId/{categoryId}")]
+        public async Task<IActionResult> GetAllIntroducesByCategoryId(Guid categoryId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                // Gọi repository để lấy sản phẩm theo CategoryId với phân trang
+                var (introduces, totalCount) = await _repository.Introduce.GetAllProductsByCategoryIdAsync(categoryId, pageNumber, pageSize);
+
+                if (!introduces.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "No Introduce found for the given category.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
+
+                // Trả về response với dữ liệu phân trang và số lượng sản phẩm
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        introduces = productDtos
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetProductsByCategoryId action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -258,6 +315,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 _mapper.Map(updateIntroduceDto, introduceEntity);
+
+                introduceEntity.NameSlug = SlugGenerator.GenerateSlug(updateIntroduceDto.Name);
+                introduceEntity.UpdatedAt = DateTime.UtcNow;
 
                 _repository.Introduce.UpdateIntroduce(introduceEntity);
                 _repository.SaveAsync();

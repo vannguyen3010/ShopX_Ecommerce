@@ -35,8 +35,8 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
-        [Route("create-imageProfile")]
-        public async Task<IActionResult> CreateImageProfile([FromForm] CreateImagePrifileDto createImageDto)
+        [Route("CreateImage")]
+        public async Task<IActionResult> CreateImage([FromForm] CreateImagePrifileDto createImageDto)
         {
             try
             {
@@ -114,8 +114,8 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateImageProfile/{id}")]
-        public async Task<IActionResult> UpdateImageProfile(Guid id, [FromForm] UpdateImageProFileDto updateImageProFileDto)
+        [Route("UpdateImage/{id}")]
+        public async Task<IActionResult> UpdateImage(Guid id, [FromForm] UpdateImageProFileDto updateImageProFileDto)
         {
             try
             {
@@ -219,7 +219,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
         }
-
         private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         {
             var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/img-Profile", $"{fileName}{fileExtension}");

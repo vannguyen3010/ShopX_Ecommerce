@@ -76,6 +76,22 @@ namespace Repository
                 .ToListAsync();
         }
 
-       
+        public async Task<(IEnumerable<Introduce> Introduces, int Total)> GetAllProductsByCategoryIdAsync(Guid categoryId, int pageNumber, int pageSize)
+        {
+            var introducesQuery = _dbContext.Introduces
+              .Where(x => x.CategoryId == categoryId)
+              .AsQueryable();
+
+            // Đếm tổng số lượng sản phẩm trong danh mục
+            int totalCount = await introducesQuery.CountAsync();
+
+            // Thực hiện phân trang
+            var products = await introducesQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (products, totalCount);
+        }
     }
 }

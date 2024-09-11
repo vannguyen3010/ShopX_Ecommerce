@@ -154,8 +154,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
         [HttpGet]
-        [Route("GetCateProductByIdAsync/{id}")]
-        public async Task<IActionResult> GetCateProductByIdAsync(Guid id)
+        [Route("GetCateProductById/{id}")]
+        public async Task<IActionResult> GetCateProductById(Guid id)
         {
             try
             {
