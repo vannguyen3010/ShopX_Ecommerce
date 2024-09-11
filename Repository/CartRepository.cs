@@ -33,15 +33,16 @@ namespace Repository
                 .ToListAsync();
         }
 
+        public void UpdateCartItem(CartItem cartItem)
+        {
+            _dbContext.CartItems.Update(cartItem);
+        }
+
         public async Task<bool> SaveAsync()
         {
             var changes = await _dbContext.SaveChangesAsync();
             return changes > 0;
         }
 
-        public void UpdateCartItem(CartItem cartItem)
-        {
-            _dbContext.CartItems.Update(cartItem);
-        }
     }
 }
