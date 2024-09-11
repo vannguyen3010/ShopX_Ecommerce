@@ -5,6 +5,7 @@ using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Repository;
 using Shared.DTO.Cart;
 using Shared.DTO.Response;
 
@@ -70,53 +71,136 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Thêm sản phẩm vào giỏ hàng
-                var cartItem = _mapper.Map<CartItem>(new CartItemDto
-                {
-                    Id = Guid.NewGuid(),
-                    UserId = addToCartDto.UserId,
-                    ProductId = addToCartDto.ProductId,
-                    Quantity = addToCartDto.Quantity,
-                    Price = product.Price,
-                    Discount = product.Discount,
-                    ImageFilePath = product.ImageFilePath,
-                    ProductName = product.Name,
-                    CategoryName = product.CategoryName != null ? product.CategoryName : "Unknown",// Đảm bảo lấy CategoryName từ Product
-                });
+                // Kiểm tra sản phẩm đã có trong giỏ hàng của người dùng chưa
+                var existingCartItem = await _repository.Cart.GetCartItemByProductIdAndUserIdAsync(addToCartDto.ProductId, addToCartDto.UserId);
 
 
-                if (cartItem == null)
+                if(existingCartItem != null)
                 {
-                    _logger.LogError("Mapping CartItemDto to CartItem failed.");
-                    return StatusCode(500, "Internal server error");
+                    // Nếu sản phẩm đã có trong giỏ hàng, cộng dồn số lượng
+                    existingCartItem.Quantity += addToCartDto.Quantity;
+                    existingCartItem.Price = product.Price;
+                    existingCartItem.Discount = product.Discount;
+                    existingCartItem.ImageFilePath = product.ImageFilePath;
+                    existingCartItem.ProductName = product.Name;
+                    existingCartItem.CategoryName = product.Category != null ? product.Category.Name : "Unknown";
+
+                    _repository.Cart.UpdateCartItem(existingCartItem);
+
+                    // Chỉ cần khôi phục cartItem từ existingCartItem
+                    var cartItemDto = _mapper.Map<CartItemDto>(existingCartItem);
+
+                    var result = await _repository.Cart.SaveAsync();
+
+                    if (!result)
+                    {
+                        _logger.LogError("Error updating item in cart.");
+                        return StatusCode(500, "Internal server error");
+                    }
+
+                    return Ok(new ApiResponse<CartItemDto>
+                    {
+                        Success = true,
+                        Message = "Sản phẩm đã được cập nhật trong giỏ hàng.",
+                        Data = cartItemDto
+                    });
                 }
-
-                cartItem.Id = Guid.NewGuid(); // Set a new unique ID
-                cartItem.UserId = addToCartDto.UserId; // Set UserId
-
-                await _repository.Cart.AddCartItemAsync(cartItem);
-                var result = await _repository.Cart.SaveAsync();
-
-                if (!result)
+                else
                 {
-                    _logger.LogError("Error adding item to cart.");
-                    return StatusCode(500, "Internal server error");
+                    // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
+                    var cartItem = _mapper.Map<CartItem>(new CartItemDto
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = addToCartDto.UserId,
+                        ProductId = addToCartDto.ProductId,
+                        Quantity = addToCartDto.Quantity,
+                        Price = product.Price,
+                        Discount = product.Discount,
+                        ImageFilePath = product.ImageFilePath,
+                        ProductName = product.Name,
+                        CategoryName = product.CategoryName != null ? product.CategoryName : "Unknown",// Đảm bảo lấy CategoryName từ Product
+                    });
+
+                    if (cartItem == null)
+                    {
+                        _logger.LogError("Mapping CartItemDto to CartItem failed.");
+                        return StatusCode(500, "Internal server error");
+                    }
+
+                    cartItem.Id = Guid.NewGuid(); // Set a new unique ID
+                    cartItem.UserId = addToCartDto.UserId; // Set UserId
+
+                    await _repository.Cart.AddCartItemAsync(cartItem);
+
+                    var result = await _repository.Cart.SaveAsync();
+
+                    if (!result)
+                    {
+                        _logger.LogError("Error adding item to cart.");
+                        return StatusCode(500, "Internal server error");
+                    }
+
+                    var cartItemDto = _mapper.Map<CartItemDto>(cartItem);
+
+                    return Ok(new ApiResponse<CartItemDto>
+                    {
+                        Success = true,
+                        Message = "Sản phẩm đã được thêm vào giỏ hàng.",
+                        Data = cartItemDto
+                    });
                 }
-
-                var cartItemDto = _mapper.Map<CartItemDto>(cartItem);
-
-                return Ok(new ApiResponse<CartItemDto>
-                {
-                    Success = true,
-                    Message = "Sản phẩm đã được thêm vào giỏ hàng.",
-                    Data = cartItemDto
-                });
-
+               
             }
             catch (Exception ex)
             {
 
                 _logger.LogError($"Lỗi khi thêm sản phẩm vào giỏ hàng: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCart/{userId}")]
+        public async Task<IActionResult> GetCart(string userId)
+        {
+            try
+            {
+                //Kiểm tra userId có tồn tại ko
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogError("UserId is null or empty.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "UserId is required.",
+                        Data = null
+                    });
+                }
+
+                // Lấy danh sách sản phẩm trong giỏ hàng của người dùng
+                var cartItems = await _repository.Cart.GetCartItemsByUserIdAsync(userId, trackChanges: false);
+                if (cartItems == null || !cartItems.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Cart not found.",
+                        Data = null
+                    });
+                }
+
+                var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
+
+                return Ok(new ApiResponse<IEnumerable<CartItemDto>>
+                {
+                    Success = true,
+                    Message = "Cart retrieved successfully.",
+                    Data = cartItemDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving cart: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

@@ -85,6 +85,7 @@ namespace Repository
         public DbSet<Product> Products { get; set; }
         public DbSet<CommentProduct> CommentProducts { get; set; }
         public DbSet<BannerProduct> BannerProducts { get; set; }
+        public DbSet<CategoryIntroduce> CategoryIntroduces { get; set; }
         public DbSet<Introduce> Introduces { get; set; }
         public DbSet<Province> Provinces { get; set; }
         public DbSet<District> Districts { get; set; }
@@ -93,6 +94,6 @@ namespace Repository
         public DbSet<ProfileUser> ProfileUsers { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-        public DbSet<CategoryIntroduce> CategoryIntroduces { get; set; }
+        public DbSet<Cart> Carts { get; set; }
     }
 }
