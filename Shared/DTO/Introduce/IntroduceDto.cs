@@ -10,6 +10,8 @@ namespace Shared.DTO.Introduce
         public string NameSlug { get; set; }
         public string Description { get; set; }
         public string FilePath { get; set; }
+        public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; }
         public bool IsHot { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;

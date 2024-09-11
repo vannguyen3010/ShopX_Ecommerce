@@ -60,7 +60,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
-                // Kiểm tra nếu tên user đã tồn tại hay chưa
+                // Kiểm tra nếu tên sản phẩm đã tồn tại hay chưa
                 var existingProduct = await _repository.Product.GetProductByNameAsync(createProductDto.Name!);
                 if (existingProduct != null)
                 {
@@ -72,6 +72,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
                 //Kiểm id Danh muc có hợp lệ ko 
                 var category = await _repository.CateProduct.GetCategoryProductByIdAsync(createProductDto.CategoryId, trackChanges: false);
                 if (category == null)
