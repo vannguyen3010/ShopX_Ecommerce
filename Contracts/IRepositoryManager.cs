@@ -18,6 +18,7 @@
         ICartRepository Cart { get; }
         ICategoryIntroduceRepository CategoryIntroduce { get; }
         IPaymentMethodRepository PaymentMethod { get; }
+        IShippingCostRepository ShippingCost { get; }
 
 
         void SaveAsync();

@@ -96,5 +96,6 @@ namespace Repository
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<ShippingCost> ShippingCosts { get; set; }
     }
 }
