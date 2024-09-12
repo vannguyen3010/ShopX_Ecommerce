@@ -22,6 +22,7 @@ namespace Repository
         private IProfileRepository _profile;
         private ICartRepository _cart;
         private ICategoryIntroduceRepository _categoryIntroduce;
+        private IPaymentMethodRepository _paymentMethod;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -206,6 +207,19 @@ namespace Repository
                 }
 
                 return _categoryIntroduce;
+            }
+        }
+
+        public IPaymentMethodRepository PaymentMethod
+        {
+            get
+            {
+                if (_paymentMethod == null)
+                {
+                    _paymentMethod = new PaymentMethodRepository(_repoContext);
+                }
+
+                return _paymentMethod;
             }
         }
 
