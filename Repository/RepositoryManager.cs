@@ -23,6 +23,7 @@ namespace Repository
         private ICartRepository _cart;
         private ICategoryIntroduceRepository _categoryIntroduce;
         private IPaymentMethodRepository _paymentMethod;
+        private IShippingCostRepository _shippingCost;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -220,6 +221,19 @@ namespace Repository
                 }
 
                 return _paymentMethod;
+            }
+        }
+
+        public IShippingCostRepository ShippingCost
+        {
+            get
+            {
+                if (_shippingCost == null)
+                {
+                    _shippingCost = new ShippingCostRepository(_repoContext);
+                }
+
+                return _shippingCost;
             }
         }
 

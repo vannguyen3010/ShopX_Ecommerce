@@ -15,6 +15,7 @@ using Shared.DTO.ImageProfile;
 using Shared.DTO.Introduce;
 using Shared.DTO.Payment;
 using Shared.DTO.Product;
+using Shared.DTO.ShippingCost;
 using Shared.DTO.User;
 
 namespace Ecommerce_Wolmart.API.Mapping
@@ -109,6 +110,10 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<PaymentMethod, PaymentMethodDto>();
 
             CreateMap<UpdatePaymentDto, PaymentMethod>();
+
+            CreateMap<ShippingCost, ShippingCostDto>();
+
+            CreateMap<UpdateCostDto, ShippingCost>();
 
 
         }
