@@ -91,7 +91,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     // Nếu sản phẩm đã có trong giỏ hàng, cộng dồn số lượng
                     existingCartItem.Quantity += addToCartDto.Quantity;
-
                     existingCartItem.Price += product.Price * addToCartDto.Quantity;
                     existingCartItem.Discount += product.Discount * addToCartDto.Quantity;
                     existingCartItem.ImageFilePath = product.ImageFilePath;

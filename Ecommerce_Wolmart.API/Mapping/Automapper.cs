@@ -13,6 +13,7 @@ using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.ImageProfile;
 using Shared.DTO.Introduce;
+using Shared.DTO.Payment;
 using Shared.DTO.Product;
 using Shared.DTO.User;
 
@@ -102,6 +103,12 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<CartItem, CartItemDto>();
 
             CreateMap<UpdateCartItemDto, CartItem>();
+
+            CreateMap<CreatePaymentDto, PaymentMethod>();
+
+            CreateMap<PaymentMethod, PaymentMethodDto>();
+
+            CreateMap<UpdatePaymentDto, PaymentMethod>();
 
 
         }

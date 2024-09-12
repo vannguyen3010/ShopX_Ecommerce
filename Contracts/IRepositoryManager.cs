@@ -17,6 +17,7 @@
         IProfileRepository Profile { get; }
         ICartRepository Cart { get; }
         ICategoryIntroduceRepository CategoryIntroduce { get; }
+        IPaymentMethodRepository PaymentMethod { get; }
 
 
         void SaveAsync();
