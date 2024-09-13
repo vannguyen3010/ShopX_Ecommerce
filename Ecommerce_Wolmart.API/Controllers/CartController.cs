@@ -73,9 +73,9 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 // Kiểm tra sản phẩm đã có trong giỏ hàng của người dùng chưa
                 var existingCartItem = await _repository.Cart.GetCartItemByProductIdAndUserIdAsync(addToCartDto.ProductId, addToCartDto.UserId);
-
+         
                 // Kiểm tra số lượng sản phẩm phải lớn hơn 0
-                if(addToCartDto.Quantity <= 0)
+                if (addToCartDto.Quantity <= 0)
                 {
                     _logger.LogError("Số lượng phải lớn hơn 0.");
                     return BadRequest(new ApiResponse<Object>

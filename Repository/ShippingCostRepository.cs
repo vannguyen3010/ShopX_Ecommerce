@@ -32,5 +32,10 @@ namespace Repository
             Update(shippingCost);
         }
 
+        public async Task<ShippingCost> GetShippingCostByProvinceCodeAsync(string provinceCode)
+        {
+            return await _dbContext.ShippingCosts
+                .FirstOrDefaultAsync(x => x.ProvinceCode == provinceCode);
+        }
     }
 }
