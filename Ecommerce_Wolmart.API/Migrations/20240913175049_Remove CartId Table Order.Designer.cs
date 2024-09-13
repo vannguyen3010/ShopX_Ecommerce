@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20240913175049_Remove CartId Table Order")]
+    partial class RemoveCartIdTableOrder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0e7debfc-0898-4808-9b73-85cacdf97c2b",
+                            ConcurrencyStamp = "aaf71456-e556-4906-a671-3e8bad8b4920",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -105,7 +108,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGxjG2o5f1ZG8GT3eHefkXxPzgPyrZEyMq5RgXG8M3TyG5gISXeR6t4+Fz5C210xdA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIqGYImbifqUyE2W5ZAa/jiS5IeKLAd523+YjCFircdOrq1a6rZiZorUgYPIAHNi9g==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -115,7 +118,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a7837343-567e-41b2-a532-a66894cebb04",
+                            ConcurrencyStamp = "0404c8f1-c092-4af2-916d-0f272ef717d9",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -123,7 +126,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENzaX83Cy1LMj6hp+Dj2Her/oEmkJSxTJwRRw0A9C1qYi5X/idF6xDzFsDWiSG0e5Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE6ripwLXhRGNgpOirqAyJDq1dgZn6+YrYElmNqaGWDRBCDiv+yvHRNOCAO3bcOl3w==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -740,18 +743,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Note")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -766,10 +757,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.Property<Guid>("PaymentMethodId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -783,10 +770,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

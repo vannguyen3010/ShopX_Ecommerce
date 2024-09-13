@@ -24,6 +24,7 @@ namespace Repository
         private ICategoryIntroduceRepository _categoryIntroduce;
         private IPaymentMethodRepository _paymentMethod;
         private IShippingCostRepository _shippingCost;
+        private IOrderRepository _order;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -234,6 +235,19 @@ namespace Repository
                 }
 
                 return _shippingCost;
+            }
+        }
+
+        public IOrderRepository Order
+        {
+            get
+            {
+                if (_order == null)
+                {
+                    _order = new OrderRepository(_repoContext);
+                }
+
+                return _order;
             }
         }
 

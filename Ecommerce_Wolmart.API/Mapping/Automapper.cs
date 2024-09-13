@@ -13,6 +13,7 @@ using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.ImageProfile;
 using Shared.DTO.Introduce;
+using Shared.DTO.Order;
 using Shared.DTO.Payment;
 using Shared.DTO.Product;
 using Shared.DTO.ShippingCost;
@@ -115,7 +116,16 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<UpdateCostDto, ShippingCost>();
 
+            CreateMap<CreateOrderDto, Order>();
 
+            // Ánh xạ từ Order -> OrderDto
+            CreateMap<Order, OrderDto>();
+            CreateMap<Order, CartItemDto>();
+            CreateMap<Order, CartItemDto>();
+
+            CreateMap<CartItemDto, Order>();
+
+            CreateMap<CartItemDto, Order>();
         }
     }
 }
