@@ -37,9 +37,21 @@ namespace Repository
                 .FirstOrDefaultAsync(x => x.UserId == userId);
         }
 
+        public async Task<Order> GetOrderDetailsForPaymentAsync(Guid orderId)
+        {
+            return await _dbContext.Orders
+                .Include(o => o.Address)
+                .Include(o => o.CartItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId); 
+        }
+        public async Task UpdateOrderAsync(Order order)
+        {
+            _dbContext.Orders.Update(order);
+        }
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
+
     }
 }

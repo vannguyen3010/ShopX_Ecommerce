@@ -9,7 +9,7 @@ namespace EmailService
         public string Subject { get; set; }
         public string Content { get; set; }
         public IFormFileCollection Attachments { get; set; }
-        public Message(IEnumerable<string> to, string subject, string content, IFormFileCollection attachments)
+        public Message(IEnumerable<string> to, string subject, string content, IFormFileCollection attachments = null)
         {
             To = new List<MailboxAddress>();
 

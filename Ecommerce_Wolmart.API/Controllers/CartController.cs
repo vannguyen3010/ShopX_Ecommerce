@@ -206,6 +206,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var cartItemDtos = cartItems.Select(item => new CartItemDto
                 {
                     Id = item.Id,
+                    UserId = userId,
                     ProductId = item.ProductId,
                     ProductName = item.ProductName,
                     CategoryName = item.CategoryName,

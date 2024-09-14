@@ -7,6 +7,7 @@ namespace Contracts
         Task AddCartItemAsync(CartItem cartItem);
         Task<IEnumerable<CartItem>> GetCartItemsByUserIdAsync(string userId, bool trackChanges);
         Task<CartItem> GetCartItemByProductIdAndUserIdAsync(Guid productId, string userId);
+        Task DeleteCartItemsByUserIdAsync(string userId);
         void UpdateCartItem(CartItem cartItem);
         void DeleteCartItem(CartItem cartItem);
         Task<bool> SaveAsync();
