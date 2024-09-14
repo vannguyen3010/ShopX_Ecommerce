@@ -43,10 +43,18 @@ namespace Repository
             _dbContext.CartItems.Remove(cartItem);
         }
 
+        public async Task DeleteCartItemsByUserIdAsync(string userId)
+        {
+            var cartItems = await _dbContext.CartItems.Where(ci => ci.UserId == userId).ToListAsync();
+            _dbContext.CartItems.RemoveRange(cartItems);
+        }
+
         public async Task<bool> SaveAsync()
         {
             var changes = await _dbContext.SaveChangesAsync();
             return changes > 0;
         }
+
+       
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Contracts;
+using EmailService;
 using Entities.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ using Shared.DTO.Address;
 using Shared.DTO.Cart;
 using Shared.DTO.Contact;
 using Shared.DTO.Order;
+using Shared.DTO.Payments;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -21,12 +23,14 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
+        private readonly IEmailSender _emailSender;
 
-        public OrderController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper)
+        public OrderController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IEmailSender emailSender)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
 
         [HttpPost]
@@ -118,7 +122,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 order.Price = totalPrice;
                 order.TotalAmount = totalPrice - totalDiscount + shippingCost.Cost;
                 order.OrderDate = DateTime.Now;
-                order.OrderStatus = "Pending"; // Default value
+                order.OrderStatus = "Đang chờ xử lý"; // Default value
                 order.CartItems = cartItems.ToList();
 
 
@@ -180,6 +184,83 @@ namespace Ecommerce_Wolmart.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside DeleteBrand action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost]
+        [Route("ProcessPayment")]
+        public async Task<IActionResult> ProcessPayment([FromBody] CreatePaymentDto PaymentDto)
+        {
+            try
+            {
+                // Lấy thông tin đơn hàng từ repository
+                var order = await _repository.Order.GetOrderDetailsForPaymentAsync(PaymentDto.OrderId);
+                if (order == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Order not found!",
+                        Data = null
+                    });
+                }
+
+                // Chuẩn bị thông tin cần trả về sau thanh toán
+                var paymentResultDto = new PaymentDto
+                {
+                    Id = order.Id,
+                    TotalAmount = order.TotalAmount,
+                    ShippingAddress = $"{order.Address.ProvinceName}, {order.Address.DistrictName}, {order.Address.WardName} {order.Address.StreetAddress}",
+                    UserName = order.UserName,
+                    PhoneNumber = order.PhoneNumber,
+                    Email = order.Email,
+                    Note = order.Note,
+                    OrderDate = order.OrderDate,
+                    OrderStatus = order.OrderStatus,
+                    CartItems = order.CartItems.Select(item => new CartItemDto
+                    {
+                        Id = item.ProductId,
+                        UserId = item.UserId,
+                        ProductId = item.ProductId,
+                        CategoryName = item.CategoryName,
+                        ProductName = item.ProductName,
+                        Quantity = item.Quantity,
+                        Price = item.Price,
+                        Discount = item.Discount,
+                        ImageFilePath = item.ImageFilePath,
+                    }).ToList()
+                };
+
+                // Xây dựng nội dung email xác nhận đơn hàng
+                var emailBody = _emailSender.BuildOrderConfirmationEmail(order);
+
+                // Tạo đối tượng Message để gửi email
+                var message = new Message(new string[] { order.Email }, "Order Confirmation", emailBody);
+
+                // Gửi email xác nhận đơn hàng
+                await _emailSender.SendEmailAsync(message);
+
+                //Xóa giỏ hàng khi thanh toán xong
+                await _repository.Cart.DeleteCartItemsByUserIdAsync(order.UserId);
+                await _repository.Cart.SaveAsync();
+
+                // Xóa đơn hàng
+                _repository.Order.DeleteOrderAsync(order);
+                await _repository.Order.SaveAsync();
+
+
+                return Ok(new ApiResponse<PaymentDto>
+                {
+                    Success = true,
+                    Message = "Payment processed successfully.",
+                    Data = paymentResultDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside ProcessPayment action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

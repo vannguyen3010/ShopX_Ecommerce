@@ -1,4 +1,5 @@
-﻿using MailKit.Net.Smtp;
+﻿using Entities.Models;
+using MailKit.Net.Smtp;
 using MimeKit;
 
 namespace EmailService
@@ -12,6 +13,8 @@ namespace EmailService
             _emailConfig = emailConfig;
            
         }
+
+
         public void SendEmail(Message message)
         {
             var emailMessage = CreateEmailMessage(message);
@@ -25,6 +28,23 @@ namespace EmailService
             var mailMessage = CreateEmailMessage(message);
 
             await SendAsync(mailMessage);
+        }
+
+        public string BuildOrderConfirmationEmail(Order order)
+        {
+            var cartItemsHtml = string.Join("", order.CartItems.Select(item =>
+                  $"<li>{item.ProductName} - Quantity: {item.Quantity} - Price: {item.Price}</li>"
+            ));
+
+            return $@" 
+                  <h2>Order Confirmation</h2>
+                  <p>Thank you for your purchase! Here are the details of your order:</p>
+                  <ul>
+                      {cartItemsHtml}
+                  </ul>
+                  <p>Total Amount: {order.TotalAmount}</p>
+                  <p>Shipping Address: {order.Address.ProvinceName}{order.Address.DistrictName}{order.Address.WardName}{order.Address.StreetAddress}</p>        
+            ";
         }
 
         private MimeMessage CreateEmailMessage(Message message)
@@ -104,5 +124,6 @@ namespace EmailService
                 }
             }
         }
+
     }
 }
