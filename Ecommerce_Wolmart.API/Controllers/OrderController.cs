@@ -3,6 +3,7 @@ using Azure.Core;
 using Contracts;
 using EmailService;
 using Entities.Models;
+using MailKit.Search;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -122,7 +123,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 order.Price = totalPrice;
                 order.TotalAmount = totalPrice - totalDiscount + shippingCost.Cost;
                 order.OrderDate = DateTime.Now;
-                order.OrderStatus = "Đang chờ xử lý"; // Default value
+                order.OrderStatus = false; // Default value
                 order.CartItems = cartItems.ToList();
 
 
@@ -143,6 +144,69 @@ namespace Ecommerce_Wolmart.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside BannerProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateOrderStatus/{Id}")]
+        public async Task<IActionResult> UpdateOrderStatus(Guid Id, [FromQuery] UpdateOrderDto updateOrderDto)
+        {
+            try
+            {
+                var order = await _repository.Order.GetOrderByIdAsync(Id, trackChanges: false);
+                if (order == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Order with id {Id} not found.",
+                        Data = null
+                    });
+                }
+
+                // Cập nhật trạng thái đơn hàng
+                order.OrderStatus = updateOrderDto.OrderStatus; // Cập nhật thành đã duyệt (true tương đương với 1)
+
+                _repository.Order.UpdateOrderAsync(order);
+                await _repository.Order.SaveAsync();
+
+               return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong while updating order status: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("GetPending-Orders")]
+        public async Task<IActionResult> GetPendingOrders()
+        {
+            try
+            {
+                var orders = await _repository.Order.GetPendingOrdersAsync(trackChanges: false);
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "No pending orders found.",
+                        Data = null
+                    });
+                }
+
+                var ordersDto = _mapper.Map<IEnumerable<OrderDto>>(orders);
+                return Ok(new ApiResponse<IEnumerable<OrderDto>>
+                {
+                    Success = true,
+                    Message = "Pending orders retrieved successfully.",
+                    Data = ordersDto
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong while getting pending orders: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -188,81 +252,5 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("ProcessPayment")]
-        public async Task<IActionResult> ProcessPayment([FromBody] CreatePaymentDto PaymentDto)
-        {
-            try
-            {
-                // Lấy thông tin đơn hàng từ repository
-                var order = await _repository.Order.GetOrderDetailsForPaymentAsync(PaymentDto.OrderId);
-                if (order == null)
-                {
-                    return NotFound(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = "Order not found!",
-                        Data = null
-                    });
-                }
-
-                // Chuẩn bị thông tin cần trả về sau thanh toán
-                var paymentResultDto = new PaymentDto
-                {
-                    Id = order.Id,
-                    TotalAmount = order.TotalAmount,
-                    ShippingAddress = $"{order.Address.ProvinceName}, {order.Address.DistrictName}, {order.Address.WardName} {order.Address.StreetAddress}",
-                    UserName = order.UserName,
-                    PhoneNumber = order.PhoneNumber,
-                    Email = order.Email,
-                    Note = order.Note,
-                    OrderDate = order.OrderDate,
-                    OrderStatus = order.OrderStatus,
-                    CartItems = order.CartItems.Select(item => new CartItemDto
-                    {
-                        Id = item.ProductId,
-                        UserId = item.UserId,
-                        ProductId = item.ProductId,
-                        CategoryName = item.CategoryName,
-                        ProductName = item.ProductName,
-                        Quantity = item.Quantity,
-                        Price = item.Price,
-                        Discount = item.Discount,
-                        ImageFilePath = item.ImageFilePath,
-                    }).ToList()
-                };
-
-                // Xây dựng nội dung email xác nhận đơn hàng
-                var emailBody = _emailSender.BuildOrderConfirmationEmail(order);
-
-                // Tạo đối tượng Message để gửi email
-                var message = new Message(new string[] { order.Email }, "Order Confirmation", emailBody);
-
-                // Gửi email xác nhận đơn hàng
-                await _emailSender.SendEmailAsync(message);
-
-                //Xóa giỏ hàng khi thanh toán xong
-                await _repository.Cart.DeleteCartItemsByUserIdAsync(order.UserId);
-                await _repository.Cart.SaveAsync();
-
-                // Xóa đơn hàng
-                _repository.Order.DeleteOrderAsync(order);
-                await _repository.Order.SaveAsync();
-
-
-                return Ok(new ApiResponse<PaymentDto>
-                {
-                    Success = true,
-                    Message = "Payment processed successfully.",
-                    Data = paymentResultDto
-                });
-            }
-            catch (Exception ex)
-            {
-
-                _logger.LogError($"Something went wrong inside ProcessPayment action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-        }
     }
 }

@@ -17,7 +17,7 @@ namespace Entities.Models
         public string UserName { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        public string OrderStatus { get; set; } // Trạng thái đơn hàng
+        public bool OrderStatus { get; set; } // Trạng thái đơn hàng
         public string Note { get; set; }
         [JsonIgnore]
         public IEnumerable<CartItem> CartItems { get; set; }
@@ -28,5 +28,6 @@ namespace Entities.Models
         public decimal ShippingCost { get; set; } // Thông tin về chi phí vận chuyển
         public decimal TotalAmount { get; set; } // Tổng giá trị đơn hàng
         public DateTime OrderDate { get; set; } = DateTime.Now; // Ngày tạo đơn hàng
+        public PaymentMethod PaymentMethod { get; set; }
     }
 }

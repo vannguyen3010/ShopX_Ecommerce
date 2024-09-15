@@ -26,7 +26,11 @@ namespace Repository
 
         public async Task<PaymentMethod> GetPaymentMethodByIdAsync(Guid Id, bool trackChanges)
         {
-            return await _dbContext.PaymentMethods.FindAsync(Id);
+            //return await _dbContext.PaymentMethods.FindAsync(Id);
+            if (trackChanges)
+                return await _dbContext.PaymentMethods.FindAsync(Id);
+            else
+                return await _dbContext.PaymentMethods.AsNoTracking().FirstOrDefaultAsync(pm => pm.Id == Id);
         }
 
         public void UpdatePaymentMethod(PaymentMethod paymentMethod)

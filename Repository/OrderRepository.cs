@@ -40,14 +40,48 @@ namespace Repository
         public async Task<Order> GetOrderDetailsForPaymentAsync(Guid orderId)
         {
             return await _dbContext.Orders
-                .Include(o => o.Address)
-                .Include(o => o.CartItems)
-                .FirstOrDefaultAsync(o => o.Id == orderId); 
+             .Include(o => o.CartItems)
+             .Include(o => o.Address)
+             .Include(o => o.PaymentMethod)
+             .SingleOrDefaultAsync(o => o.Id == orderId);
         }
         public async Task UpdateOrderAsync(Order order)
         {
             _dbContext.Orders.Update(order);
         }
+
+        public async Task<IEnumerable<Order>> GetPendingOrdersAsync(bool trackChanges)
+        {
+            return await _dbContext.Orders
+                   .AsNoTracking() // Không theo dõi thay đổi của thực thể
+                   .Where(x => !x.OrderStatus)
+                   .Include(o => o.CartItems) // Nếu cần, bao gồm các thuộc tính liên quan
+                   .ThenInclude(ci => ci.Product) // Nếu cần, bao gồm các thuộc tính liên quan của CartItems
+                   .ToListAsync();
+        }
+
+        public async Task<Order> GetOrderPaymentByIdAsync(Guid orderId)
+        {
+            return await _dbContext.Orders
+                     .Include(o => o.CartItems)
+                     .Include(o => o.Address)
+                     .Include(o => o.PaymentMethodId)
+                     .FirstOrDefaultAsync(o => o.Id == orderId);
+
+        }
+
+        public async Task DeleteOrderCheckoutAsync(Guid orderId)
+        {
+            var order = await _dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+            if (order != null)
+            {
+                // Xóa đơn hàng
+                _dbContext.Orders.Remove(order);
+
+                await SaveAsync();
+            }
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();

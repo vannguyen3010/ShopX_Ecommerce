@@ -20,7 +20,7 @@ namespace Shared.DTO.Order
         public string UserName { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        public string OrderStatus { get; set; } // Trạng thái đơn hàng
+        public bool OrderStatus { get; set; } // Trạng thái đơn hàng
         public AddressDto Address { get; set; }
         public IEnumerable<CartItemDto> CartItems { get; set; } // Danh sách sản phẩm trong giỏ hàng
         public decimal Price { get; set; }
