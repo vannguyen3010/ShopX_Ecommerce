@@ -59,23 +59,7 @@ namespace Repository
                 .HasOne(w => w.AdministrativeUnit)
                 .WithMany()
                 .HasForeignKey(w => w.AdministrativeUnitId);
-            //modelBuilder.Entity<Addresses>()
-            //     .HasOne(a => a.Province)
-            //     .WithMany()
-            //     .HasForeignKey(a => a.ProvinceCode)
-            //     .OnDelete(DeleteBehavior.Restrict);
 
-            //modelBuilder.Entity<Addresses>()
-            //    .HasOne(a => a.District)
-            //    .WithMany()
-            //    .HasForeignKey(a => a.DistrictCode)
-            //    .OnDelete(DeleteBehavior.Restrict);
-
-            //modelBuilder.Entity<Addresses>()
-            //    .HasOne(a => a.Ward)
-            //    .WithMany()
-            //    .HasForeignKey(a => a.WardCode)
-            //    .OnDelete(DeleteBehavior.Restrict);
         }
 
         public DbSet<Image> Images { get; set; }
@@ -97,5 +81,6 @@ namespace Repository
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<ShippingCost> ShippingCosts { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Checkout> Checkouts { get; set; }
     }
 }

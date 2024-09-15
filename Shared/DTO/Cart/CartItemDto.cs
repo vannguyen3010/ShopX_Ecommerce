@@ -15,6 +15,8 @@
     }
     public class CartDtos
     {
+        //public Guid Id { get; set; }
+        //public string UserId { get; set; }
         public IEnumerable<CartItemDto> Items { get; set; }
         public decimal TotalPrice { get; set; }
     }

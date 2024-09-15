@@ -9,12 +9,14 @@ using Shared.DTO.Cart;
 using Shared.DTO.Category;
 using Shared.DTO.CategoryIntroduce;
 using Shared.DTO.CateProduct;
+using Shared.DTO.Checkout;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.ImageProfile;
 using Shared.DTO.Introduce;
 using Shared.DTO.Order;
 using Shared.DTO.Payment;
+using Shared.DTO.Payments;
 using Shared.DTO.Product;
 using Shared.DTO.ShippingCost;
 using Shared.DTO.User;
@@ -120,12 +122,19 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             // Ánh xạ từ Order -> OrderDto
             CreateMap<Order, OrderDto>();
+
             CreateMap<Order, CartItemDto>();
+
             CreateMap<Order, CartItemDto>();
 
             CreateMap<CartItemDto, Order>();
 
-            CreateMap<CartItemDto, Order>();
+            CreateMap<Order, CheckoutDto>();
+
+            CreateMap<Checkout, CheckoutDto>();
+
+            CreateMap<UpdateCheckoutDto, Checkout>();
+
         }
     }
 }

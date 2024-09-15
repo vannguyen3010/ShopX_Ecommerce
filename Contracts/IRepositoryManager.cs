@@ -3,7 +3,6 @@
     public interface IRepositoryManager
     {
         IBannerRepository Banner { get; }
-
         ICateProductsRepository CateProduct { get; }
         IContactRepository Contact { get; }
         IProductRepository Product { get; }
@@ -20,6 +19,7 @@
         IPaymentMethodRepository PaymentMethod { get; }
         IShippingCostRepository ShippingCost { get; }
         IOrderRepository Order { get; }
+        ICheckoutRepository Checkout { get; }
 
 
         void SaveAsync();

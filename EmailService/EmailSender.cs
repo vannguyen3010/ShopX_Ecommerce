@@ -33,7 +33,7 @@ namespace EmailService
         public string BuildOrderConfirmationEmail(Order order)
         {
             var cartItemsHtml = string.Join("", order.CartItems.Select(item =>
-                  $"<li>{item.ProductName} - Quantity: {item.Quantity} - Price: {item.Price}</li>"
+                  $"<li>{item.ProductName} - Số lượng: {item.Quantity} - Price: {item.Price}</li>"
             ));
 
             return $@" 
@@ -42,7 +42,10 @@ namespace EmailService
                   <ul>
                       {cartItemsHtml}
                   </ul>
-                  <p>Total Amount: {order.TotalAmount}</p>
+                  <p>Giá vận chuyển: {order.ShippingCost}</p>
+                  <p>Giá Giảm: {order.Discount}</p>
+                  <p>Tổng Giá: {order.TotalAmount}</p>
+
                   <p>Shipping Address: {order.Address.ProvinceName}{order.Address.DistrictName}{order.Address.WardName}{order.Address.StreetAddress}</p>        
             ";
         }

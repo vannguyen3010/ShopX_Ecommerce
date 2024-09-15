@@ -8,8 +8,11 @@ namespace Contracts
         Task<Order> GetOrderByIdAsync(Guid id, bool trackChanges);
         Task<Order> GetOrderByUserIdAsync(string userId);
         Task<Order> GetOrderDetailsForPaymentAsync(Guid orderId);
+        Task<IEnumerable<Order>> GetPendingOrdersAsync(bool trackChanges);
+        Task<Order> GetOrderPaymentByIdAsync(Guid orderId);
         Task UpdateOrderAsync(Order order);
         void DeleteOrderAsync(Order order);
+        Task DeleteOrderCheckoutAsync(Guid orderId);
         Task SaveAsync();
     }
 }

@@ -25,6 +25,7 @@ namespace Repository
         private IPaymentMethodRepository _paymentMethod;
         private IShippingCostRepository _shippingCost;
         private IOrderRepository _order;
+        private ICheckoutRepository _checkout;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -248,6 +249,19 @@ namespace Repository
                 }
 
                 return _order;
+            }
+        }
+
+        public ICheckoutRepository Checkout
+        {
+            get
+            {
+                if (_checkout == null)
+                {
+                    _checkout = new CheckoutRepository(_repoContext);
+                }
+
+                return _checkout;
             }
         }
 
