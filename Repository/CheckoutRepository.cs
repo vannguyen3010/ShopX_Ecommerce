@@ -45,10 +45,16 @@ namespace Repository
         {
             return await _dbContext.Checkouts.FirstOrDefaultAsync(x => x.Id == checkoutId);
         }
+        public async Task DeleteCheckoutAsync(Checkout checkout)
+        {
+            Delete(checkout);
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
 
+      
     }
 }

@@ -50,6 +50,15 @@ namespace EmailService
             ";
         }
 
+        public string OrderInfomationEmail(Checkout checkout)
+        {
+            return $@" 
+                  <h2>Thông báo</h2>
+                  <p>Đơn hàng của bạn đã được phê duyệt và đang trong quá trình vận chuyển!</p>
+                       
+            ";
+        }
+
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();

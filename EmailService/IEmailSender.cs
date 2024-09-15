@@ -8,5 +8,6 @@ namespace EmailService
         Task SendEmailAsync(Message message);
 
         string BuildOrderConfirmationEmail(Order order);
+        string OrderInfomationEmail(Checkout checkout);
     }
 }

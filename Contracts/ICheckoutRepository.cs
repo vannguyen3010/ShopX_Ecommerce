@@ -7,9 +7,10 @@ namespace Contracts
         Task<IEnumerable<Checkout>> GetAllCheckoutAsync();
         Task<IEnumerable<Checkout>> GetAllPendingCheckoutOrdersAsync(bool trackChanges);
         Task<IEnumerable<Checkout>> GetAllConfirmCheckoutOrdersAsync(bool trackChanges);
+        Task<Checkout> GetCheckoutByIdAsync(Guid checkoutId);
         Task CreateCheckoutAsync(Checkout checkout);
         Task UpdateCheckoutAsync(Checkout checkout);
-        Task<Checkout> GetCheckoutByIdAsync(Guid checkoutId);
+        Task DeleteCheckoutAsync(Checkout checkout);
         Task SaveAsync();
     }
 }

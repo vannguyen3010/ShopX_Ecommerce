@@ -5,6 +5,7 @@ using Entities.Models;
 using MailKit.Search;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.X509;
 using Repository;
 using Shared.DTO.Checkout;
 using Shared.DTO.Order;
@@ -83,7 +84,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 await _repository.Cart.SaveAsync();
 
                 //Xóa đơn hàng
-                _repository.Order.DeleteOrderCheckoutAsync(order.Id);
+                await _repository.Order.DeleteOrderCheckoutAsync(order.Id);
                 await _repository.Order.SaveAsync();
 
 
@@ -232,11 +233,58 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Lưu thay đổi
                 await _repository.Checkout.UpdateCheckoutAsync(checkout);
 
+                // Xây dựng nội dung email xác nhận đơn hàng
+                var emailBody = _emailSender.OrderInfomationEmail(checkout);
+
+                // Tạo đối tượng Message để gửi email
+                var message = new Message(new string[] { checkout.Email }, "Thông báo", emailBody);
+
+                // Gửi email xác nhận đơn hàng
+                await _emailSender.SendEmailAsync(message);
+
                 return NoContent();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside UpdateCheckoutPayment action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteCheckout/{checkoutId}")]
+        public async Task<IActionResult> DeleteCheckout(Guid checkoutId)
+        {
+            try
+            {
+                // Kiểm tra thanh toán có tồn tại không
+                var checkout = await _repository.Checkout.GetCheckoutByIdAsync(checkoutId);
+                if (checkout == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy thông tin thanh toán với ID {checkoutId}.",
+                        Data = null
+                    });
+                }
+
+                //Xóa thanh toán
+                await _repository.Checkout.DeleteCheckoutAsync(checkout);
+
+                //Lưu
+                await _repository.Checkout.SaveAsync();
+
+                return Ok(new ApiResponse<Object>
+                {
+                    Success = true,
+                    Message = "Thanh toán đã được xóa thành công.",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Đã xảy ra lỗi khi xóa thanh toán: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
