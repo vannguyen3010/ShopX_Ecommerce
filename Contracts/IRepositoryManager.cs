@@ -20,6 +20,7 @@
         IShippingCostRepository ShippingCost { get; }
         IOrderRepository Order { get; }
         ICheckoutRepository Checkout { get; }
+        ISocialMediaInfoRepository SocialMediaInfo { get; }
 
 
         void SaveAsync();

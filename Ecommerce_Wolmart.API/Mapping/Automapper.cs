@@ -16,9 +16,9 @@ using Shared.DTO.ImageProfile;
 using Shared.DTO.Introduce;
 using Shared.DTO.Order;
 using Shared.DTO.Payment;
-using Shared.DTO.Payments;
 using Shared.DTO.Product;
 using Shared.DTO.ShippingCost;
+using Shared.DTO.SocialMediaInfo;
 using Shared.DTO.User;
 
 namespace Ecommerce_Wolmart.API.Mapping
@@ -134,6 +134,12 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<Checkout, CheckoutDto>();
 
             CreateMap<UpdateCheckoutDto, Checkout>();
+
+            CreateMap<CreateSocialMediaInfoDto, SocialMediaInfo>();
+
+            CreateMap<SocialMediaInfo, SocialMediaInfoDto>();
+
+            CreateMap<UpdateSocialMediaInfoDto, SocialMediaInfo>();
 
         }
     }

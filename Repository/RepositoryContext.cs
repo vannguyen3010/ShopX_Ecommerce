@@ -82,5 +82,6 @@ namespace Repository
         public DbSet<ShippingCost> ShippingCosts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Checkout> Checkouts { get; set; }
+        public DbSet<SocialMediaInfo> SocialMediaInfos { get; set; }
     }
 }
