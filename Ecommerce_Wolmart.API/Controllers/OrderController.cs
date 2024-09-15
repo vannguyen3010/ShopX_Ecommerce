@@ -12,7 +12,6 @@ using Shared.DTO.Address;
 using Shared.DTO.Cart;
 using Shared.DTO.Contact;
 using Shared.DTO.Order;
-using Shared.DTO.Payments;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers

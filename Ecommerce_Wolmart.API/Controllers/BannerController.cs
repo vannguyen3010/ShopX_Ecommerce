@@ -146,35 +146,43 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("UpdateBanner/{id}")]
         public async Task<IActionResult> UpdateBanner(Guid id, [FromForm] BannerUpdateDto updateDto)
         {
-            UpdateFileUpload(updateDto);
-
-            if (ModelState.IsValid)
+            try
             {
-                var existingBanner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
-                if (existingBanner == null)
+                UpdateFileUpload(updateDto);
+
+                if (ModelState.IsValid)
                 {
-                    return NotFound("Banner not found");
+                    var existingBanner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
+                    if (existingBanner == null)
+                    {
+                        return NotFound("Banner not found");
+                    }
+
+                    existingBanner.Title = updateDto.Title;
+                    existingBanner.Desc = updateDto.Desc;
+
+                    if (updateDto.File != null)
+                    {
+                        existingBanner.File = updateDto.File;
+                        existingBanner.FileExtension = Path.GetExtension(updateDto.File.FileName);
+                        existingBanner.FileSizeInBytes = updateDto.File.Length;
+                        existingBanner.FileName = updateDto.File.FileName;
+                        existingBanner.FileDescription = updateDto.FileDescription;
+                        existingBanner.FilePath = await SaveFileAndGetUrl(updateDto.File, existingBanner.FileName, existingBanner.FileExtension);
+                    }
+
+                    existingBanner.Position = MapBannerPosition(updateDto.Position);
+
+                    await _repository.Banner.UpdateBanner(existingBanner);
+                    return Ok(_mapper.Map<BannerDto>(existingBanner));
                 }
-
-                existingBanner.Title = updateDto.Title;
-                existingBanner.Desc = updateDto.Desc;
-
-                if (updateDto.File != null)
-                {
-                    existingBanner.File = updateDto.File;
-                    existingBanner.FileExtension = Path.GetExtension(updateDto.File.FileName);
-                    existingBanner.FileSizeInBytes = updateDto.File.Length;
-                    existingBanner.FileName = updateDto.File.FileName;
-                    existingBanner.FileDescription = updateDto.FileDescription;
-                    existingBanner.FilePath = await SaveFileAndGetUrl(updateDto.File, existingBanner.FileName, existingBanner.FileExtension);
-                }
-
-                existingBanner.Position = MapBannerPosition(updateDto.Position);
-
-                await _repository.Banner.UpdateBanner(existingBanner);
-                return Ok(_mapper.Map<BannerDto>(existingBanner));
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Banner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [HttpDelete]

@@ -26,6 +26,7 @@ namespace Repository
         private IShippingCostRepository _shippingCost;
         private IOrderRepository _order;
         private ICheckoutRepository _checkout;
+        private ISocialMediaInfoRepository _socialMediaInfo;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -262,6 +263,19 @@ namespace Repository
                 }
 
                 return _checkout;
+            }
+        }
+
+        public ISocialMediaInfoRepository SocialMediaInfo
+        {
+            get
+            {
+                if (_socialMediaInfo == null)
+                {
+                    _socialMediaInfo = new SocialMediaInfoRepository(_repoContext);
+                }
+
+                return _socialMediaInfo;
             }
         }
 
