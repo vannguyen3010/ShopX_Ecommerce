@@ -131,12 +131,12 @@ namespace Repository
                 .ToListAsync();
         }
 
-        public async Task UpdateProductAsync(Product product)
+        public async Task UpdateProductAsync(Product product, byte[] rowVersion)
         {
+            _dbContext.Entry(product).OriginalValues["RowVersion"] = rowVersion;
             _dbContext.Products.Update(product);
-            await SaveAsync();
+            await _dbContext.SaveChangesAsync();
         }
-
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();

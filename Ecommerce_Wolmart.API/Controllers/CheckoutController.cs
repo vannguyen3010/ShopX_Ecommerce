@@ -84,8 +84,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 await _repository.Cart.SaveAsync();
 
                 //Xóa đơn hàng
-                await _repository.Order.DeleteOrderCheckoutAsync(order.Id);
-                await _repository.Order.SaveAsync();
+                //await _repository.Order.DeleteOrderCheckoutAsync(order.Id);
+                //await _repository.Order.SaveAsync();
 
 
                 // Trả về thông tin đơn hàng với giỏ hàng, địa chỉ và phương thức thanh toán, bao gồm thông tin người dùng
