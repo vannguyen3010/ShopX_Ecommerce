@@ -14,6 +14,7 @@ namespace Shared.DTO.Product
         [Range(1, 5)]
         public int Rating { get; set; }
         public bool IsHot { get; set; }
+        public int StockQuantity { get; set; }
 
         public IFormFile? File { get; set; }
         public List<IFormFile> ImageObjectList { get; set; } = new List<IFormFile>();

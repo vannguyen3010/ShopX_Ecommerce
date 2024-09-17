@@ -12,6 +12,7 @@ namespace Shared.DTO.Product
         public string Detail { get; set; }
         public decimal Price { get; set; } = 0;
         public decimal Discount { get; set; } = 0;
+        public int StockQuantity { get; set; }
         public IFormFile ImageFile { get; set; }
         [Range(1, 5)]
         public int Rating { get; set; }
