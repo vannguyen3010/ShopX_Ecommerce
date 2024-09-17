@@ -476,6 +476,19 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+                // Kiểm tra nếu tên sản phẩm đã tồn tại hay chưa
+                var existingProduct = await _repository.Product.GetProductByNameAsync(updateProductDto.Name!);
+                if (existingProduct != null)
+                {
+                    _logger.LogError($"Name with name '{existingProduct.Name}' already exists.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Name with name '{existingProduct.Name}' already exists.",
+                        Data = null
+                    });
+                }
+
                 // Chuyển đổi RowVersion từ chuỗi hexadecimal sang byte[]
                 byte[] rowVersionBytes = ConvertHexStringToByteArray(updateProductDto.RowVersion);
 

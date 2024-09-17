@@ -28,6 +28,7 @@ namespace Entities.Models
         public string ImageFilePath { get; set; }
         public bool IsHot { get; set; }
         public int Rating { get; set; }
+        public int StockQuantity { get; set; } // Thêm thuộc tính tồn kho
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();

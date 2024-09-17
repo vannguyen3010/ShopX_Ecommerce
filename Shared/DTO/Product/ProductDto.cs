@@ -14,6 +14,7 @@
         public string ImageFilePath { get; set; }
         public bool IsHot { get; set; }
         public int Rating { get; set; }
+        public int StockQuantity { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<ProductImageDto> ProductImages { get; set; } = new List<ProductImageDto>();
