@@ -4,6 +4,7 @@ using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using Repository;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;
@@ -450,7 +451,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 UpdateFileUpload(updateProductDto);
 
                 //Kiểm tra sản phẩm có tồn tại không
-                var productEntity = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
+                var productEntity = await _repository.Product.GetProductByIdAsync(id, trackChanges: true);
 
                 if (productEntity == null)
                 {
@@ -462,6 +463,21 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
+                // Kiểm tra Discount lớn hơn Price không
+                if (updateProductDto.Discount > updateProductDto.Price)
+                {
+                    _logger.LogError("Discount cannot be greater than price.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Discount cannot be greater than price.",
+                        Data = null
+                    });
+                }
+
+                // Chuyển đổi RowVersion từ chuỗi hexadecimal sang byte[]
+                byte[] rowVersionBytes = ConvertHexStringToByteArray(updateProductDto.RowVersion);
 
                 //Cập nhật các thông tin sản phẩm
                 _mapper.Map(updateProductDto, productEntity);
@@ -501,20 +517,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Cập nhật sản phẩm trong DB
-                await _repository.Product.UpdateProductAsync(productEntity);
-
-                //var result = await _repository.Product.SaveAsync();
-
-                //if (!result)
-                //{
-                //    _logger.LogError("Error updating the product.");
-                //    return StatusCode(500, "Internal server error");
-                //}
+                await _repository.Product.UpdateProductAsync(productEntity, rowVersionBytes);
 
                 return Ok(new ApiResponse<ProductDto>
                 {
                     Success = true,
-                    Message = "Category retrieved successfully.",
+                    Message = "Sản phẩm được cập nhật thành công.",
                     Data = _mapper.Map<ProductDto>(productEntity)
                 });
 
@@ -536,6 +544,18 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        private byte[] ConvertHexStringToByteArray(string hex)
+        {
+            if (hex.StartsWith("0x"))
+                hex = hex.Substring(2);
+
+            int numberChars = hex.Length;
+            byte[] bytes = new byte[numberChars / 2];
+            for (int i = 0; i < numberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+
+            return bytes;
+        }
         private void UpdateFileUpload(UpdateProductDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
