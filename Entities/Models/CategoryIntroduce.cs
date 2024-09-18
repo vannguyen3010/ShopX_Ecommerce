@@ -12,7 +12,7 @@ namespace Entities.Models
         public Guid? ParentCategoryId { get; set; }
         public CategoryIntroduce ParentCategory { get; set; }
         public ICollection<Introduce> Introduces { get; set; }
-        public DateTime CreateAt { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }

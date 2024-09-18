@@ -19,5 +19,7 @@
         // Navigation properties
         public Order Order { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }

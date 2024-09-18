@@ -10,5 +10,7 @@ namespace Shared.DTO.BannerProduct
         public string Desc { get; set; }
         public string FilePath { get; set; }
         public BannerProductWithPopupPosition Position { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }
