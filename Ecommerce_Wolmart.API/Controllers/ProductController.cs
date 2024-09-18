@@ -362,7 +362,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-
                 // Nếu không cung cấp startDate, đặt ngày mặc định là 30 ngày trước ngày hiện tại
                 startDate ??= DateTime.UtcNow.AddDays(-10);
 
