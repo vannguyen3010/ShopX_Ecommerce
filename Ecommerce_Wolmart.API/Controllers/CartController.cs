@@ -58,6 +58,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+                // Kiểm tra sản phẩm có còn trong kho hay không
+                if(product.StockQuantity == 0)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Sản phẩm này đã hết hàng.",
+                        Data = null
+                    });
+                }
+
                 // Kiểm tra người dùng có tồn tại không
                 //var user = await _repository.CommentProduct.GetUserByIdAsync(addToCartDto.UserId);
                 var user = await _userManager.FindByIdAsync(addToCartDto.UserId);
@@ -201,6 +212,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
 
                 //var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
                 var cartItemDtos = cartItems.Select(item => new CartItemDto

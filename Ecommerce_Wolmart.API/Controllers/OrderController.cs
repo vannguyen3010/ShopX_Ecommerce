@@ -61,16 +61,16 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Kiểm tra xem UserId đã có đơn hàng chưa
-                var existingOrder = await _repository.Order.GetOrderByUserIdAsync(createOrderDto.UserId.ToString());
-                if (existingOrder != null)
-                {
-                    return Conflict(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = $"Đơn hàng đã tồn tại cho người dùng với ID {createOrderDto.UserId}.",
-                        Data = null
-                    });
-                }
+                //var existingOrder = await _repository.Order.GetOrderByUserIdAsync(createOrderDto.UserId.ToString());
+                //if (existingOrder != null)
+                //{
+                //    return Conflict(new ApiResponse<Object>
+                //    {
+                //        Success = false,
+                //        Message = $"Đơn hàng đã tồn tại cho người dùng với ID {createOrderDto.UserId}.",
+                //        Data = null
+                //    });
+                //}
 
                 // Lấy thông tin địa chỉ
                 var address = await _repository.Address.GetAddressByIdAsync(createOrderDto.AddressId, trackChanges: false);

@@ -49,7 +49,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Tạo một bản ghi Checkout mới
-                var checkout = new Checkout
+                var checkout = new Checkout 
                 {
                     Id = Guid.NewGuid(),
                     OrderId = order.Id,
@@ -69,6 +69,26 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Lưu bản ghi Checkout vào cơ sở dữ liệu
                 await _repository.Checkout.CreateCheckoutAsync(checkout);
                 await _repository.Checkout.SaveAsync();
+
+                // Lấy danh sách sản phẩm từ order và cập nhật StockQuantity
+                foreach (var orderItem in order.CartItems)
+                {
+                    var product = await _repository.Product.GetProductByIdAsync(orderItem.ProductId, trackChanges: false);
+                    if(product != null)
+                    {
+                        // Trừ số lượng sản phẩm đã mua
+                        product.StockQuantity -= orderItem.Quantity;
+                        
+                        if(product.StockQuantity < 0)
+                        {
+                            product.StockQuantity = 0;  // Đảm bảo không có số lượng âm
+                        }
+
+                        // Cập nhật lại sản phẩm trong cơ sở dữ liệu
+                        await _repository.Product.UpdateProductOrderItemAsync(product);
+                    }
+                }
+
 
                 // Xây dựng nội dung email xác nhận đơn hàng
                 var emailBody = _emailSender.BuildOrderConfirmationEmail(order);

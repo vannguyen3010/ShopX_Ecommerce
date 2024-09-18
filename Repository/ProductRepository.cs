@@ -135,11 +135,19 @@ namespace Repository
         {
             _dbContext.Entry(product).OriginalValues["RowVersion"] = rowVersion;
             _dbContext.Products.Update(product);
-            await _dbContext.SaveChangesAsync();
+            await SaveAsync();
         }
+
+        public async Task UpdateProductOrderItemAsync(Product product)
+        {
+            _dbContext.Products.Update(product);
+            await SaveAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
+
     }
 }
