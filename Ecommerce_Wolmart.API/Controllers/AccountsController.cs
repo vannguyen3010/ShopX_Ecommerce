@@ -4,7 +4,6 @@ using EmailService;
 using Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTO.User;
 
@@ -33,6 +32,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             if (registerDto == null || !ModelState.IsValid)
                 return BadRequest();
 
+
             var user = _mapper.Map<User>(registerDto);
             var result = await _userManager.CreateAsync(user, registerDto.Password!);
 
@@ -58,7 +58,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
-            if(string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
+            if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
                 return BadRequest("Invalid login request.");
 
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
@@ -248,6 +248,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Đã xảy ra lỗi khi xử lý yêu cầu của bạn.");
             }
         }
+
 
     }
 }
