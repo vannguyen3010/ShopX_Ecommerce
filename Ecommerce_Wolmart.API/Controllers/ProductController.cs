@@ -283,6 +283,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        //Lấy tất cả sản phẩm hết hàng
         [HttpGet]
         [Route("GetAllProductOutByStockStatus")]
         public async Task<IActionResult> GetAllProductOutByStockStatus()
@@ -318,6 +319,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        //Lấy tất cả sản phẩm còn hàng
         [HttpGet]
         [Route("GetAllProductOnByStockStatus")]
         public async Task<IActionResult> GetAllProductOnByStockStatus()
@@ -332,7 +334,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     return NotFound(new ApiResponse<Object>
                     {
                         Success = false,
-                        Message = "Không có sản phẩm nào hết hàng.",
+                        Message = "Không có sản phẩm nào còn hàng.",
                         Data = null
                     });
                 }
@@ -349,6 +351,46 @@ namespace Ecommerce_Wolmart.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Lỗi khi lấy danh sách sản phẩm hết hàng: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        //Lấy tất cả sản phẩm mới
+        [HttpGet]
+        [Route("GetNewProducts")]
+        public async Task<IActionResult> GetNewProducts(DateTime? startDate = null)
+        {
+            try
+            {
+
+                // Nếu không cung cấp startDate, đặt ngày mặc định là 30 ngày trước ngày hiện tại
+                startDate ??= DateTime.UtcNow.AddDays(-10);
+
+                // Lấy tất cả sản phẩm mới từ cơ sở dữ liệu, với điều kiện ngày tạo lớn hơn startDate
+                var products = await _repository.Product.GetAllNewProductsAsync(startDate.Value, trackChanges: false);
+
+                if (products == null || !products.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không có sản phẩm mới",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Danh sách sản phẩm mới.",
+                    Data = productDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi lấy danh sách sản phẩm mới: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

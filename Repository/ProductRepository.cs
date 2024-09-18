@@ -148,6 +148,7 @@ namespace Repository
         {
             return await FindByCondition(x => x.StockQuantity == stockQuantity, trackChanges).ToListAsync();
         }
+
         public async Task<IEnumerable<Product>> GetAllProductsByStockStatus(int stockQuantity, bool trackChanges)
         {
             return await FindByCondition(x => x.StockQuantity == stockQuantity, trackChanges).ToListAsync();
@@ -157,10 +158,20 @@ namespace Repository
         {
             return await FindByCondition(x => x.StockQuantity > stockQuantity, trackChanges).ToListAsync();
         }
+
+        public async Task<IEnumerable<Product>> GetAllNewProductsAsync(DateTime startDate, bool trackChanges)
+        {
+            return await _dbContext.Products
+                        .Where(x => x.CreatedAt >= startDate)
+                        .OrderByDescending(x => x.CreatedAt)// Sắp xếp theo ngày tạo mới nhất trước
+                        .ToListAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
 
+       
     }
 }
