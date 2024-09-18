@@ -9,7 +9,9 @@ namespace Entities.Models
         public Guid? ImageId { get; set; }
         public string FirstName { get; set; } 
         public string LastName { get; set; }  
-        public string PhoneNumber { get; set; } 
+        public string PhoneNumber { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public User User { get; set; } 
         public Image Image { get; set; }

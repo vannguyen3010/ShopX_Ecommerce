@@ -14,11 +14,9 @@ namespace Entities.Models
         public decimal Price { get; set; } = 0;
         public decimal Discount { get; set; } = 0;
         public Guid CategoryId { get; set; }
-        public CateProduct Category { get; set; }
         public string CategoryName { get; set; }
         [NotMapped]
         public IFormFile ImageFile { get; set; }
-
         [NotMapped]
         public List<IFormFile> ImageObjectList { get; set; } = new List<IFormFile>();
         public string ImageFileName { get; set; }
@@ -31,10 +29,11 @@ namespace Entities.Models
         public int StockQuantity { get; set; } // Thêm thuộc tính tồn kho
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
-        public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
-
         // Thêm RowVersion cho đồng thời
         [Timestamp]
         public byte[] RowVersion { get; set; }
+
+        public CateProduct Category { get; set; }
+        public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
     }
 }

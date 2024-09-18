@@ -9,5 +9,6 @@
         public string ProductName { get; set; }
         public string UserName { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }

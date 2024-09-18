@@ -20,6 +20,8 @@ namespace Entities.Models
         public string FilePath { get; set; }
         [Required]
         public BannerPosition Position { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
    
 }

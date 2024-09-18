@@ -7,5 +7,7 @@
         public string Desc { get; set; }
         public string filePath { get; set; }
         public BannerPosition Position { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }
