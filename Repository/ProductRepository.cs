@@ -144,6 +144,19 @@ namespace Repository
             await SaveAsync();
         }
 
+        public async Task<IEnumerable<Product>> GetAllProductOutByStockStatusAsync(int stockQuantity, bool trackChanges)
+        {
+            return await FindByCondition(x => x.StockQuantity == stockQuantity, trackChanges).ToListAsync();
+        }
+        public async Task<IEnumerable<Product>> GetAllProductsByStockStatus(int stockQuantity, bool trackChanges)
+        {
+            return await FindByCondition(x => x.StockQuantity == stockQuantity, trackChanges).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product>> GetAllProductOnByStockStatusAsync(int stockQuantity, bool trackChanges)
+        {
+            return await FindByCondition(x => x.StockQuantity > stockQuantity, trackChanges).ToListAsync();
+        }
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();

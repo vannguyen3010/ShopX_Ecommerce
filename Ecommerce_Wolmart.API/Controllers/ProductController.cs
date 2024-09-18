@@ -100,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Kiểm tra Discount lớn hơn Price hay không
-                if(createProductDto.Discount > createProductDto.Price)
+                if (createProductDto.Discount > createProductDto.Price)
                 {
                     _logger.LogError("Sản phẩm giảm giá không được lớn hơn giá gốc.");
                     return BadRequest(new ApiResponse<Object>
@@ -133,7 +133,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Xử lý các hình ảnh con
-                if(createProductDto.ImageObjectList != null)
+                if (createProductDto.ImageObjectList != null)
                 {
                     foreach (var file in createProductDto.ImageObjectList)
                     {
@@ -168,7 +168,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-       
+
         [HttpGet]
         [Route("GetAllProductsPagination")]
         public async Task<IActionResult> GetAllProductsPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
@@ -209,6 +209,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
 
         [HttpGet]
         [Route("GetAllProductIsHot")]
@@ -278,6 +279,76 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
 
                 _logger.LogError($"Something went wrong inside GetAllProductIsHot action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllProductOutByStockStatus")]
+        public async Task<IActionResult> GetAllProductOutByStockStatus()
+        {
+            try
+            {
+                // Truy vấn tất cả sản phẩm có StockQuantity bằng 0
+                var products = await _repository.Product.GetAllProductOutByStockStatusAsync(0, trackChanges: false);
+
+                if (products == null || !products.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không có sản phẩm nào hết hàng.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Danh sách sản phẩm hết hàng.",
+                    Data = productDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi lấy danh sách sản phẩm hết hàng: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllProductOnByStockStatus")]
+        public async Task<IActionResult> GetAllProductOnByStockStatus()
+        {
+            try
+            {
+                //Lấy tất cả sản phẩm từ cơ sở dữ liệu, với điều kiện StockQuantity > 0
+                var products = await _repository.Product.GetAllProductOnByStockStatusAsync(stockQuantity: 0, trackChanges: false);
+
+                if (products == null || !products.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không có sản phẩm nào hết hàng.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Danh sách sản phẩm hết hàng.",
+                    Data = productDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Lỗi khi lấy danh sách sản phẩm hết hàng: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -556,6 +627,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
 
         private byte[] ConvertHexStringToByteArray(string hex)
         {
