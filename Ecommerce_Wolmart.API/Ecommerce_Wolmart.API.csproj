@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ecommerce.UI\Ecommerce.UI.csproj" />
     <ProjectReference Include="..\EmailService\EmailService.csproj" />
     <ProjectReference Include="..\LoggerManager\LoggerService.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />

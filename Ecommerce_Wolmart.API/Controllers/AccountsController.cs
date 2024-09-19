@@ -77,6 +77,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
         }
+
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
         {
@@ -119,7 +120,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
 
             //Đặt Lại Mật Khẩu
-            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token!, resetPasswordDto.Password!);
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(x => x.Description);
@@ -127,6 +128,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return BadRequest(new { Errors = errors });
             }
             await _userManager.SetLockoutEndDateAsync(user, new DateTime(2000, 1, 1));
+
             //Nếu việc đặt lại mật khẩu thành công, thiết lập ngày khóa tài khoản của người dùng thành một ngày trong quá khứ để mở khóa tài khoản nếu nó bị khóa trước đó.
             return Ok();
         }
