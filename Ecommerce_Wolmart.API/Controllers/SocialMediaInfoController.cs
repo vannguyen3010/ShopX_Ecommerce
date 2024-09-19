@@ -49,6 +49,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ Dto thành entity
                 var socialInfoEntity = _mapper.Map<SocialMediaInfo>(socialMediaInfoDto);
 
+                socialInfoEntity.ViewCount += 1;
+
                 // Xử lý tập tin hình ảnh
                 if (socialMediaInfoDto.LogoUrl != null)
                 {
