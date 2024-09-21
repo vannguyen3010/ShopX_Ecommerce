@@ -2,9 +2,11 @@
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using Entities.Identity;
+using Entities.Models.Address;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.DTO.Response;
 using Shared.DTO.User;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -58,18 +60,47 @@ namespace Ecommerce_Wolmart.API.Controllers
         [HttpPost("Login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
+
             if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
-                return BadRequest("Invalid login request.");
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Kiểm tra Email và Mật khẩu!",
+                    Data = null
+                });
+            }
 
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
             if (user == null)
-                return BadRequest("Invalid Request");
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Email chưa đăng ký!",
+                    Data = null
+                });
+            }
 
             if (!await _userManager.CheckPasswordAsync(user, loginDto.Password!))
-                return BadRequest("Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại.");
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại.",
+                    Data = null
+                });
+            }
 
             if (user.EmailConfirmed == false)
-                return BadRequest("Email cần phải xác nhận.");
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Email cần phải xác nhận.",
+                    Data = null
+                });
+            }
 
             var token = await _jwtHandler.GenerateToken(user);
 
