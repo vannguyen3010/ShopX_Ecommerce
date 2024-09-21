@@ -40,6 +40,9 @@ builder.Services.AddSingleton(emailConfig);
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IBannerRepository, BannerRepository>();
 
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
 
 builder.Services.AddControllers();
 
@@ -49,6 +52,8 @@ builder.Services.AddHttpContextAccessor(); // Khi link vào ảnh thì sẽ tạ
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 

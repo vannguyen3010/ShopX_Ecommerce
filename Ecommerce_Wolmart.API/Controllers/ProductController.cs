@@ -210,7 +210,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-
         [HttpGet]
         [Route("GetAllProductIsHot")]
         public async Task<IActionResult> GetAllProductIsHot()
