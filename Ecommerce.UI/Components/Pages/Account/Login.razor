@@ -18,9 +18,8 @@
                             <a href="" class="nav-link active">Đăng Nhập</a>
                         </li>
                     </ul>
-                    <EditForm Enhance Model="_loginModel" method="POST" OnValidSubmit="HandleLogin" class="tab-content" id="form-login" FormName="form-login">
+                    <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" class="tab-content" id="form-login" FormName="form-login">
                         <DataAnnotationsValidator />
-                        <ValidationSummary />
                         <div class="tab-pane active">
                             <div class="form-group">
                                 <label>Email *</label>
@@ -32,11 +31,11 @@
                                 <InputText @bind-Value="_loginModel.Password" type="password" class="form-control" name="password" />
                                 <ValidationMessage For="@(() => _loginModel.Password)" />
                             </div>
-                            <div class="form-checkbox d-flex align-items-center justify-content-between">
+                        @*     <div class="form-checkbox d-flex align-items-center justify-content-between">
                                 <input type="checkbox" class="custom-checkbox" id="remember1" name="remember1" required="">
                                 <label for="remember1">Nhớ mật khẩu</label>
                                 <a href="#">Quên mật khẩu</a>
-                            </div>
+                            </div> *@
                             <button class="btn btn-primary" type="submit">Đăng nhập</button>
                         </div>
                     </EditForm>
@@ -50,14 +49,15 @@
 @code 
 {
     //bắt context - chạy dạng dotnet MVC
-    [SupplyParameterFromForm(FormName = "HandleLogin")] public LoginDto _loginModel { get; set; } = new();
-    private bool _loginFailed;
+    [SupplyParameterFromForm(FormName = "HandleLogin")] 
+    public LoginDto _loginModel { get; set; } = new();
+    private bool result;
 
     private async Task HandleLogin()
     {
         // lưu cookie bằng context
-        _loginFailed = !await AccountService.LoginAsync(_loginModel);
-        if (!_loginFailed)
+        result = !await AccountService.LoginAsync(_loginModel);
+        if (result)
         {
             // Redirect or handle successful login
             NavigationManager.NavigateTo("/");

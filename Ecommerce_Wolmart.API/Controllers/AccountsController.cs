@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Contracts;
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using Entities.Identity;
@@ -16,24 +17,26 @@ namespace Ecommerce_Wolmart.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
         private readonly IEmailSender _emailSender;
 
-        public AccountsController(UserManager<User> userManager, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender)
+        public AccountsController(UserManager<User> userManager, IRepositoryManager repository, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender)
         {
             _userManager = userManager;
+            _repository = repository;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
             _emailSender = emailSender;
         }
 
-        [HttpPost("Register")]
+        [HttpPost]
+        [Route("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
         {
             if (registerDto == null || !ModelState.IsValid)
                 return BadRequest();
-
 
             var user = _mapper.Map<User>(registerDto);
             var result = await _userManager.CreateAsync(user, registerDto.Password!);
@@ -57,7 +60,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             return StatusCode(201);
         }
 
-        [HttpPost("Login")]
+        [HttpPost]
+        [Route("Login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
 
@@ -109,7 +113,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
         }
 
-        [HttpPost("ForgotPassword")]
+        [HttpPost]
+        [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
         {
             if (!ModelState.IsValid)
@@ -139,7 +144,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             return Ok();
         }
 
-        [HttpPost("ResetPassword")]
+        [HttpPost]
+        [Route("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             if (!ModelState.IsValid)
@@ -164,7 +170,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             return Ok();
         }
 
-        [HttpGet("EmailConfirmation")]
+        [HttpGet]
+        [Route("EmailConfirmation")]
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -178,7 +185,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             return Ok();
         }
 
-        [HttpGet("GetAllUsers")]
+        [HttpGet]
+        [Route("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
@@ -201,7 +209,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpGet("GetUserById/{id}")]
+        [HttpGet]
+        [Route("GetUserById/{id}")]
         public async Task<IActionResult> GetUserById(string id)
         {
             try
@@ -225,7 +234,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpPut("UpdateUser/{id}")]
+        [HttpPut]
+        [Route("UpdateUser/{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUser)
         {
             try
@@ -256,7 +266,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpDelete("DeleteUser/{id}")]
+        [HttpDelete]
+        [Route("DeleteUser/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             try
@@ -281,7 +292,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Đã xảy ra lỗi khi xử lý yêu cầu của bạn.");
             }
         }
-
 
     }
 }
