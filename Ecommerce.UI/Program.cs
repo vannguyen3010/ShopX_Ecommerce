@@ -18,17 +18,22 @@ builder.Services.AddRazorComponents()
 //{
 //    client.BaseAddress = new Uri(apiBaseUrl);
 //});
+//builder.Services.AddHttpClient("WebApiClient", client =>
+//{
+//    client.BaseAddress = new Uri("https://localhost:7105/"); // Đặt URL trỏ đến Web API
+//});
 
 builder.Services.AddScoped<HttpClient>(x =>
 {
     var Uri = x.GetRequiredService<NavigationManager>();
     HttpClient Client = new()
     {
-        BaseAddress = new Uri(Uri.BaseUri),
+        BaseAddress = new Uri("https://localhost:7105/"),
     };
     Client.DefaultRequestHeaders.Add("Accept", "application/json");
     return Client;
 });
+
 
 // Đăng ký AccountService
 builder.Services.AddScoped<AccountService>();
