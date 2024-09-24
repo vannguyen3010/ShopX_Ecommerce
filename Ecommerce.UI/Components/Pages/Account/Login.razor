@@ -48,16 +48,17 @@
 
 @code 
 {
-    //bắt context - chạy dạng dotnet MVC
+    // bắt context - chạy dạng dotnet MVC
     [SupplyParameterFromForm(FormName = "HandleLogin")] 
     public LoginDto _loginModel { get; set; } = new();
     private bool result;
 
     private async Task HandleLogin()
     {
+        Console.WriteLine($"Username: {_loginModel.Email}, Password: {_loginModel.Password}");
         // lưu cookie bằng context
         result = !await AccountService.LoginAsync(_loginModel);
-        if (result)
+        if (!result)
         {
             // Redirect or handle successful login
             NavigationManager.NavigateTo("/");
@@ -67,5 +68,6 @@
     {
         return base.OnInitializedAsync();
     }
+  
 
 }
