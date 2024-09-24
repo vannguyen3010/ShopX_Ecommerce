@@ -1,18 +1,21 @@
-﻿using Entities.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Shared.DTO.User;
-
+﻿using Shared.DTO.User;
 namespace Ecommerce.UI.Services
 {
-    //đây là lớp repo
-    public class AccountService(HttpClient httpClient)
+    public class AccountService
     {
         private const string BaseUrl = "api/Accounts";
+        private readonly HttpClient _httpClient;
+
+        public AccountService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
         public async Task<RegisterResponseDto> RegisterUserAsync(RegisterDto registerDto)
         {
-            var response = await httpClient.PostAsJsonAsync("api/Accounts/Register", registerDto);
+            var response = await _httpClient.PostAsJsonAsync("api/Accounts/Register", registerDto);
 
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<RegisterResponseDto>();
             }
@@ -26,10 +29,18 @@ namespace Ecommerce.UI.Services
             }
         }
 
-        public async Task<bool> LoginAsync(LoginDto loginDto)
+        public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
         {
-            var response = await httpClient.PostAsJsonAsync("api/Accounts/Login", loginDto);
-            return response.IsSuccessStatusCode;
+            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/Login", loginDto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+                return authResponse;
+            }
+            // You can add detailed error handling here
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Login failed: {errorContent}");
         }
     }
 }
