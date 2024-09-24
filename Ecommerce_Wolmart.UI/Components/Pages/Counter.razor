@@ -1,5 +1,11 @@
-﻿@page "/account/dang-nhap"
-@inject AccountService AccountService
+﻿@page "/counter"
+@using Ecommerce_Wolmart.UI.Services
+@using Shared.DTO.User
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+<PageTitle>Counter</PageTitle>
+
+@inject AuthServices AuthServices
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
 
@@ -49,7 +55,7 @@
     {
         try
         {
-            var result = await AccountService.LoginAsync(_loginModel);
+            var result = await AuthServices.LoginAsync(_loginModel);
             if (result.IsAuthSuccessful)
             {
                 NavigationManager.NavigateTo("/");
