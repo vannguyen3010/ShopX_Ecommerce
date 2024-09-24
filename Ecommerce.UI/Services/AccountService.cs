@@ -7,6 +7,7 @@ namespace Ecommerce.UI.Services
     //đây là lớp repo
     public class AccountService(HttpClient httpClient)
     {
+        private const string BaseUrl = "api/Accounts";
         public async Task<RegisterResponseDto> RegisterUserAsync(RegisterDto registerDto)
         {
             var response = await httpClient.PostAsJsonAsync("api/Accounts/Register", registerDto);
