@@ -1,9 +1,89 @@
 ﻿@page "/account/dang-ky"
 
 @inject AccountService AccountService
+@rendermode InteractiveServer
 
 <link href="/css/auth.css" rel="stylesheet" />
 <link href="/assets/css/style.min.css" rel="stylesheet">
+
+<main class="main login-page">
+    <div class="page-header">
+        <div class="container">
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="container">
+            <div class="login-popup">
+                <div class="tab tab-nav-boxed tab-nav-center tab-nav-underline">
+                    <ul class="nav nav-tabs text-uppercase" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link">Đăng ký</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <EditForm Model="_registerModel" OnValidSubmit="HandleRegister" id="form-register" FormName="form-register">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="form-group mb-5">
+                                <ValidationMessage class="text-danger" For="@(() => _registerModel.LastName)" />
+                                <label>Họ *</label>
+                                <InputText @bind-Value="_registerModel.LastName" type="text" class="form-control" />
+                            </div>
+                            <div class="form-group mb-5">
+                                <ValidationMessage For="@(() => _registerModel.FirstName)" />
+                                <label>Tên lót *</label>
+                                <InputText @bind-Value="_registerModel.FirstName" type="text" class="form-control" />
+                            </div>
+                            <div class="form-group mb-5">
+                                <ValidationMessage For="@(() => _registerModel.UserName)" />
+                                <label>Tên *</label>
+                                <InputText @bind-Value="_registerModel.UserName" type="text" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <ValidationMessage For="@(() => _registerModel.Email)" />
+                                <label>Email *</label>
+                                <InputText @bind-Value="_registerModel.Email" type="text" class="form-control" placeholder="Nhập đia chỉ email" />
+                            </div>
+                            <div class="form-group mb-5">
+                                <ValidationMessage For="@(() => _registerModel.Password)" />
+                                <label>Mật khẩu *</label>
+                                <InputText @bind-Value="_registerModel.Password" type="password" class="form-control" />
+                            </div>
+                            <div class="form-group mb-5">
+                                <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
+                                <label>Xác nhận mật khẩu *</label>
+                                <InputText @bind-Value="_registerModel.ConfirmPassword" type="password" class="form-control" />
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-black">Bạn đã có tài khoản ? </p>
+                                <a class="text-primary mx-2" href="/dang-nhap"><p>Đăng nhập tại đây</p></a>
+                            </div>
+
+                            <div class="form-checkbox d-flex align-items-center justify-content-between mb-5">
+                                <input type="checkbox" class="custom-checkbox" id="remember" name="remember">
+                                <label for="remember" class="font-size-md">
+                                    Bằng cách ấn vào nút “ĐĂNG KÝ”, tôi đồng ý với
+                                    <a target="_blank" href="~/pdf/20230701_chinh_sach_bao_mat.pdf" class="text-danger font-size-md input_text">Điều Khoản Sử Dụng</a>
+                                    và
+                                    <a target="_blank" href="~/pdf/20230701_dieu_khoan_dich_vu.pdf" class="text-danger font-size-md input_text">Chính Sách Bảo Mật</a>
+                                </label>
+                            </div>
+                            <button class="btn btn-primary" type="submit">Đăng Ký</button>
+                        </EditForm>
+                        @if (_errorMessage != null)
+                        {
+                            <div class="alert alert-danger">@_errorMessage</div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
 
 @code {
     private RegisterDto _registerModel = new RegisterDto();
@@ -23,82 +103,3 @@
         }
     }
 }
-
-<main class="main login-page">
-    <div class="page-header">
-        <div class="container">
-        </div>
-    </div>
-
-    <div class="page-content">
-        <div class="container">
-            <div class="login-popup">
-                <div class="tab tab-nav-boxed tab-nav-center tab-nav-underline">
-                    <ul class="nav nav-tabs text-uppercase" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link">Đăng ký</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <EditForm Model="_registerModel" OnValidSubmit="HandleRegister" FormName="registerForm">
-                            <DataAnnotationsValidator />
-                            <ValidationSummary />
-                            <div class="form-group mb-5">
-                                <ValidationMessage class="text-danger" For="@(() => _registerModel.LastName)" />
-                                <label>Họ *</label>
-                                <InputText @bind-Value="_registerModel.LastName" type="text" class="form-control"/>
-                            </div>
-                            <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.FirstName)" />
-                                <label>Tên lót *</label>
-                                <InputText @bind-Value="_registerModel.FirstName" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.UserName)" />
-                                <label>Tên *</label>
-                                <InputText @bind-Value="_registerModel.UserName" type="text" class="form-control"/>
-                            </div>
-                            <div class="form-group">
-                                <ValidationMessage For="@(() => _registerModel.Email)" />
-                                <label>Email *</label>
-                                <InputText @bind-Value="_registerModel.Email" type="text" class="form-control" placeholder="Nhập đia chỉ email"/>
-                            </div>
-                            <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.Password)" />
-                                <label>Mật khẩu *</label>
-                                <InputText @bind-Value="_registerModel.Password" type="password"class="form-control"/>
-                            </div>
-                            <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
-                                <label>Xác nhận mật khẩu *</label>
-                                <InputText @bind-Value="_registerModel.ConfirmPassword" type="password" class="form-control"/>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-black">Bạn đã có tài khoản ? </p>
-                                <a class="text-primary mx-2" href="/dang-nhap"><p>Đăng nhập tại đây</p></a>
-                            </div>
-@* 
-                            <div class="form-checkbox d-flex align-items-center justify-content-between mb-5">
-                                <input type="checkbox" class="custom-checkbox" id="remember" name="remember">
-                                <label for="remember" class="font-size-md">
-                                    Bằng cách ấn vào nút “ĐĂNG KÝ”, tôi đồng ý với
-                                    <a target="_blank" href="~/pdf/20230701_chinh_sach_bao_mat.pdf" class="text-danger font-size-md input_text">Điều Khoản Sử Dụng</a>
-                                    và
-                                    <a target="_blank" href="~/pdf/20230701_dieu_khoan_dich_vu.pdf" class="text-danger font-size-md input_text">Chính Sách Bảo Mật</a>
-                                </label>
-                            </div> *@
-                            <button class="btn btn-primary" type="submit">Đăng Ký</button>
-                        </EditForm>
-                        @if (_errorMessage != null)
-                        {
-                            <div class="alert alert-danger">@_errorMessage</div>
-                        }
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-
-
