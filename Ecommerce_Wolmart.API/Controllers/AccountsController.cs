@@ -31,14 +31,63 @@ namespace Ecommerce_Wolmart.API.Controllers
             _emailSender = emailSender;
         }
 
+        //[HttpPost]
+        //[Route("Register")]
+        //public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
+        //{
+        //    if (registerDto == null || !ModelState.IsValid)
+        //        return BadRequest();
+
+        //    var user = _mapper.Map<User>(registerDto);
+
+        //    var result = await _userManager.CreateAsync(user, registerDto.Password!);
+
+        //    if (!result.Succeeded)
+        //    {
+        //        var errors = result.Errors.Select(x => x.Description);
+
+        //        return BadRequest(new RegisterResponseDto { Errors = errors });
+        //    }
+        //    await _userManager.AddToRoleAsync(user, "User");
+
+        //    //Tạo Token xác thực 
+        //    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        //    //Send the email
+        //    var message = new Message(new string[] { user.Email! }, "Confirm your email", $"Your email confirmation token is: {token}", null!);
+
+        //    await _emailSender.SendEmailAsync(message);
+
+        //    return StatusCode(201);
+        //}
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
         {
             if (registerDto == null || !ModelState.IsValid)
-                return BadRequest();
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Dữ liệu đăng ký không hợp lệ!",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra email đã tồn tại
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email!);
+            if (existingUser != null)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Email đã được đăng ký vui lòng nhập email khác!",
+                    Data = null
+                });
+            }
 
             var user = _mapper.Map<User>(registerDto);
+
             var result = await _userManager.CreateAsync(user, registerDto.Password!);
 
             if (!result.Succeeded)
@@ -47,13 +96,24 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 return BadRequest(new RegisterResponseDto { Errors = errors });
             }
+
+            //   // Thêm người dùng vào vai trò "User"
             await _userManager.AddToRoleAsync(user, "User");
 
-            //Tạo Token xác thực 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            // Tạo mã xác nhận ngẫu nhiên
+            var verificationCode = new Random().Next(100000, 999999).ToString();// Mã 6 chữ số ngẫu nhiên
 
-            //Send the email
-            var message = new Message(new string[] { user.Email! }, "Confirm your email", $"Your email confirmation token is: {token}", null!);
+            // Lưu mã xác nhận vào thuộc tính của người
+            user.VerificationCode = verificationCode;
+            await _userManager.UpdateAsync(user);
+
+            // Gửi mã xác nhận qua email
+            var message = new Message(
+                new string[] { user.Email! },
+                "Confirm your email",
+                $"Mã xác thực: {verificationCode}",
+                null!
+            );
 
             await _emailSender.SendEmailAsync(message);
 
@@ -172,15 +232,28 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("EmailConfirmation")]
-        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string verificationCode)
         {
+            // Tìm người dùng dựa trên email
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
                 return BadRequest("Invalid Email Confirmation Request");
 
-            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
-            if (!confirmResult.Succeeded)
-                return BadRequest("Invalid Email Confirmation Request");
+            // Kiểm tra mã xác thực (verificationCode)
+            if(user.VerificationCode != verificationCode)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Mã xác minh không hợp lệ!",
+                    Data = null
+                });
+            }
+
+            // Cập nhật trạng thái xác nhận email của người dùng
+            user.EmailConfirmed = true;
+            user.VerificationCode = null; // Xóa mã xác nhận sau khi xác nhận thành công
+            await _userManager.UpdateAsync(user);
 
             return Ok();
         }

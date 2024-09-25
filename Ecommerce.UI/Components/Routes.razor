@@ -1,6 +1,13 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+﻿@using Ecommerce.UI.Shared
+<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="routeData" DefaultLayout="typeof(Shared._LayoutMaster)" />
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(_LayoutMaster)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
 </Router>
