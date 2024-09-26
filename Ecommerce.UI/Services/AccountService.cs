@@ -1,9 +1,9 @@
-﻿using Shared.DTO.User;
+﻿using Shared.DTO.Response;
+using Shared.DTO.User;
 namespace Ecommerce.UI.Services
 {
     public class AccountService
     {
-        private const string BaseUrl = "api/Accounts";
         private readonly HttpClient _httpClient;
 
         public AccountService(HttpClient httpClient)
@@ -29,18 +29,26 @@ namespace Ecommerce.UI.Services
             }
         }
 
-        public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
+        public async Task<AuthResponseDto> Login(LoginDto request)
         {
-            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/Login", loginDto);
+            var response = await _httpClient.PostAsJsonAsync("api/Accounts/LoginUser", request);
 
             if (response.IsSuccessStatusCode)
             {
-                var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-                return authResponse;
+                var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+                return result ?? new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "No data received" };
             }
-            // You can add detailed error handling here
-            var errorContent = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Login failed: {errorContent}");
+            else
+            {
+                return new AuthResponseDto
+                {
+                    IsAuthSuccessful = false,
+                    ErrorMessage = $"Error: {response.StatusCode}, {await response.Content.ReadAsStringAsync()}"
+                };
+            }
         }
+
+
+
     }
 }

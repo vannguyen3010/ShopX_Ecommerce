@@ -1,3 +1,16 @@
-﻿.input_text {
-    text-decoration: underline;
+﻿
+/* Login*/
+.input_item_auth {
+    position: relative;
 }
+.input_item_auth span {
+   right: 10px;
+   top: 67%;
+   transform: translateY(-50%);
+   cursor: pointer;
+   position: absolute;
+}
+.text_danger {
+    color: red;
+}
+/* -------------------------------------------------*/
