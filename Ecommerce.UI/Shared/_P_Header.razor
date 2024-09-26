@@ -1,4 +1,14 @@
-﻿<header class="header">
+﻿@using Ecommerce.UI.Components.Pages.OtherPage
+@using Microsoft.AspNetCore.Components.Authorization
+@using Blazored.LocalStorage
+@using System.Security.Claims
+@using global::Shared.DTO.User
+@inject NavigationManager NavigationManager
+@inject AuthState AuthState
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILocalStorageService LocalStorage
+
+<header class="header">
     <div class="header-top">
         <div class="container">
             <div class="header-left">
@@ -19,25 +29,62 @@
                     </div>
                 </div>
 
+               @*  <div class="dropdown">
+                    <a href="#language">
+                        <i class="w-icon-account"></i> Tài khoản
+                    </a>
+                    <div class="dropdown-box">
+                        @if (!AuthState.IsLoggedIn)
+                        {
+                          
+                            <a href="/account/dang-nhap">
+                                Đăng Nhập
+                            </a>
+                            <a href="/account/dang-ky">
+                                Đăng Ký
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="/account/thong-tin-ca-nhan">
+                                Thông tin cá nhân
+                            </a>
+                            <a class="cursor" @onclick="Logout">
+                                Đăng Xuất
+                            </a>
+                        }
+
+                    </div>
+                </div> *@
                 <div class="dropdown">
                     <a href="#language">
                         <i class="w-icon-account"></i> Tài khoản
                     </a>
                     <div class="dropdown-box">
-                        <a href="/account/thong-tin-ca-nhan">
-                            Thông tin cá nhân
-                        </a>
-                        <a href="/account/dang-nhap">
-                            Đăng Nhập
-                        </a>
-                        <a href="/account/dang-ky">
-                            Đăng Ký
-                        </a>
+                        <AuthorizeView>
+                            <Authorized>
+                                <a href="/account/thong-tin-ca-nhan">
+                                    Profile
+                                </a>
+                                <button class="cursor" @onclick="Logout">
+                                    Đăng Xuất
+                                </button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <a href="/account/dang-nhap">
+                                    Đăng Nhập
+                                </a>
+                                <a href="/account/dang-ky">
+                                    Đăng Ký
+                                </a>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- End of Header Top -->
 
     <div class="header-middle">
@@ -128,3 +175,15 @@
         </div>
     </div>
 </header>
+
+@code
+{
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+
+        await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/account/dang-nhap", forceLoad: true);
+    }
+
+}

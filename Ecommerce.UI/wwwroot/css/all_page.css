@@ -33,3 +33,6 @@
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+.cursor{
+    cursor: pointer;
+}

@@ -3,6 +3,7 @@ using Contracts;
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using Entities.Identity;
+using Entities.Models;
 using Entities.Models.Address;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -121,7 +122,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
-        [Route("Login")]
+        [Route("LoginUser")]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
 
@@ -142,6 +143,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     Success = false,
                     Message = $"Email chưa đăng ký!",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra xem người dùng có phải là User không
+            if (!await _userManager.IsInRoleAsync(user, "User"))
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Tài khoản này không có quyền truy cập.",
                     Data = null
                 });
             }
@@ -354,7 +366,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var result = await _userManager.DeleteAsync(user);
                 if (result.Succeeded)
                 {
-                    return NoContent();
+                    return Ok();
                 }
 
                 return BadRequest(result.Errors);
