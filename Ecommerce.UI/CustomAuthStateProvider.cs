@@ -19,47 +19,15 @@ namespace Ecommerce.UI
             _http = http;
             _jsRuntime = jsRuntime;
         }
-        //public override async Task<AuthenticationState> GetAuthenticationStateAsync()
-        //{
-        //    string authToken = null;
-        //    // Chỉ gọi LocalStorage khi không ở chế độ prerendering
-        //    if (!_isPrerendering)
-        //    {
-        //        authToken = await _localStorageService.GetItemAsStringAsync("authToken");
-        //    }
-
-        //    var identity = new ClaimsIdentity();
-        //    _http.DefaultRequestHeaders.Authorization = null;
-
-        //    if (!string.IsNullOrEmpty(authToken))
-        //    {
-        //        try
-        //        {
-        //            identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
-        //            _http.DefaultRequestHeaders.Authorization =
-        //                new AuthenticationHeaderValue("Bearer", authToken.Replace("\"", ""));
-        //        }
-        //        catch
-        //        {
-        //            await _localStorageService.RemoveItemAsync("authToken");
-        //            identity = new ClaimsIdentity();
-        //        }
-        //    }
-
-        //    var user = new ClaimsPrincipal(identity);
-        //    var state = new AuthenticationState(user);
-
-        //    NotifyAuthenticationStateChanged(Task.FromResult(state));
-
-        //    return state;
-        //}
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             string authToken = null;
+            // Chỉ gọi LocalStorage khi không ở chế độ prerendering
             if (!_isPrerendering)
             {
                 authToken = await _localStorageService.GetItemAsStringAsync("authToken");
             }
+
             var identity = new ClaimsIdentity();
             _http.DefaultRequestHeaders.Authorization = null;
 

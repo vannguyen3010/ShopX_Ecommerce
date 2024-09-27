@@ -10,6 +10,7 @@ namespace Shared.DTO.User
         [Compare("Password", ErrorMessage = "Mật khẩu và mật khẩu xác nhận không khớp.")]
         public string? ConfirmPassword { get; set; }
         public string? Email { get; set; }
-        public string? Token { get; set; }
+        //public string? Token { get; set; }
+        public string? VerificationCode { get; set; }
     }
 }
