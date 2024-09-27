@@ -1,9 +1,11 @@
 ﻿@page "/account/dang-nhap"
 @inject AccountService AccountService
+
 @inject IToastService ToastService
 @inject ILocalStorageService LocalStorage
 @inject AuthState AuthState
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime JSRuntime
 
 @rendermode InteractiveServer
 
@@ -36,11 +38,9 @@
                                 <ValidationMessage class="text_danger" For="@(() => _loginModel.Password)" />
                             </div>
                             <div class="form-checkbox d-flex align-items-center justify-content-between">
-                                <input type="checkbox" class="custom-checkbox" id="remember1" name="remember1" required="">
-                                <label for="remember1">Nhớ mật khẩu</label>
-                                <a class="text_danger" href="#">Quên mật khẩu?</a>
+                                <a class="text_danger" href="/forgot-password">Quên mật khẩu?</a>
                             </div>
-                            @if(ShowLoadingButton)
+                            @if (ShowLoadingButton)
                             {
                                 <ButtonLoadingSpinner></ButtonLoadingSpinner>
                             }
@@ -65,7 +65,7 @@
     private string passwordFieldType = "password";
     private string iconClass = "fa-eye-slash";
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var url))
@@ -73,12 +73,13 @@
             returnUrl = url;
         }
     }
+
     private async Task HandleLogin()
     {
         ShowLoadingButton = true;
 
         var result = await AccountService.Login(_loginModel);
-        if(result.IsAuthSuccessful)
+        if (result.IsAuthSuccessful)
         {
             errorMessage = string.Empty;
 
@@ -94,6 +95,7 @@
         {
             loginError = "Đăng nhập không thành công. Vui lòng kiểm tra thông tin đăng nhập của bạn";
             ToastService.ShowError(loginError);
+            Console.WriteLine("ToastService.ShowSuccess được gọi");
         }
         ShowLoadingButton = false;
     }

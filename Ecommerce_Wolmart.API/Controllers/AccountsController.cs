@@ -209,13 +209,28 @@ namespace Ecommerce_Wolmart.API.Controllers
             //var message = new Message(new string[] { user.Email! }, "Reset password token", callback, null!);
 
             //Send the email
-            var message = new Message(new string[] { user.Email! }, "token", $"Reset password token: {token}", null!);
+            //var message = new Message(new string[] { user.Email! }, "token", $"Reset password token: {token}", null!);
+            //await _emailSender.SendEmailAsync(message);
+
+            // Tạo mã xác nhận ngẫu nhiên
+            var verificationCode = new Random().Next(100000, 999999).ToString();// Mã 6 chữ số ngẫu nhiên
+
+            // Lưu mã xác nhận vào thuộc tính của người
+            user.VerificationCode = verificationCode;
+            await _userManager.UpdateAsync(user);
+
+            // Gửi mã xác nhận qua email
+            var message = new Message(
+                new string[] { user.Email! },
+                "Confirm your email",
+                $"Mã xác thực: {verificationCode}",
+                null!
+            );
 
             await _emailSender.SendEmailAsync(message);
 
             return Ok();
         }
-
         [HttpPost]
         [Route("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
@@ -227,20 +242,62 @@ namespace Ecommerce_Wolmart.API.Controllers
             if (user == null)
                 return BadRequest("Invalid Request");
 
+            // Kiểm tra mã xác nhận (verification code)
+            if (user.VerificationCode != resetPasswordDto.VerificationCode)
+            {
+                return BadRequest("Mã xác nhận không đúng.");
+            }
 
-            //Đặt Lại Mật Khẩu
-            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+            // Đặt lại mật khẩu nếu mã xác nhận hợp lệ
+            var resetPassResult = await _userManager.RemovePasswordAsync(user);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(x => x.Description);
-
                 return BadRequest(new { Errors = errors });
             }
+
+            // Đặt mật khẩu mới
+            var addPassResult = await _userManager.AddPasswordAsync(user, resetPasswordDto.Password!);
+            if (!addPassResult.Succeeded)
+            {
+                var errors = addPassResult.Errors.Select(x => x.Description);
+                return BadRequest(new { Errors = errors });
+            }
+
+            // Xóa mã xác nhận sau khi đặt lại mật khẩu thành công
+            user.VerificationCode = null;
+            await _userManager.UpdateAsync(user);
+
+            // Reset trạng thái khóa tài khoản
             await _userManager.SetLockoutEndDateAsync(user, new DateTime(2000, 1, 1));
 
-            //Nếu việc đặt lại mật khẩu thành công, thiết lập ngày khóa tài khoản của người dùng thành một ngày trong quá khứ để mở khóa tài khoản nếu nó bị khóa trước đó.
-            return Ok();
+            return Ok("Mật khẩu đã được đặt lại thành công.");
         }
+
+        //[HttpPost]
+        //[Route("ResetPassword")]
+        //public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest();
+
+        //    var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email!);
+        //    if (user == null)
+        //        return BadRequest("Invalid Request");
+
+
+        //    //Đặt Lại Mật Khẩu
+        //    var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.VerificationCode!, resetPasswordDto.Password!);
+        //    if (!resetPassResult.Succeeded)
+        //    {
+        //        var errors = resetPassResult.Errors.Select(x => x.Description);
+
+        //        return BadRequest(new { Errors = errors });
+        //    }
+        //    await _userManager.SetLockoutEndDateAsync(user, new DateTime(2000, 1, 1));
+
+        //    return Ok();
+        //}
 
         [HttpGet]
         [Route("EmailConfirmation")]
