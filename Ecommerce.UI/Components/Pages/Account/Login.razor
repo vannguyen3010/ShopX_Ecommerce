@@ -1,11 +1,11 @@
 ﻿@page "/account/dang-nhap"
 @inject AccountService AccountService
 
-@inject IToastService ToastService
 @inject ILocalStorageService LocalStorage
 @inject AuthState AuthState
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJSRuntime JSRuntime
+
 
 @rendermode InteractiveServer
 
@@ -38,7 +38,7 @@
                                 <ValidationMessage class="text_danger" For="@(() => _loginModel.Password)" />
                             </div>
                             <div class="form-checkbox d-flex align-items-center justify-content-between">
-                                <a class="text_danger" href="/forgot-password">Quên mật khẩu?</a>
+                                <a class="text_danger" href="/account/forgot-password">Quên mật khẩu?</a>
                             </div>
                             @if (ShowLoadingButton)
                             {
