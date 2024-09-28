@@ -4,7 +4,7 @@
     position: relative;
 }
 .input_item_auth span {
-   right: 10px;
+   right: 15px;
    top: 67%;
    transform: translateY(-50%);
    cursor: pointer;

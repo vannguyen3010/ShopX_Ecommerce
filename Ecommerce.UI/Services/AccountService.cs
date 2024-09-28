@@ -48,7 +48,26 @@ namespace Ecommerce.UI.Services
             }
         }
 
+        public async Task<bool> ForgotPasswordAsync(string email)
+        {
+            var forgotPasswordDto = new ForgotPasswordDto
+            {
+                Email = email,
+                ClientURL = "string"
+            };
 
+            var response = await _httpClient.PostAsJsonAsync("api/Accounts/ForgotPassword", forgotPasswordDto);
+            if(response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
+        }
 
+        public async Task<bool> ResetPasswordAsync(ResetPasswordDto request)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/Accounts/ResetPassword", request);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
