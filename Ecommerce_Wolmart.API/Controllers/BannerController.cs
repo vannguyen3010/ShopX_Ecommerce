@@ -35,7 +35,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         [HttpPost]
         [Route("CreateBanner")]
         public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto createbannerDto)
-       {
+        {
             try
             {
                 ValidateFileUpload(createbannerDto);
@@ -77,6 +77,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                     bannerEntity.FileSizeInBytes = createbannerDto.File.Length;
                 }
 
+                // Xử lý tập tin hình ảnh thứ hai
+                if (createbannerDto.SecondFile != null)
+                {
+                    string secondFileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.SecondFile.FileName)}";
+                    var secondFileExtension = Path.GetExtension(createbannerDto.SecondFile.FileName);
+                    bannerEntity.SecondFilePath = await SaveFileAndGetUrl(createbannerDto.SecondFile, secondFileName, secondFileExtension);
+                    bannerEntity.SecondFileName = secondFileName;
+                    bannerEntity.SecondFileExtension = secondFileExtension;
+                    bannerEntity.SecondFileSizeInBytes = createbannerDto.SecondFile.Length;
+                }
+
                 // tạo danh mục vào cơ sở dữ liệu
                 await _repository.Banner.CreateBanner(bannerEntity);
 
@@ -99,6 +110,9 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("GetAllBannerPosition")]
         public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition? position)
         {
+            // Top,0
+            // Right,1
+            // Left, 2
             IEnumerable<Banner> banners;
             if(position.HasValue)
             {

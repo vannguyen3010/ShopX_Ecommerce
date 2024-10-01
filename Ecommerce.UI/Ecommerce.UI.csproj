@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\controller\" />
+    <Folder Include="wwwroot\Img_Dev\Banners\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,20 @@
+﻿/*BannerTop*/
+.custom-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.custom-dots a {
+    margin: 0 5px;
+}
+
+.custom-dots img {
+    display: block;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/*-----------------*/

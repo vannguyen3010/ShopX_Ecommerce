@@ -1,10 +1,8 @@
 ﻿@page "/account/dang-nhap"
 @inject AccountService AccountService
-
 @inject ILocalStorageService LocalStorage
 @inject AuthState AuthState
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
 
 @rendermode InteractiveServer
 
@@ -37,6 +35,7 @@
                             </div>
                             <div class="form-checkbox d-flex align-items-center justify-content-between">
                                 <a class="text-danger" href="/account/forgot-password">Quên mật khẩu?</a>
+                                <a class="text-danger" href="/account/confirm-email">Quên mật khẩu?</a>
                             </div>
                             @if (ShowLoadingButton)
                             {
@@ -46,6 +45,7 @@
                             {
                                 <button class="btn btn-primary cursor" type="submit">Đăng nhập</button>
                             }
+
                         </div>
                     </EditForm>
                 </div>
@@ -53,7 +53,6 @@
         </div>
     </div>
 </main>
-
 @code {
     public bool ShowLoadingButton { get; set; } = false;
     private LoginDto _loginModel = new LoginDto();
@@ -63,12 +62,12 @@
     private string passwordFieldType = "password";
     private string iconClass = "fa-eye-slash";
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var url))
         {
-            returnUrl = url;
+            returnUrl = "url";
         }
     }
 
@@ -96,6 +95,7 @@
         {
             loginError = "Đăng nhập không thành công. Vui lòng kiểm tra thông tin đăng nhập của bạn";
             ToastService.ShowError(loginError);
+            return;
         }
         ShowLoadingButton = false;
     }

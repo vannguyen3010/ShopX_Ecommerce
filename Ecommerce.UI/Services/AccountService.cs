@@ -1,6 +1,5 @@
 ﻿using Shared.DTO.Response;
 using Shared.DTO.User;
-using static System.Net.WebRequestMethods;
 namespace Ecommerce.UI.Services
 {
     public class AccountService
@@ -59,7 +58,7 @@ namespace Ecommerce.UI.Services
             };
 
             var response = await _httpClient.PostAsJsonAsync("api/Accounts/ForgotPassword", forgotPasswordDto);
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 return true;
             }

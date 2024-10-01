@@ -101,6 +101,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             //   // Thêm người dùng vào vai trò "User"
             await _userManager.AddToRoleAsync(user, "User");
 
+
             // Tạo mã xác nhận ngẫu nhiên
             var verificationCode = new Random().Next(100000, 999999).ToString();// Mã 6 chữ số ngẫu nhiên
 

@@ -18,6 +18,15 @@ namespace Entities.Models
         public string FileExtension { get; set; }
         public long FileSizeInBytes { get; set; }
         public string FilePath { get; set; }
+
+        // Thêm thông tin cho ảnh thứ hai
+        [NotMapped] // Sẽ không lưu ảnh vào Db
+        public IFormFile SecondFile { get; set; } // Trường ảnh thứ hai
+        public string SecondFileName { get; set; }
+        public string SecondFileExtension { get; set; }
+        public long SecondFileSizeInBytes { get; set; }
+        public string SecondFilePath { get; set; }
+
         [Required]
         public BannerPosition Position { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
