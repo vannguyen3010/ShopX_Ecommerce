@@ -17,6 +17,7 @@ namespace Shared.DTO.Banner
         [Required]
         public BannerPosition Position { get; set; }
 
+        public IFormFile SecondFile { get; set; } // Trường ảnh thứ hai
     }
   
 }
