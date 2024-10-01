@@ -1,5 +1,6 @@
 ﻿using Shared.DTO.Response;
 using Shared.DTO.User;
+using static System.Net.WebRequestMethods;
 namespace Ecommerce.UI.Services
 {
     public class AccountService
@@ -14,19 +15,20 @@ namespace Ecommerce.UI.Services
         public async Task<RegisterResponseDto> RegisterUserAsync(RegisterDto registerDto)
         {
             var response = await _httpClient.PostAsJsonAsync("api/Accounts/Register", registerDto);
-
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<RegisterResponseDto>();
+                return new RegisterResponseDto { IsSuccessfulRegistration = true };
             }
-            else
+
+            // Nếu không thành công, đọc lỗi từ response
+            var errorResponse = await response.Content.ReadFromJsonAsync<RegisterResponseDto>();
+            return new RegisterResponseDto
             {
-                var errorResponse = new RegisterResponseDto
-                {
-                    Errors = new List<string> { "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin." }
-                };
-                return errorResponse;
-            }
+                IsSuccessfulRegistration = false,
+                Errors = errorResponse?.Errors,
+                Message = errorResponse?.Message
+            };
+
         }
 
         public async Task<AuthResponseDto> Login(LoginDto request)
@@ -68,6 +70,18 @@ namespace Ecommerce.UI.Services
         {
             var response = await _httpClient.PostAsJsonAsync("api/Accounts/ResetPassword", request);
             return response.IsSuccessStatusCode;
+        }
+        public async Task<ApiResponse<object>> EmailConfirmationAsync(string email, string verificationCode)
+        {
+            var response = await _httpClient.GetAsync($"api/Accounts/EmailConfirmation?email={email}&verificationCode={verificationCode}");
+            if (response.IsSuccessStatusCode)
+            {
+                return new ApiResponse<object> { Success = true, Message = "Email confirmed successfully!" };
+            }
+            //return new ApiResponse<object> { Success = false, Message = "Email confirmation failed!" };
+            // Lấy thông tin lỗi từ API
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            return new ApiResponse<object> { Success = false, Message = errorMessage };
         }
     }
 }

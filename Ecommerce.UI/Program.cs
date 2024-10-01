@@ -5,6 +5,7 @@ using Ecommerce.UI.Components;
 using Ecommerce.UI.Components.Pages.OtherPage;
 using Ecommerce.UI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,21 +13,18 @@ builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7105/") });
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+
 
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddAuthorizationCore();
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
 builder.Services.AddOptions();
-builder.Services.AddAuthorizationCore();
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
-
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

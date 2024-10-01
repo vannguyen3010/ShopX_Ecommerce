@@ -1,10 +1,7 @@
 ﻿@using Ecommerce.UI.Components.Pages.OtherPage
 @using Microsoft.AspNetCore.Components.Authorization
 @using Blazored.LocalStorage
-@using System.Security.Claims
-@using global::Shared.DTO.User
 @inject NavigationManager NavigationManager
-@inject AuthState AuthState
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorage
 
@@ -28,34 +25,6 @@
                         </button>
                     </div>
                 </div>
-
-               @*  <div class="dropdown">
-                    <a href="#language">
-                        <i class="w-icon-account"></i> Tài khoản
-                    </a>
-                    <div class="dropdown-box">
-                        @if (!AuthState.IsLoggedIn)
-                        {
-                          
-                            <a href="/account/dang-nhap">
-                                Đăng Nhập
-                            </a>
-                            <a href="/account/dang-ky">
-                                Đăng Ký
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="/account/thong-tin-ca-nhan">
-                                Thông tin cá nhân
-                            </a>
-                            <a class="cursor" @onclick="Logout">
-                                Đăng Xuất
-                            </a>
-                        }
-
-                    </div>
-                </div> *@
                 <div class="dropdown">
                     <a href="#language">
                         <i class="w-icon-account"></i> Tài khoản
@@ -185,4 +154,5 @@
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/account/dang-nhap", forceLoad: true);
     }
+  
 }

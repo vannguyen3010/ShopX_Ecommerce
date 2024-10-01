@@ -4,7 +4,6 @@
 @inject ILocalStorageService LocalStorage
 @inject AuthState AuthState
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IJSRuntime JSRuntime
 
 
 @rendermode InteractiveServer
@@ -18,9 +17,9 @@
         <div class="container">
             <div class="login-popup">
                 <div class="tab tab-nav-boxed tab-nav-center tab-nav-underline">
-                    <ul class="nav nav-tabs text-uppercase" role="tablist">
+                    <ul class="nav nav-tabs text-uppercase" style="border-bottom: unset" role="tablist">
                         <li class="nav-item">
-                            <a href="" class="nav-link active">Đăng Nhập</a>
+                            <a class="nav-link active" style="border-bottom: unset">Đăng Nhập</a>
                         </li>
                     </ul>
                     <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" class="tab-content w-100" id="form-login" FormName="form-login">
@@ -34,19 +33,19 @@
                             <div class="form-group mb-0 input_item_auth">
                                 <label>Mật khẩu *</label>
                                 <InputText @bind-Value="_loginModel.Password" type="@passwordFieldType" class="form-control" name="password" />
-                                <span class="fa @iconClass field-icon" @onclick="TogglePasswordVisibility"></span>
                                 <ValidationMessage class="text_danger" For="@(() => _loginModel.Password)" />
+                                <span class="fa @iconClass field-icon" @onclick="TogglePasswordVisibility"></span>
                             </div>
                             <div class="form-checkbox d-flex align-items-center justify-content-between">
-                                <a class="text_danger" href="/account/forgot-password">Quên mật khẩu?</a>
+                                <a class="text_danger" href="/account/forgot-password)">Quên mật khẩu?</a>
                             </div>
                             @if (ShowLoadingButton)
                             {
-                                <ButtonLoadingSpinner></ButtonLoadingSpinner>
+                                    <ButtonLoadingSpinner></ButtonLoadingSpinner>
                             }
                             else
                             {
-                                <button class="btn btn-primary cursor" type="submit">Đăng nhập</button>
+                                    <button class="btn btn-primary cursor" type="submit">Đăng nhập</button>
                             }
                         </div>
                     </EditForm>
@@ -85,10 +84,13 @@
 
             AuthState.IsLoggedIn = true;
             ToastService.ShowSuccess("Đăng nhập thành công!");
-            await Task.Delay(1000);
+
             await LocalStorage.SetItemAsync("authToken", result.Token);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
+            StateHasChanged();
+
+            await Task.Delay(1000);
             NavigationManager.NavigateTo(returnUrl, forceLoad: true);
         }
         else
@@ -99,7 +101,6 @@
         }
         ShowLoadingButton = false;
     }
-
     private void TogglePasswordVisibility()
     {
         if (passwordFieldType == "password")
