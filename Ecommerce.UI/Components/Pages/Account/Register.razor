@@ -18,58 +18,67 @@
                 <div class="tab tab-nav-boxed tab-nav-center tab-nav-underline">
                     <ul class="nav nav-tabs text-uppercase" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link">Đăng ký</a>
+                            <a class="nav-link" style="border-bottom: unset">Đăng ký</a>
                         </li>
                     </ul>
-                    <div class="tab-content">
-                        <EditForm Model="_registerModel" OnValidSubmit="HandleRegister" id="form-register" FormName="form-register">
+                    <div class="tab-content w-100 row">
+                        <EditForm Model="registerDto" OnValidSubmit="HandleRegister" id="form-register" FormName="form-register">
                             <DataAnnotationsValidator />
-                            <ValidationSummary />
-                            <div class="form-group mb-5">
-                                <ValidationMessage class="text-danger" For="@(() => _registerModel.LastName)" />
-                                <label>Họ *</label>
-                                <InputText @bind-Value="_registerModel.LastName" type="text" class="form-control" />
+                            <div class="d-flex row g-3">
+                                <div class="form-group mb-5 col-6">
+                                    <label>Họ *</label>
+                                    <InputText @bind-Value="registerDto.LastName" type="text" class="form-control" />
+                                    <ValidationMessage class="text_danger" For="@(() => registerDto.LastName)" />
+                                </div>
+                                <div class="form-group mb-5 col-6">
+                                    <label>Tên lót *</label>
+                                    <InputText @bind-Value="registerDto.FirstName" type="text" class="form-control" />
+                                    <ValidationMessage class="text_danger" For="@(() => registerDto.FirstName)" />
+                                </div>
                             </div>
                             <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.FirstName)" />
-                                <label>Tên lót *</label>
-                                <InputText @bind-Value="_registerModel.FirstName" type="text" class="form-control" />
-                            </div>
-                            <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.UserName)" />
                                 <label>Tên *</label>
-                                <InputText @bind-Value="_registerModel.UserName" type="text" class="form-control" />
+                                <InputText @bind-Value="registerDto.UserName" type="text" class="form-control" />
+                                <ValidationMessage class="text_danger" For="@(() => registerDto.UserName)" />
                             </div>
                             <div class="form-group">
-                                <ValidationMessage For="@(() => _registerModel.Email)" />
                                 <label>Email *</label>
-                                <InputText @bind-Value="_registerModel.Email" type="text" class="form-control" placeholder="Nhập đia chỉ email" />
+                                <InputText @bind-Value="registerDto.Email" type="text" class="form-control" placeholder="Nhập đia chỉ email" />
+                                <ValidationMessage class="text_danger" For="@(() => registerDto.Email)" />
                             </div>
-                            <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.Password)" />
+                            <div class="form-group mb-5 input_item_auth">
                                 <label>Mật khẩu *</label>
-                                <InputText @bind-Value="_registerModel.Password" type="password" class="form-control" />
+                                <InputText @bind-Value="registerDto.Password" type="@passwordFieldType" class="form-control" />
+                                <span class="fa @iconClass field-icon" @onclick="TogglePasswordVisibility"></span>
+                                <ValidationMessage class="text_danger" For="@(() => registerDto.Password)" />
                             </div>
                             <div class="form-group mb-5">
-                                <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
                                 <label>Xác nhận mật khẩu *</label>
-                                <InputText @bind-Value="_registerModel.ConfirmPassword" type="password" class="form-control" />
+                                <InputText @bind-Value="registerDto.ConfirmPassword" type="password" class="form-control" />
+                                <ValidationMessage class="text_danger" For="@(() => registerDto.ConfirmPassword)" />
                             </div>
-                            <div class="d-flex">
+                            <div class="d-flex justify-content-between">
                                 <p class="text-black">Bạn đã có tài khoản ? </p>
-                                <a class="text-primary mx-2" href="/dang-nhap"><p>Đăng nhập tại đây</p></a>
+                                <a class="text-primary mx-2" href="/account/dang-nhap"><p>Đăng nhập tại đây</p></a>
                             </div>
 
                             <div class="form-checkbox d-flex align-items-center justify-content-between mb-5">
                                 <input type="checkbox" class="custom-checkbox" id="remember" name="remember">
                                 <label for="remember" class="font-size-md">
-                                    Bằng cách ấn vào nút “ĐĂNG KÝ”, tôi đồng ý với
+                                    Bằng cách ấn vào nút <p class="text-danger">“ĐĂNG KÝ”</p>, đồng nghĩa bạn đồng ý với
                                     <a target="_blank" href="~/pdf/20230701_chinh_sach_bao_mat.pdf" class="text-danger font-size-md input_text">Điều Khoản Sử Dụng</a>
                                     và
                                     <a target="_blank" href="~/pdf/20230701_dieu_khoan_dich_vu.pdf" class="text-danger font-size-md input_text">Chính Sách Bảo Mật</a>
                                 </label>
                             </div>
-                            <button class="btn btn-primary" type="submit">Đăng Ký</button>
+                            @if (ShowLoadingButton)
+                            {
+                                <ButtonLoadingSpinner></ButtonLoadingSpinner>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" type="submit">Đăng Ký</button>
+                            }
                         </EditForm>
                         @if (_errorMessage != null)
                         {
@@ -86,20 +95,41 @@
 
 
 @code {
-    private RegisterDto _registerModel = new RegisterDto();
+    private RegisterDto registerDto = new RegisterDto();
     private string? _errorMessage;
+    public bool ShowLoadingButton { get; set; } = false;
+    private string passwordFieldType = "password";
+    private string iconClass = "fa-eye-slash";
 
     private async Task HandleRegister()
     {
+        ShowLoadingButton = true;
         _errorMessage = null; // Reset thông báo lỗi
-        var result = await AccountService.RegisterUserAsync(_registerModel);
-        if (result.Errors != null && result.Errors.Any())
+        var response = await AccountService.RegisterUserAsync(registerDto);
+        if (response.IsSuccessfulRegistration)
         {
-            _errorMessage = string.Join(", ", result.Errors);
+            await localStorage.SetItemAsync("UserEmail", registerDto.Email);
+            // Chuyển hướng đến trang đăng nhập
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("/account/confirm-email", forceLoad: true);
         }
         else
         {
-            _errorMessage = "Đăng ký thành công!";
+            _errorMessage = response.Errors?.FirstOrDefault() ?? "Đã xảy ra lỗi trong quá trình đăng ký.";
+        }
+        ShowLoadingButton = false;
+    }
+    private void TogglePasswordVisibility()
+    {
+        if (passwordFieldType == "password")
+        {
+            passwordFieldType = "text"; // Hiển thị mật khẩu
+            iconClass = "fa-eye"; // Đổi icon thành mắt mở
+        }
+        else
+        {
+            passwordFieldType = "password"; // Ẩn mật khẩu
+            iconClass = "fa-eye-slash"; // Đổi icon thành mắt đóng
         }
     }
 }

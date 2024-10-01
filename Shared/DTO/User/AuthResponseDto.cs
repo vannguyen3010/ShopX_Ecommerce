@@ -6,4 +6,10 @@
         public string? ErrorMessage { get; set; }
         public string? Token { get; set; }
     }
+    public class ServiceResponse<T>
+    {
+        public T? Data { get; set; }
+        public bool Success { get; set; } = true;
+        public string Message { get; set; } = string.Empty;
+    }
 }

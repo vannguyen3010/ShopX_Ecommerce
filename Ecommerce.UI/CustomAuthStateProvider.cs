@@ -17,7 +17,6 @@ namespace Ecommerce.UI
         {
             _localStorageService = localStorageService;
             _http = http;
-            _jsRuntime = jsRuntime;
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
@@ -54,6 +53,7 @@ namespace Ecommerce.UI
             return state;
         }
 
+
         private byte[] ParseBase64WithoutPadding(string base64)
         {
             switch (base64.Length % 4)
@@ -77,3 +77,4 @@ namespace Ecommerce.UI
         }
     }
 }
+

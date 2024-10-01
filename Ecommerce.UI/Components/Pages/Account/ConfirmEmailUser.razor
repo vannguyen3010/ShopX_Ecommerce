@@ -1,0 +1,125 @@
+﻿@page "/account/confirm-email"
+@inject ILocalStorageService localStorage
+@inject AccountService AccountService
+
+@rendermode InteractiveServer
+
+<link href="css/auth.css" rel="stylesheet" />
+
+
+<div class="section_otp">
+    <div class="container otp_item_custom_form">
+        <h2>Nhập mã xác minh</h2>
+        <p>@Email</p>
+        <div>
+            @for (int i = 0; i < 6; i++)
+            {
+                <input type="text" class="otp-input" maxlength="1" @oninput="@(e => HandleInput(e, i))"/>
+            }
+        </div>
+           <button class="validate mt-5" @onclick="ConfirmEmail">Xác nhận</button>
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <p class="error-message text-danger">@_errorMessage</p>
+        }
+    </div>
+</div>
+
+@code {
+    private string Email;
+    private string _errorMessage;
+    private string verificationCode = string.Empty;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Email = await localStorage.GetItemAsync<string>("UserEmail");
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleInput(ChangeEventArgs e, int index)
+    {
+        // Kiểm tra nếu có giá trị nhập vào
+        if (e.Value != null && e.Value.ToString().Length > 0)
+        {
+            // Lấy ký tự vừa nhập
+            var enteredChar = e.Value.ToString();
+
+            // Nếu ký tự hợp lệ, thêm vào verificationCode
+            if (enteredChar.Length == 1 && char.IsDigit(enteredChar[0]))
+            {
+                verificationCode = verificationCode.Length > index ? verificationCode.Remove(index, 1).Insert(index, enteredChar) : verificationCode + enteredChar;
+
+            }
+        }
+    }
+    private async Task ConfirmEmail()
+    {
+        // Kiểm tra chiều dài mã xác minh
+        if (verificationCode.Length != 6)
+        {
+            _errorMessage = "Mã xác minh phải có 6 chữ số.";
+            return;
+        }
+
+        var response = await AccountService.EmailConfirmationAsync(Email, verificationCode);
+
+        if (response.Success)
+        {
+            await localStorage.RemoveItemAsync("UserEmail"); // Xóa email khỏi localStorage
+            NavigationManager.NavigateTo("/account/dang-nhap", forceLoad: true); // Chuyển hướng đến trang đăng nhập
+        }
+        else
+        {
+            _errorMessage = response.Message;
+        }
+    }
+}
+
+<style>
+    .section_otp {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+
+    .otp_item_custom_form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .otp-input {
+        width: 40px;
+        height: 40px;
+        margin: 0 5px;
+        font-size: 18px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .resend {
+        color: #007bff;
+        cursor: pointer;
+    }
+
+    .validate {
+        background-color: #ff4d4d;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+</style>
