@@ -8,18 +8,17 @@
 
 @rendermode InteractiveServer
 
-<link href="css/auth.css" rel="stylesheet" type="text/css" />
+<link href="css/account.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
-
 
 <main class="main login-page">
     <div class="page-content">
         <div class="container">
             <div class="login-popup">
                 <div class="tab tab-nav-boxed tab-nav-center tab-nav-underline">
-                    <ul class="nav nav-tabs text-uppercase" style="border-bottom: unset" role="tablist">
+                    <ul class="nav nav-tabs text-uppercase" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" style="border-bottom: unset">Đăng Nhập</a>
+                            <a class="nav-link active" style="border:unset">Đăng Nhập</a>
                         </li>
                     </ul>
                     <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" class="tab-content w-100" id="form-login" FormName="form-login">
@@ -28,24 +27,24 @@
                             <div class="form-group">
                                 <label>Email *</label>
                                 <InputText @bind-Value="_loginModel.Email" type="text" class="form-control" name="email" />
-                                <ValidationMessage class="text_danger" For="@(() => _loginModel.Email)" />
+                                <ValidationMessage class="text-danger" For="@(() => _loginModel.Email)" />
                             </div>
                             <div class="form-group mb-0 input_item_auth">
                                 <label>Mật khẩu *</label>
                                 <InputText @bind-Value="_loginModel.Password" type="@passwordFieldType" class="form-control" name="password" />
-                                <ValidationMessage class="text_danger" For="@(() => _loginModel.Password)" />
+                                <ValidationMessage class="text-danger" For="@(() => _loginModel.Password)" />
                                 <span class="fa @iconClass field-icon" @onclick="TogglePasswordVisibility"></span>
                             </div>
                             <div class="form-checkbox d-flex align-items-center justify-content-between">
-                                <a class="text_danger" href="/account/forgot-password)">Quên mật khẩu?</a>
+                                <a class="text-danger" href="/account/forgot-password">Quên mật khẩu?</a>
                             </div>
                             @if (ShowLoadingButton)
                             {
-                                    <ButtonLoadingSpinner></ButtonLoadingSpinner>
+                                <ButtonLoadingSpinner></ButtonLoadingSpinner>
                             }
                             else
                             {
-                                    <button class="btn btn-primary cursor" type="submit">Đăng nhập</button>
+                                <button class="btn btn-primary cursor" type="submit">Đăng nhập</button>
                             }
                         </div>
                     </EditForm>
@@ -97,7 +96,6 @@
         {
             loginError = "Đăng nhập không thành công. Vui lòng kiểm tra thông tin đăng nhập của bạn";
             ToastService.ShowError(loginError);
-            Console.WriteLine("ToastService.ShowSuccess được gọi");
         }
         ShowLoadingButton = false;
     }
