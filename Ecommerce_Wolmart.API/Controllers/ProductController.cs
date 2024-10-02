@@ -356,12 +356,12 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         //Lấy tất cả sản phẩm mới
         [HttpGet]
-        [Route("GetNewProducts")]
-        public async Task<IActionResult> GetNewProducts(DateTime? startDate = null)
+        [Route("GetAllNewProducts")]
+        public async Task<IActionResult> GetAllNewProducts(DateTime? startDate = null) //2-10
         {
             try
             {
-                // Nếu không cung cấp startDate, đặt ngày mặc định là 30 ngày trước ngày hiện tại
+                // Nếu không cung cấp startDate, đặt ngày mặc định là 10 ngày trước ngày hiện tại
                 startDate ??= DateTime.UtcNow.AddDays(-10);
 
                 // Lấy tất cả sản phẩm mới từ cơ sở dữ liệu, với điều kiện ngày tạo lớn hơn startDate
