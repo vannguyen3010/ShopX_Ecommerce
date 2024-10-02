@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\controller\" />
+    <Folder Include="Extensions\" />
     <Folder Include="wwwroot\Img_Dev\Banners\" />
   </ItemGroup>
 

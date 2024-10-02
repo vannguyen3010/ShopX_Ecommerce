@@ -1,4 +1,5 @@
-﻿using Shared.DTO.Banner;
+﻿using Shared;
+using Shared.DTO.Banner;
 using Shared.DTO.Response;
 
 namespace Ecommerce.UI.Services
@@ -12,7 +13,7 @@ namespace Ecommerce.UI.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<BannerDto>> GetAllBannersAsync(int position = 0)
+        public async Task<IEnumerable<BannerDto>> GetAllBannersAsync(BannerPosition position)
         {
             var response = await _httpClient.GetAsync($"/api/Banner/GetAllBannerPosition?position={position}");
             response.EnsureSuccessStatusCode();
