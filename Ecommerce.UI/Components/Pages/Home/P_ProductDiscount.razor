@@ -1,0 +1,65 @@
+﻿@inject HomeServices HomeServices
+
+@code {
+    private IEnumerable<ProductDto> discountProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        discountProducts = await HomeServices.GetAllProductDiscountAsync();
+    }
+}
+
+<h2 class="title justify-content-center ls-normal mb-4 mt-10 pt-1 appear-animate">
+    Sản Phẩm Giảm Giá
+</h2>
+<div class="tab-content product-wrapper appear-animate">
+    <div class="tab-pane active pt-4" id="tab1-1">
+        <div class="row cols-xl-5 cols-md-4 cols-sm-3 cols-2">
+            @if (discountProducts != null && discountProducts.Any())
+            {
+                @foreach (var item in discountProducts.Take(10))
+                {
+                    <div class="product-wrap">
+                        <div class="product text-center img__wrapper">
+                            <figure class="product-media spotlight">
+                                <a href="product-default.html">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product"
+                                         width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                </a>
+                            </figure>
+                            <img src="http://www.savoy-sharm.com/media-room/images/hi-res/king-bed-room-accommodation-savoy-luxury-5-stars-accommodation-sharm-el-sheikh.jpg" alt="" />
+                            @if (item.Discount > 1)
+                            {
+                                <a class="sold_out" href="https://abc.com/">@item.Discount</a>
+                            }
+                            <div class="product-details">
+                                <h4 class="product-name"><a href="product-default.html">@item.Name</a></h4>
+                                <div class="ratings-container">
+                                    <div class="star-rating">
+                                        @for (int i = 0; i < item.Rating; i++)
+                                        {
+                                            <span class="fa fa-star checked"></span>
+                                        }
+                                        @for (int i = 0; i < (5 - item.Rating); i++)
+                                        {
+                                            <span class="fa fa-star"></span>
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="product-price">
+                                    <del class="old-price">@item.Price <span class="currency-symbol">đ</span>  </del>
+                                    <ins class="new-price text-danger">@((item.Price - item.Discount)) <span class="currency-symbol">đ</span></ins>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+    <div class="row text-center">
+        <a>Xem thêm</a>
+    </div>
+</div>
