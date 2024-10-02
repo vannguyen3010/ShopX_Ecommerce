@@ -16,12 +16,12 @@ namespace Entities.Models
         public ICollection<Product> Products { get; set; }
 
         [NotMapped] // Sẽ ko lưu ảnh vào Db
-        public IFormFile File { get; set; }
-        public string FileName { get; set; }
+        public IFormFile? File { get; set; }
+        public string? FileName { get; set; }
         public string? FileDescription { get; set; }
-        public string FileExtension { get; set; }
-        public long FileSizeInBytes { get; set; }
-        public string FilePath { get; set; }
+        public string? FileExtension { get; set; }
+        public long? FileSizeInBytes { get; set; }
+        public string? FilePath { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime DateTime { get; set; }
 

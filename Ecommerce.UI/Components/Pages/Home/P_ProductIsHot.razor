@@ -1,4 +1,4 @@
-﻿@inject ProductServices ProductServices
+﻿@inject HomeServices HomeServices
 
 @code {
     private IEnumerable<ProductDto> hotProducts;
@@ -6,8 +6,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        hotProducts = await ProductServices.GetAllProductIsHotAsync();
-        discountProducts = await ProductServices.GetAllProductDiscountAsync();
+        hotProducts = await HomeServices.GetAllProductIsHotAsync();
+        discountProducts = await HomeServices.GetAllProductDiscountAsync();
     }
 }
 
@@ -51,7 +51,7 @@
                                         </div>
                                     </div>
                                     <div class="product-label-group">
-                                        <label class="product-label label-discount">Giảm giá @item.Discount</label>
+                                        <label class="product-label label-discount">- @item.Discount </label>
                                     </div>
                                 </div>
                             </div>
@@ -64,34 +64,26 @@
                                     </h2>
 
                                     <hr class="product-divider">
-
                                     <div class="product-price">
-                                        <ins class="new-price ls-50">
-                                            @item.Price
-                                        </ins>
+                                        <del class="old-price">@item.Price <span class="currency-symbol">đ</span></del>
+                                        <ins class="new-price text-danger">@((item.Price - item.Discount)) <span class="currency-symbol">đ</span></ins>
                                     </div>
-
                                     <div class="ratings-container">
-                                        <div class="ratings-full">
-                                            <span class="ratings" style="width: 80%;"></span>
-                                            <span class="tooltiptext tooltip-top"></span>
+                                        <div class="star-rating">
+                                            @for (int i = 0; i < item.Rating; i++)
+                                            {
+                                                <span class="fa fa-star checked"></span>
+                                            }
+                                            @for (int i = 0; i < (5 - item.Rating); i++)
+                                            {
+                                                <span class="fa fa-star"></span>
+                                            }
+
                                         </div>
-                                        <a href="#" class="rating-reviews">(3 Reviews)</a>
                                     </div>
 
-                                    <div class="product-form product-variation-form product-size-swatch mb-3">
-                                        <label class="mb-1">Size:</label>
-                                        <div class="flex-wrap d-flex align-items-center product-variations">
-                                            <a href="#" class="size">Extra Large</a>
-                                            <a href="#" class="size">Large</a>
-                                            <a href="#" class="size">Medium</a>
-                                            <a href="#" class="size">Small</a>
-                                        </div>
-                                        <a href="#" class="product-variation-clean">Clean All</a>
-                                    </div>
-
-                                    <div class="product-variation-price">
-                                        <span></span>
+                                    <div class="product_des">
+                                        <span class="no_wrap_3">@item.Description</span>
                                     </div>
 
                                     <div class="product-form pt-4">

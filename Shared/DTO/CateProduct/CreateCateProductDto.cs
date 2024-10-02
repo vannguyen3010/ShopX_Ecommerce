@@ -12,8 +12,7 @@ namespace Shared.DTO.Category
         public Guid? ParentCategoryId { get; set; }
         public string? FileName { get; set; }
         public string? FileDescription { get; set; }
-        [Required]
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
     }
   
 }

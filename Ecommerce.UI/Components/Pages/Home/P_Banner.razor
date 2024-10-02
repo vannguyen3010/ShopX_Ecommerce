@@ -1,11 +1,11 @@
-﻿@inject BannerServices BannerServices
+﻿@inject HomeServices HomeServices
 
 @code {
     private IEnumerable<BannerDto> banners;
 
     protected override async Task OnInitializedAsync()
     {
-        banners = await BannerServices.GetAllBannersAsync(BannerPosition.Top);
+        banners = await HomeServices.GetAllBannersAsync(BannerPosition.Top);
     }
 }
 <section class="intro-section mt-4">
@@ -27,11 +27,11 @@
                             <div class="slide-animate" data-animation-options="{
                                     'name': 'zoomIn', 'duration': '1s'
                                 }">
-                                <h5 class="banner-subtitle text-uppercase font-weight-bold no_wrap">
+                                <h5 class="banner-subtitle text-uppercase font-weight-bold no_wrap_2">
                                     @item.Title
                                 </h5>
                                 <h3 class="banner-title text-capitalize ls-25">
-                                    <span class="text-primary no_wrap">@item.Desc</span>
+                                    <span class="text-primary no_wrap_2">@item.Desc</span>
                                 </h3>
                                 <a href="demo9-shop.html"
                                    class="btn btn-dark btn-outline btn-rounded btn-icon-right">
