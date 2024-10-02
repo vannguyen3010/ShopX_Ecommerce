@@ -5,7 +5,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        banners = await BannerServices.GetAllBannersAsync(0);
+        banners = await BannerServices.GetAllBannersAsync(BannerPosition.Top);
     }
 }
 <section class="intro-section mt-4">
@@ -27,11 +27,11 @@
                             <div class="slide-animate" data-animation-options="{
                                     'name': 'zoomIn', 'duration': '1s'
                                 }">
-                                <h5 class="banner-subtitle text-uppercase font-weight-bold">
+                                <h5 class="banner-subtitle text-uppercase font-weight-bold no_wrap">
                                     @item.Title
                                 </h5>
                                 <h3 class="banner-title text-capitalize ls-25">
-                                    <span class="text-primary">@item.Desc</span>
+                                    <span class="text-primary no_wrap">@item.Desc</span>
                                 </h3>
                                 <a href="demo9-shop.html"
                                    class="btn btn-dark btn-outline btn-rounded btn-icon-right">
@@ -127,47 +127,3 @@
         </div>
     </div>
 </div>
-
-
-@*  @if (banners != null && banners.Any())
-{
-    @foreach (var item in banners)
-    {
-        <div class="owl-carousel owl-theme row gutter-no cols-1 animation-slider" data-owl-options="{
-                    'nav': false,
-                    'dots': true,
-                    'autoplay': false,
-                    'items': 1,
-                    'dotsContainer': '.custom-dots'
-                }">
-            <div class="banner banner-fixed content-center intro-slide intro-slide1"
-                 style="background-image: url(@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)); background-color: #EEF4F4;">
-                <div class="container">
-                    <div class="banner-content d-inline-block y-50">
-                        <div class="slide-animate" data-animation-options="{
-                                    'name': 'zoomIn', 'duration': '1s'
-                                }">
-                            <h5 class="banner-subtitle text-uppercase font-weight-bold">
-                                @item.Title
-                            </h5>
-                            <h3 class="banner-title text-capitalize ls-25">
-                                <span class="text-primary">@item.Desc</span>
-                            </h3>
-                        </div>
-                    </div>
-                    <figure class="slide-image skrollable slide-animate">
-                        <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Banner"
-                             data-bottom-top="transform: translatex(-10vh);"
-                             data-top-bottom="transform: translateX(10vh);" width="472" height="510">
-                    </figure>
-                </div>
-            </div>
-
-        </div>
-        <div class="custom-dots owl-img-dots appear-animate">
-            <a href="#" class="active">
-                <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Dot" width="70" height="70" />
-            </a>
-        </div>
-    }
-} *@

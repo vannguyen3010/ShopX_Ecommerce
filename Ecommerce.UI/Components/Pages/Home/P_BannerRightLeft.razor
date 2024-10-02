@@ -1,0 +1,96 @@
+﻿@inject BannerServices BannerServices
+
+@code {
+    private IEnumerable<BannerDto> rightBanners;
+    private IEnumerable<BannerDto> leftBanners;
+
+    protected override async Task OnInitializedAsync()
+    {
+        rightBanners = await BannerServices.GetAllBannersAsync(BannerPosition.Right);
+        leftBanners = await BannerServices.GetAllBannersAsync(BannerPosition.Left);
+    }
+}
+<div class="row category-wrapper electronics-cosmetics appear-animate mb-7">
+    <!-- Slide bên trái -->
+    <div class="col-md-6 mb-4">
+        <div class="owl-carousel owl-theme" id="left-carousel">
+            @if(leftBanners != null && leftBanners.Any())
+            {
+                @foreach (var item in leftBanners)
+                {
+
+                    <div class="banner banner-fixed br-sm">
+                        <figure>
+                            <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
+                                 width="640" height="200" style="background-color: #25282D;" />
+                        </figure>
+                        <div class="banner-content y-50 text-center">
+                            <h3 class="banner-title text-white ls-25 mb-0">@item.Title</h3>
+                            <div class="banner-price-info text-white font-weight-bold text-uppercase mb-1">
+                                @item.Desc
+                            </div>
+                            <hr class="banner-divider bg-white" />
+                            <a href="shop-banner-sidebar.html"
+                               class="btn btn-white btn-link btn-underline btn-icon-right">
+                                Xem thêm<i class="w-icon-long-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="banner banner-fixed br-sm">
+                    <figure>
+                        <img src="/Img_Dev/banner.png" alt="Category Banner" style="background-color: #eeedec;height: 190px;width:640px" />
+                    </figure>
+                    <div class="banner-content y-50 text-center">
+                    </div>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <!-- Slide bên phải -->
+    <div class="col-md-6 mb-4">
+        <div class="owl-carousel owl-theme" id="right-carousel">
+            @if(rightBanners != null && rightBanners.Any())
+            {
+                @foreach (var item in rightBanners)
+                {
+                    <div class="banner banner-fixed br-sm">
+                        <figure>
+                            <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
+                                 width="640" height="200" style="background-color: #eeedec;" />
+                        </figure>
+                        <div class="banner-content y-50 text-center">
+                            <h3 class="banner-title ls-25 text-capitalize mb-0">@item.Title</h3>
+                            <div class="banner-price-info font-weight-bold text-uppercase mb-1">
+                                @item.Desc
+                            </div>
+                            <hr class="banner-divider bg-dark" />
+                            <a href="shop-banner-sidebar.html"
+                               class="btn btn-dark btn-link btn-underline btn-icon-right">
+                                Xem thêm<i class="w-icon-long-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="banner banner-fixed br-sm">
+                    <figure>
+                        <img src="/Img_Dev/banner.png" alt="Category Banner"
+                             width="640" height="200" style="background-color: #eeedec;" />
+                    </figure>
+                    <div class="banner-content y-50 text-center">
+                       
+                    </div>
+                </div>
+            }
+          
+        </div>
+    </div>
+</div>

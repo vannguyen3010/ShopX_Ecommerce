@@ -17,4 +17,26 @@
     object-fit: cover;
 }
 
-/*-----------------*/
+/*--------BannerRightLeft*/
+.banner-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    left: 7.3%;
+}
+
+.banner-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.banner-price-info {
+    font-size: 18px;
+}
+
+.btn-underline {
+    text-decoration: unset;
+}
+

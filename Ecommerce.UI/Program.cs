@@ -16,6 +16,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<BannerServices>();
+builder.Services.AddScoped<ProductServices>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

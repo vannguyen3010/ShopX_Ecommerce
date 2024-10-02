@@ -21,11 +21,11 @@ namespace Entities.Models
 
         // Thêm thông tin cho ảnh thứ hai
         [NotMapped] // Sẽ không lưu ảnh vào Db
-        public IFormFile SecondFile { get; set; } // Trường ảnh thứ hai
-        public string SecondFileName { get; set; }
-        public string SecondFileExtension { get; set; }
-        public long SecondFileSizeInBytes { get; set; }
-        public string SecondFilePath { get; set; }
+        public IFormFile? SecondFile { get; set; } // Trường ảnh thứ hai
+        public string? SecondFileName { get; set; }
+        public string? SecondFileExtension { get; set; }
+        public long? SecondFileSizeInBytes { get; set; }
+        public string? SecondFilePath { get; set; }
 
         [Required]
         public BannerPosition Position { get; set; }
