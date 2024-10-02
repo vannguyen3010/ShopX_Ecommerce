@@ -45,6 +45,7 @@
             }
         }
     });
+   
 });
 function setActiveImage(element, imagePath) {
     // Xóa lớp 'active' khỏi tất cả các thumbnail

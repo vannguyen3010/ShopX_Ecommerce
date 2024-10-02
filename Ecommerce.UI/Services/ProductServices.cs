@@ -38,5 +38,20 @@ namespace Ecommerce.UI.Services
                 return Enumerable.Empty<ProductDto>();
             }
         }
+        public async Task<ApiResponse<IEnumerable<ProductDto>>> GetAllNewProductsAsync(DateTime? startDate = null)
+        {
+            var query = startDate.HasValue ? $"?startDate={startDate.Value.ToString("yyyy-MM-dd")}" : string.Empty;
+            var response = await _httpClient.GetAsync($"/api/Product/GetAllNewProducts{query}");
+            
+            if(response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<ProductDto>>>();
+                return content!;
+            }
+            else
+            {
+                throw new Exception("Không thể lấy danh sách sản phẩm mới.");
+            }
+        }
     }
 }
