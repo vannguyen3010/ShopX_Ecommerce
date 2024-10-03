@@ -15,9 +15,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7105/") });
 
 builder.Services.AddScoped<AccountService>();
-builder.Services.AddScoped<BannerServices>();
 builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<HomeServices>();
+builder.Services.AddScoped<BaseServices>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
