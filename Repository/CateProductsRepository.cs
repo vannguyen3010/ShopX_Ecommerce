@@ -69,5 +69,12 @@ namespace Repository
         {
             return await _dbContext.Products.AnyAsync(x => x.CategoryId == categoryId);
         }
+
+        public async Task<IEnumerable<CateProduct>> GetAllCategoryProductWithProducts(bool trackChanges)
+        {
+            return await _dbContext.CateProducts
+                    .Where(x => x.Products.Any())
+                    .ToListAsync();
+        }
     }
 }

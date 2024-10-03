@@ -1,4 +1,13 @@
-﻿
+﻿@inject HomeServices HomeServices
+
+@code {
+    private IEnumerable<CateProductDto> cateProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cateProducts = await HomeServices.GetAllCategoryProductsHaveProduct();
+    }
+}
 <div class="category-section top-category bg-grey pt-10 pb-10 appear-animate">
     <div class="container pb-2">
         <h2 class="title justify-content-center pt-1 ls-normal mb-5">Danh mục sản phẩm</h2>
@@ -21,84 +30,24 @@
                             }
                         }
                     }">
-            <div class="category category-classic category-absolute overlay-zoom br-xs">
-                <a href="shop-banner-sidebar.html" class="category-media">
-                    <img src="assets/images/demos/demo1/categories/2-1.jpg" alt="Category" width="130"
-                         height="130">
-                </a>
-                <div class="category-content">
-                    <h4 class="category-name">Fashion</h4>
-                    <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
-                        Shop
-                        Now
-                    </a>
-                </div>
-            </div>
-            <div class="category category-classic category-absolute overlay-zoom br-xs">
-                <a href="shop-banner-sidebar.html" class="category-media">
-                    <img src="assets/images/demos/demo1/categories/2-2.jpg" alt="Category" width="130"
-                         height="130">
-                </a>
-                <div class="category-content">
-                    <h4 class="category-name">Furniture</h4>
-                    <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
-                        Shop
-                        Now
-                    </a>
-                </div>
-            </div>
-            <div class="category category-classic category-absolute overlay-zoom br-xs">
-                <a href="shop-banner-sidebar.html" class="category-media">
-                    <img src="assets/images/demos/demo1/categories/2-3.jpg" alt="Category" width="130"
-                         height="130">
-                </a>
-                <div class="category-content">
-                    <h4 class="category-name">Shoes</h4>
-                    <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
-                        Shop
-                        Now
-                    </a>
-                </div>
-            </div>
-            <div class="category category-classic category-absolute overlay-zoom br-xs">
-                <a href="shop-banner-sidebar.html" class="category-media">
-                    <img src="assets/images/demos/demo1/categories/2-4.jpg" alt="Category" width="130"
-                         height="130">
-                </a>
-                <div class="category-content">
-                    <h4 class="category-name">Sports</h4>
-                    <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
-                        Shop
-                        Now
-                    </a>
-                </div>
-            </div>
-            <div class="category category-classic category-absolute overlay-zoom br-xs">
-                <a href="shop-banner-sidebar.html" class="category-media">
-                    <img src="assets/images/demos/demo1/categories/2-5.jpg" alt="Category" width="130"
-                         height="130">
-                </a>
-                <div class="category-content">
-                    <h4 class="category-name">Games</h4>
-                    <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
-                        Shop
-                        Now
-                    </a>
-                </div>
-            </div>
-            <div class="category category-classic category-absolute overlay-zoom br-xs">
-                <a href="shop-banner-sidebar.html" class="category-media">
-                    <img src="assets/images/demos/demo1/categories/2-6.jpg" alt="Category" width="130"
-                         height="130">
-                </a>
-                <div class="category-content">
-                    <h4 class="category-name">Computers</h4>
-                    <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
-                        Shop
-                        Now
-                    </a>
-                </div>
-            </div>
+            @if(cateProducts != null && cateProducts.Any())
+            {
+                @foreach (var item in cateProducts)
+                {
+                    <div class="category category-classic category-absolute overlay-zoom br-xs">
+                        <a href="shop-banner-sidebar.html" class="category-media">
+                            <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
+                                 height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                        </a>
+                        <div class="category-content">
+                            <h4 class="category-name">@item.Name</h4>
+                            <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline">
+                                Xem thêm
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
         </div>
     </div>
 </div>
