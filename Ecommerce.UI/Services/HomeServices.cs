@@ -1,4 +1,6 @@
-﻿using Shared;
+﻿using Ecommerce.UI.Extensions;
+using Microsoft.JSInterop;
+using Shared;
 using Shared.DTO.Banner;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;
@@ -15,7 +17,6 @@ namespace Ecommerce.UI.Services
         {
             _httpClient = httpClient;
         }
-
         public async Task<IEnumerable<BannerDto>> GetAllBannersAsync(BannerPosition position)
         {
             var response = await _httpClient.GetAsync($"/api/Banner/GetAllBannerPosition?position={position}");

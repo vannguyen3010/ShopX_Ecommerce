@@ -22,9 +22,9 @@
                                 'margin': 20,
                                 'items': 1
                             }">
-                @if (hotProducts != null && hotProducts.Any())
+                @if (discountProducts != null && discountProducts.Any())
                 {
-                    @foreach (var item in hotProducts)
+                    @foreach (var item in discountProducts)
                     {
                         <div class="product product-single row">
                             <div class="col-md-6">
@@ -53,7 +53,7 @@
                                     <div class="product-label-group">
                                         @if(item.Discount > 0)
                                         {
-                                            <label class="product-label label-discount">- @item.Discount </label>
+                                            <label class="product-label label-discount">- @item.Discount.ToString("N0")  </label>
                                         }
                                     </div>
                                 </div>
@@ -68,8 +68,8 @@
 
                                     <hr class="product-divider">
                                     <div class="product-price">
-                                        <del class="old-price">@item.Price <span class="currency-symbol">đ</span></del>
-                                        <ins class="new-price text-danger">@((item.Price - item.Discount)) <span class="currency-symbol">đ</span></ins>
+                                        <del class="old-price">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></del>
+                                        <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
                                     </div>
                                     <div class="ratings-container">
                                         <div class="star-rating">
@@ -132,165 +132,72 @@
         <div class="widget widget-products widget-products-bordered h-100">
             <div class="widget-body br-sm h-100">
                 <h4 class="title-sm title-underline font-weight-bolder ls-normal mb-2">
-                    Top 20 Best
-                    Seller
+                    Top sản phẩm bán chạy
                 </h4>
                 <div class="owl-carousel owl-theme owl-nav-top row cols-lg-1 cols-md-3"
                      data-owl-options="{
-                                    'nav': true,
-                                    'dots': false,
-                                    'margin': 20,
-                                    'responsive': {
-                                        '0': {
-                                            'items': 1
-                                        },
-                                        '576': {
-                                            'items': 2
-                                        },
-                                        '768': {
-                                            'items': 3
-                                        },
-                                        '992': {
-                                            'items': 1
-                                        }
+                                'nav': true,
+                                'dots': false,
+                                'margin': 20,
+                                'responsive': {
+                                    '0': {
+                                        'items': 1
+                                    },
+                                    '576': {
+                                        'items': 2
+                                    },
+                                    '768': {
+                                        'items': 3
+                                    },
+                                    '992': {
+                                        'items': 1
                                     }
-                                }">
-                    <div class="product-widget-wrap">
-                        <div class="product product-widget bb-no">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/demos/demo1/products/2-1.jpg" alt="Product"
-                                         width="105" height="118" />
-                                </a>
-                            </figure>
-                            <div class="product-details">
-                                <h4 class="product-name">
-                                    <a href="product-default.html">Kitchen Cooker</a>
-                                </h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 60%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
+                                }
+                            }">
+                    @if (hotProducts != null && hotProducts.Any())
+                    {
+                        var productChunks = hotProducts.Chunk(3); // Chia sản phẩm thành nhóm 3
+                        foreach (var chunk in productChunks)
+                        {
+                            <div class="product-widget-wrap">
+                                @foreach (var item in chunk)
+                                {
+                                    <div class="product product-widget bb-no">
+                                        <figure class="product-media">
+                                            <a href="product-default.html">
+                                                <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
+                                                     alt="Product"
+                                                     width="105" height="118"
+                                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                            </a>
+                                        </figure>
+                                        <div class="product-details">
+                                            <h4 class="product-name">
+                                                <a href="product-default.html">@item.Name</a>
+                                            </h4>
+                                            <div class="ratings-container">
+                                                <div class="star-rating">
+                                                    @for (int i = 0; i < item.Rating; i++)
+                                                    {
+                                                        <span class="fa fa-star checked"></span>
+                                                    }
+                                                    @for (int i = 0; i < (5 - item.Rating); i++)
+                                                    {
+                                                        <span class="fa fa-star"></span>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                            <div class="product-price">
+                                                <del class="old-price fs-5">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                                <del class="new-price text-danger fs-5">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></del>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="product-price">
-                                    <ins class="new-price">$150.60</ins>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product product-widget bb-no">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/demos/demo1/products/2-2.jpg" alt="Product"
-                                         width="105" height="118" />
-                                </a>
-                            </figure>
-                            <div class="product-details">
-                                <h4 class="product-name">
-                                    <a href="product-default.html">Professional Pixel Camera</a>
-                                </h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 60%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
-                                    </div>
-                                </div>
-                                <div class="product-price">
-                                    <ins class="new-price">$215.68</ins><del class="old-price">$230.45</del>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product product-widget">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/demos/demo1/products/2-3.jpg" alt="Product"
-                                         width="105" height="118" />
-                                </a>
-                            </figure>
-                            <div class="product-details">
-                                <h4 class="product-name">
-                                    <a href="product-default.html">Sport Women’s Wear</a>
-                                </h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 60%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
-                                    </div>
-                                </div>
-                                <div class="product-price">
-                                    <ins class="new-price">$220.20</ins><del class="old-price">$300.62</del>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-widget-wrap">
-                        <div class="product product-widget bb-no">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/demos/demo1/products/2-7.jpg" alt="Product"
-                                         width="105" height="118" />
-                                </a>
-                            </figure>
-                            <div class="product-details">
-                                <h4 class="product-name">
-                                    <a href="product-default.html">Security Guard</a>
-                                </h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 100%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
-                                    </div>
-                                </div>
-                                <div class="product-price">
-                                    <ins class="new-price">$320.00</ins>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product product-widget bb-no">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/demos/demo1/products/2-8.jpg" alt="Product"
-                                         width="105" height="118" />
-                                </a>
-                            </figure>
-                            <div class="product-details">
-                                <h4 class="product-name">
-                                    <a href="product-default.html">Apple Super Notecom</a>
-                                </h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 60%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
-                                    </div>
-                                </div>
-                                <div class="product-price">
-                                    <ins class="new-price">$215.68</ins><del class="old-price">$230.45</del>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product product-widget">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/demos/demo1/products/2-3.jpg" alt="Product"
-                                         width="105" height="118" />
-                                </a>
-                            </figure>
-                            <div class="product-details">
-                                <h4 class="product-name">
-                                    <a href="product-default.html">Sport Women’s Wear</a>
-                                </h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 60%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
-                                    </div>
-                                </div>
-                                <div class="product-price">
-                                    <ins class="new-price">$220.20</ins><del class="old-price">$300.62</del>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                }
+                            </div> <!-- Kết thúc slide -->
+                        }
+                    }
                 </div>
             </div>
         </div>
