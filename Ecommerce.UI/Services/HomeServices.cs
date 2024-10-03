@@ -3,6 +3,7 @@ using Shared;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
 using System.Net.Http;
+using Shared.DTO.Introduce;
 
 namespace Ecommerce.UI.Services
 {
@@ -27,7 +28,6 @@ namespace Ecommerce.UI.Services
             }
             return new List<BannerDto>();
         }
-
         public async Task<IEnumerable<ProductDto>> GetAllProductIsHotAsync()
         {
             var response = await _httpClient.GetAsync("/api/Product/GetAllProductIsHot");
@@ -54,7 +54,6 @@ namespace Ecommerce.UI.Services
                 return Enumerable.Empty<ProductDto>();
             }
         }
-
         public async Task<ApiResponse<IEnumerable<ProductDto>>> GetAllNewProductsAsync(DateTime? startDate = null)
         {
             var query = startDate.HasValue ? $"?startDate={startDate.Value.ToString("yyyy-MM-dd")}" : string.Empty;
@@ -68,6 +67,19 @@ namespace Ecommerce.UI.Services
             else
             {
                 throw new Exception("Không thể lấy danh sách sản phẩm mới.");
+            }
+        }
+        public async Task<IEnumerable<IntroduceDto>> GetAllIntroduceIsHot()
+        {
+            var response = await _httpClient.GetAsync("/api/Introduce/GetAllIntroduceIsHot");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<IntroduceDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<IntroduceDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<IntroduceDto>();
             }
         }
     }
