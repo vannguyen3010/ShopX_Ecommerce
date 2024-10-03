@@ -14,5 +14,6 @@ namespace Contracts
         Task<IEnumerable<CateProduct>> GetChildCategoriesByParentIdAsync(Guid parentcategoryProductId, bool trackChanges);
         Task<bool> HasChildCategoriesAsync(Guid categoryId);
         Task<bool> HasProductsInCategoryAsync(Guid categoryId);
+        Task<IEnumerable<CateProduct>> GetAllCategoryProductWithProducts(bool trackChanges);
     }
 }

@@ -1,9 +1,9 @@
-﻿using Shared.DTO.Banner;
-using Shared;
+﻿using Shared;
+using Shared.DTO.Banner;
+using Shared.DTO.CateProduct;
+using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
-using System.Net.Http;
-using Shared.DTO.Introduce;
 
 namespace Ecommerce.UI.Services
 {
@@ -80,6 +80,19 @@ namespace Ecommerce.UI.Services
             else
             {
                 return Enumerable.Empty<IntroduceDto>();
+            }
+        }
+        public async Task<IEnumerable<CateProductDto>> GetAllCategoryProductsHaveProduct()
+        {
+            var response = await _httpClient.GetAsync("/api/CateProduct/GetAllCategoryProductsHaveProduct");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<CateProductDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<CateProductDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<CateProductDto>();
             }
         }
     }

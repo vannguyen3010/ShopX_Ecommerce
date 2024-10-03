@@ -217,41 +217,24 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var categories = await _repository.CateProduct.GetAllCategoryProduct(trackChanges: false); // Lấy tất cả danh mục
+                // Lấy tất cả danh mục
+                var categories = await _repository.CateProduct.GetAllCategoryProduct(trackChanges: false);
 
-                var result = categories
-                    .Where(c => c.ParentCategoryId == null) // Lấy các danh mục cha
-                    .Select(c => new
-                    {
-                        c.Id,
-                        c.Name,
-                        c.NameSlug,
-                        c.FilePath,
-                        c.ParentCategoryId,
-                        c.CreateAt,
-                        c.DateTime,
-                        CategoriesObjs = categories
-                            .Where(child => child.ParentCategoryId == c.Id) // Lấy danh mục con của danh mục cha hiện tại
-                            .Select(child => new
-                            {
-                                child.Id,
-                                child.Name,
-                                child.NameSlug,
-                                child.FilePath,
-                                child.ParentCategoryId,
-                                child.CreateAt,
-                                child.DateTime,
-                                CategoriesObjs = new List<object>() // Danh mục con của danh mục con (cấp sâu hơn)
-                            })
-                            .ToList()
-                    })
+                // Ánh xạ các danh mục cha và con với AutoMapper
+                var parentCategories = categories
+                    .Where(c => c.ParentCategoryId == null)
                     .ToList();
-                var apiResponse = new ApiResponse<IEnumerable<object>>
+
+                var result = _mapper.Map<IEnumerable<CateProductDto>>(parentCategories); // Sử dụng AutoMapper
+
+                // Trả về response
+                var apiResponse = new ApiResponse<IEnumerable<CateProductDto>>
                 {
                     Success = true,
                     Message = "Categories retrieved successfully.",
                     Data = result
                 };
+
                 return Ok(apiResponse);
             }
             catch (Exception ex)
@@ -265,6 +248,40 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
         }
+
+        [HttpGet]
+        [Route("GetAllCategoryProductsHaveProduct")]
+        public async Task<IActionResult> GetAllCategoryProductsHaveProduct()
+        {
+            try
+            {
+                // Gọi repository để lấy danh mục có sản phẩm
+                var categories = await _repository.CateProduct.GetAllCategoryProductWithProducts(trackChanges: false);
+
+                var result = _mapper.Map<IEnumerable<CateProductDto>>(categories); // Sử dụng AutoMapper
+
+                // Trả về response
+                var apiResponse = new ApiResponse<IEnumerable<CateProductDto>>
+                {
+                    Success = true,
+                    Message = "Categories with products retrieved successfully.",
+                    Data = result
+                };
+
+                return Ok(apiResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetAllCategories action: {ex.Message}");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Internal server error",
+                    Data = null
+                });
+            }
+        }
+
 
         [HttpDelete]
         [Route("DeleteCategoryProduct")]
