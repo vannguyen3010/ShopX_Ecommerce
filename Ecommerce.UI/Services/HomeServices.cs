@@ -1,6 +1,4 @@
-﻿using Ecommerce.UI.Extensions;
-using Microsoft.JSInterop;
-using Shared;
+﻿using Shared;
 using Shared.DTO.Banner;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;

@@ -1,8 +1,16 @@
 ﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorage
 
+@inject BaseServices BaseServices
+
 @code
 {
+    private IEnumerable<CateProductDto> cateProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cateProducts = await BaseServices.GetAllCategoryProducts();
+    }
     private async Task Logout()
     {
         await LocalStorage.RemoveItemAsync("authToken");
@@ -120,12 +128,26 @@
                             <li>
                                 <a href="/san-pham">Sản phẩm</a>
                                 <ul>
-                                    <li>
-                                        <a href="vendor-dokan-store-list.html">Store Listing</a>
-                                        <ul>
-                                            <li><a href="vendor-dokan-store-list.html">Store listing 1</a></li>
-                                        </ul>
-                                    </li>
+                                    @if(cateProducts != null && cateProducts.Any())
+                                    {
+                                        @foreach (var item in cateProducts)
+                                        {
+                                            <li>
+                                                <a href="vendor-dokan-store-list.html">@item.Name</a>
+                                                @if(item.CategoriesObjs.Any())
+                                                {
+                                                    <ul>
+                                                        @foreach (var res in item.CategoriesObjs)
+                                                        {
+                                                            <li><a href="vendor-dokan-store-list.html">@res.Name</a></li>
+                                                        }
+                                                    </ul>
+                                                }
+                                              
+                                            </li>
+                                        }
+                                    }
+                                   
                                 </ul>
                             </li>
                             <li>
