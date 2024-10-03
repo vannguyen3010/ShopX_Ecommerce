@@ -22,7 +22,8 @@
                     <div class="banner banner-fixed br-sm">
                         <figure>
                             <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
-                                 width="640" height="200" style="background-color: #25282D;" />
+                                 width="640" height="200" style="background-color: #25282D;"
+                                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
                         </figure>
                         <div class="banner-content y-50 text-center">
                             <h3 class="banner-title text-white ls-25 mb-0">@item.Title</h3>

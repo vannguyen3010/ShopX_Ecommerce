@@ -42,7 +42,8 @@
                         <figure class="slide-image skrollable slide-animate">
                             <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Banner"
                                  data-bottom-top="transform: translatex(-10vh);"
-                                 data-top-bottom="transform: translateX(10vh);" width="472" height="510">
+                                 data-top-bottom="transform: translateX(10vh);" width="472" height="510"
+                                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                         </figure>
                     </div>
                 </div>
