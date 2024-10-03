@@ -30,7 +30,7 @@
                             <img src="http://www.savoy-sharm.com/media-room/images/hi-res/king-bed-room-accommodation-savoy-luxury-5-stars-accommodation-sharm-el-sheikh.jpg" alt="" />
                             @if (item.Discount > 1)
                             {
-                                <a class="sold_out" href="https://abc.com/">- @item.Discount</a>
+                                <a class="sold_out" href="https://abc.com/">- @item.Discount.ToString("N0") </a>
                             }
                             <div class="product-details">
                                 <h4 class="product-name"><a href="product-default.html">@item.Name</a></h4>
@@ -48,8 +48,8 @@
                                     </div>
                                 </div>
                                 <div class="product-price">
-                                    <del class="old-price">@item.Price <span class="currency-symbol">đ</span>  </del>
-                                    <ins class="new-price text-danger">@((item.Price - item.Discount)) <span class="currency-symbol">đ</span></ins>
+                                    <del class="old-price">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></del>
+                                    <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
                                 </div>
                             </div>
                         </div>

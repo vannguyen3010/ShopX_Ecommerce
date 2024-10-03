@@ -1,9 +1,17 @@
-﻿@using Ecommerce.UI.Components.Pages.OtherPage
-@using Microsoft.AspNetCore.Components.Authorization
-@using Blazored.LocalStorage
-@inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ILocalStorageService LocalStorage
+
+@code
+{
+    private async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("authToken");
+
+        await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/account/dang-nhap", forceLoad: true);
+    }
+
+}
 
 <header class="header">
     <div class="header-top">
@@ -13,14 +21,14 @@
             </div>
             <div class="header-right">
                 <div id="google_translate_element"></div>
-                <div id="translate_select" class="btn_language">
+                <div class="btn_language">
                     <div class="active_flag">
-                        <button class="d-lg-show btn_language_item" href="javascript:void(0)">
+                        <button class="d-lg-show btn_language_item">
                             <img src="/img_dev/us.png" />
                         </button>
                     </div>
                     <div>
-                        <button class="d-lg-show btn_language_item active_flag" href="javascript:void(0)" style="object-fit: contain;opacity: 0.3">
+                        <button class="d-lg-show btn_language_item active_flag" style="object-fit: contain;opacity: 0.3">
                             <img src="/img_dev/vi.png" />
                         </button>
                     </div>
@@ -145,14 +153,3 @@
     </div>
 </header>
 
-@code
-{
-    private async Task Logout()
-    {
-        await LocalStorage.RemoveItemAsync("authToken");
-
-        await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        NavigationManager.NavigateTo("/account/dang-nhap", forceLoad: true);
-    }
-  
-}
