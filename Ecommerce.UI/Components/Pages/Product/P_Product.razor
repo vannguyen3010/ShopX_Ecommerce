@@ -1,517 +1,132 @@
-﻿<div class="main-content">
+﻿@inject ProductServices ProductServices
+<style>
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .page-button {
+        margin: 0 5px;
+        padding: 5px 10px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+        .page-button:hover {
+            background-color: #0056b3;
+        }
+</style>
+<div class="main-content">
     <!-- Start of Shop Banner -->
-    <div class="shop-default-banner shop-boxed-banner banner d-flex align-items-center mb-6 br-xs"
-         style="background-image: url(assets/images/demos/demo9/banner/4.jpg); background-color: #494844;">
-        <div class="banner-content">
-            <h4 class="banner-subtitle font-weight-normal text-uppercase text-white ls-normal">
-                Up To <strong class="text-secondary">70%</strong> Discount
-            </h4>
-            <h3 class="banner-title text-white text-capitalize ls-25">Fashion Collection</h3>
-            <a href="demo9-shop.html"
-               class="btn btn-white btn-rounded btn-icon-right btn-outline">
-                Shop Now<i class="w-icon-long-arrow-right"></i>
-            </a>
-        </div>
+    <div class="owl-carousel owl-theme"
+         data-owl-options="{
+        'loop': true,
+        'autoplay': true,
+        'autoplayTimeout': 5000,
+        'nav': true,
+        'dots': true,
+        'margin': 20,
+        'responsive': {
+            '0': {
+                'items': 1
+            },
+            '576': {
+                'items': 1
+            },
+            '768': {
+                'items': 1
+            },
+            '992': {
+                'items': 1
+            },
+            '1200': {
+                'items': 1
+            }
+        }
+     }">
+        @if (bannerProducts != null && bannerProducts.Any())
+        {
+            @foreach (var item in bannerProducts)
+            {
+                <div class="shop-default-banner shop-boxed-banner banner d-flex align-items-center mb-6 br-xs"
+                     style="background-image: url('@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)'); background-color: #494844;"
+                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                    <div class="banner-content">
+                        <h4 class="banner-subtitle font-weight-normal text-uppercase text-white ls-normal">
+                            @item.Title
+                        </h4>
+                        <h3 class="banner-title text-white text-capitalize ls-25">@item.Desc</h3>
+                        <a href=""
+                           class="btn btn-white btn-rounded btn-icon-right btn-outline">
+                            Xem thêm<i class="w-icon-long-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+        }
     </div>
+
     <!-- End of Shop Banner -->
 
-    <nav class="toolbox sticky-toolbox sticky-content fix-top">
-        <div class="toolbox-left">
-            <a href="#" class="btn btn-primary btn-outline btn-rounded left-sidebar-toggle
-                                        btn-icon-left d-block d-lg-none">
-                <i class="w-icon-category"></i><span>Filters</span>
-            </a>
-            <div class="toolbox-item toolbox-sort select-box text-dark">
-                <label>Sort By :</label>
-                <select name="orderby" class="form-control">
-                    <option value="default" selected="selected">Default sorting</option>
-                    <option value="popularity">Sort by popularity</option>
-                    <option value="rating">Sort by average rating</option>
-                    <option value="date">Sort by latest</option>
-                    <option value="price-low">Sort by pric: low to high</option>
-                    <option value="price-high">Sort by price: high to low</option>
-                </select>
-            </div>
-        </div>
-        <div class="toolbox-right">
-            <div class="toolbox-item toolbox-show select-box">
-                <select name="count" class="form-control">
-                    <option value="9">Show 9</option>
-                    <option value="12" selected="selected">Show 12</option>
-                    <option value="24">Show 24</option>
-                    <option value="36">Show 36</option>
-                </select>
-            </div>
-            <div class="toolbox-item toolbox-layout">
-                <a href="shop-boxed-banner.html" class="icon-mode-grid btn-layout active">
-                    <i class="w-icon-grid"></i>
-                </a>
-                <a href="shop-list.html" class="icon-mode-list btn-layout">
-                    <i class="w-icon-list"></i>
-                </a>
-            </div>
-        </div>
-    </nav>
     <div class="product-wrapper row cols-lg-4 cols-md-3 cols-sm-2 cols-2">
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-3.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Gold Watch</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$41.36</ins><del class="old-price">$48.82</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-7.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Comfortable Backpack</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$138.05</ins>
+        @if (products != null && products.Any())
+        {
+            @foreach (var item in products)
+            {
+                <div class="product-wrap">
+                    <div class="product text-center img__wrapper">
+                        <figure class="product-media spotlight">
+                            <a href="/san-pham/@item.Id">
+                                <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product"
+                                     width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                            </a>
+                        </figure>
+                        <img src="http://www.savoy-sharm.com/media-room/images/hi-res/king-bed-room-accommodation-savoy-luxury-5-stars-accommodation-sharm-el-sheikh.jpg" alt="" />
+                        @if (item.Discount > 1)
+                        {
+                            <a class="sold_out">- @item.Discount.ToString("N0") </a>
+                        }
+                        <div class="product-details">
+                            <h4 class="product-name"><a href="/san-pham/@item.Id">@item.Name</a></h4>
+                            <div class="ratings-container">
+                                <div class="star-rating">
+                                    @for (int i = 0; i < item.Rating; i++)
+                                    {
+                                        <span class="fa fa-star checked"></span>
+                                    }
+                                    @for (int i = 0; i < (5 - item.Rating); i++)
+                                    {
+                                        <span class="fa fa-star"></span>
+                                    }
+
+                                </div>
+                            </div>
+                            <div class="product-price">
+                                <del class="old-price">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-4.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Brown Leather Shoes</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$70.28</ins><del class="old-price">$75.32</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-8.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Comfortable Armchair</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$290.05</ins><del class="old-price">$302.74</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-5.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Men's Suede Belt</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$37.19</ins><del class="old-price">$40.57</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-9.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Prtable Torch</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$10.73</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-6.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Wooden Chair</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$40.21</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/5-10.jpg" alt="Product"
-                             width="800" height="900" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Top Men's Hiking Hat</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$20.84</ins><del class="old-price">$25.92</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/6-1.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Lattice Soft Pillow</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$73.40</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/6-2.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Comfortable Armchair</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$290.05</ins><del class="old-price">$302.74</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/6-3.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Lantern</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$108.54</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/6-4.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Morden Table</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$231.47</ins><del class="old-price">$259.17</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/6-5.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Plastic Candle Box</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$46.16</ins><del class="old-price">$51.29</del>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/7-1.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Wireless Mouse</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$15.73</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/7-2.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Wonderful Sound Music Player</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$50.29 - $58.28</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-wrap">
-            <div class="product text-center">
-                <figure class="product-media">
-                    <a href="product-default.html">
-                        <img src="assets/images/demos/demo9/product/7-3.jpg" alt="Product"
-                             width="600" height="675" />
-                    </a>
-                    <div class="product-action-vertical">
-                        <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                           title="Add to cart"></a>
-                        <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                           title="Wishlist"></a>
-                        <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                           title="Compare"></a>
-                        <a href="#" class="btn-product-icon btn-quickview w-icon-search"
-                           title="Quick View"></a>
-                    </div>
-                </figure>
-                <div class="product-details">
-                    <h3 class="product-name">
-                        <a href="product-default.html">Fashion Table Sound Marker</a>
-                    </h3>
-                    <div class="product-price">
-                        <ins class="new-price">$72.80</ins>
-                    </div>
-                </div>
-            </div>
-        </div>
+            }
+        }
     </div>
 
     <div class="toolbox toolbox-pagination justify-content-between">
         <p class="showing-info mb-2 mb-sm-0">
             Showing<span>1-12 of 60</span>Products
         </p>
-        <ul class="pagination">
+        <div>
+            <button @onclick="PreviousPage" disabled="@isFirstPage">Previous</button>
+            <span>Page @currentPage of @totalPages</span>
+            <button @onclick="NextPage" disabled="@isLastPage">Next</button>
+        </div>
+       @*  <ul class="pagination">
             <li class="prev disabled">
-                <a href="#" aria-label="Previous" tabindex="-1" aria-disabled="true">
+                <button @onclick="GoToPreviousPage" disabled="@(currentPage == 1)" aria-label="Previous" tabindex="-1" aria-disabled="true">
                     <i class="w-icon-long-arrow-left"></i>Prev
-                </a>
+                </button>
             </li>
             <li class="page-item active">
                 <a class="page-link" href="#">1</a>
@@ -520,10 +135,85 @@
                 <a class="page-link" href="#">2</a>
             </li>
             <li class="next">
-                <a href="#" aria-label="Next">
+                <button @onclick="GoToNextPage" disabled="@(currentPage * pageSize >= totalCount)" aria-label="Next">
                     Next<i class="w-icon-long-arrow-right"></i>
-                </a>
+                </button>
             </li>
-        </ul>
+        </ul> *@
     </div>
 </div>
+
+@code {
+    private IEnumerable<BannerProductDto> bannerProducts;
+    private IEnumerable<ProductDto> products;
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages;
+    private bool isFirstPage => currentPage == 1;
+    private bool isLastPage => currentPage == totalPages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProductsFromUrl();
+        bannerProducts = await ProductServices.GetAllBannerPositionProductPopup(BannerProductWithPopupPosition.Product);
+       
+    }
+
+    // Đọc tham số từ URL và gọi API
+    private async Task LoadProductsFromUrl()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var queryParameters = QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParameters.TryGetValue("pageNumber", out var pageNumberValue))
+        {
+            currentPage = int.Parse(pageNumberValue);
+        }
+
+        if (queryParameters.TryGetValue("pageSize", out var pageSizeValue))
+        {
+            pageSize = int.Parse(pageSizeValue);
+        }
+
+        await LoadProducts();
+    }
+    // Hàm gọi API để lấy danh sách sản phẩm
+    private async Task LoadProducts()
+    {
+        var response = await ProductServices.GetAllProductsPagination(currentPage, pageSize);
+
+        if (response != null && response.Success)
+        {
+            products = response.Data.Products;
+            totalPages = (int)Math.Ceiling((double)response.Data.TotalCount / pageSize);
+        }
+    }
+    // Điều hướng đến trang trước đó
+    private async Task PreviousPage()
+    {
+        Console.WriteLine("Previous Page clicked");
+        if (!isFirstPage)
+        {
+            currentPage--;
+            UpdateUrl();
+            await LoadProducts();
+        }
+    }
+
+    // Điều hướng đến trang tiếp theo
+    private async Task NextPage()
+    {
+        Console.WriteLine("Previous Page clicked");
+        if (!isLastPage)
+        {
+            currentPage++;
+            UpdateUrl();
+            await LoadProducts();
+        }
+    }
+    // Cập nhật URL với tham số trang mới
+    private void UpdateUrl()
+    {
+        NavigationManager.NavigateTo($"/san-pham?pageNumber={currentPage}&pageSize={pageSize}", true);
+    }
+}

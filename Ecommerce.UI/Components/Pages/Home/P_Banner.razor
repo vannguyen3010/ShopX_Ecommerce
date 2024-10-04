@@ -21,7 +21,8 @@
             @foreach (var item in banners)
             {
                 <div class="banner banner-fixed content-center intro-slide intro-slide1"
-                     style="background-image: url('@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)'); background-color: #EEF4F4;">
+                     style="background-image: url('@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)'); background-color: #EEF4F4;"
+                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                     <div class="container">
                         <div class="banner-content d-inline-block y-50">
                             <div class="slide-animate" data-animation-options="{
