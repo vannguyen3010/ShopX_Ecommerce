@@ -8,6 +8,8 @@
     [Parameter] public Guid id { get; set; }
     [Parameter] public string nameSlug { get; set; }
     private ProductDto product;
+    private IEnumerable<ProductDto> relatedProducts;
+    private bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -15,15 +17,13 @@
     }
     private async Task LoadProduct()
     {
-        var response = await ProductServices.GetProductById(id);
+        var response = await ProductServices.GetProductByIdAsync(id);
         if (response.Success)
         {
             product = response.Data;
+            relatedProducts = response.Data2nd;
         }
-        else
-        {
-            NavigationManager.NavigateTo("/san-pham"); // Redirect nếu không tìm thấy sản phẩm
-        }
+        loading = false;
     }
 }
 
@@ -40,7 +40,6 @@
             </ul>
         </nav>
         <!-- End of Breadcrumb -->
-
         <!-- Start of Page Content -->
         <div class="page-content">
             <div class="container">
@@ -497,13 +496,10 @@
                 <section class="vendor-product-section">
                     <div class="title-link-wrapper mb-4">
                         <h4 class="title text-left">Sản phẩm liên quan</h4>
-                        <a href="#" class="btn btn-dark btn-link btn-slide-right btn-icon-right">
-                            More Products<i class="w-icon-long-arrow-right"></i>
-                        </a>
                     </div>
                     <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2" data-owl-options="{
                             'nav': false,
-                            'dots': false,
+                            'dots': true,
                             'margin': 20,
                             'responsive': {
                                 '0': {
@@ -517,44 +513,47 @@
                                 }
                             }
                         }">
-                        <div class="product">
-                            <figure class="product-media">
-                                <a href="product-default.html">
-                                    <img src="assets/images/products/default/1-1.jpg" alt="Product" width="300"
-                                         height="338" />
-                                    <img src="assets/images/products/default/1-2.jpg" alt="Product" width="300"
-                                         height="338" />
-                                </a>
-                                <div class="product-action-vertical">
-                                    <a href="#" class="btn-product-icon btn-cart w-icon-cart"
-                                       title="Add to cart"></a>
-                                    <a href="#" class="btn-product-icon btn-wishlist w-icon-heart"
-                                       title="Add to wishlist"></a>
-                                    <a href="#" class="btn-product-icon btn-compare w-icon-compare"
-                                       title="Add to Compare"></a>
-                                </div>
-                                <div class="product-action">
-                                    <a href="#" class="btn-product btn-quickview" title="Quick View">
-                                        Quick
-                                        View
-                                    </a>
-                                </div>
-                            </figure>
-                            <div class="product-details">
-                                <div class="product-cat"><a href="shop-banner-sidebar.html">Accessories</a></div>
-                                <h4 class="product-name"><a href="product-default.html">Sticky Pencil</a></h4>
-                                <div class="ratings-container">
-                                    <div class="ratings-full">
-                                        <span class="ratings" style="width: 100%;"></span>
-                                        <span class="tooltiptext tooltip-top"></span>
+                        @if (relatedProducts != null && relatedProducts.Any())
+                        {
+                            @foreach (var item in relatedProducts.Take(10))
+                            {
+                                <div class="product img__wrapper">
+                                    <figure class="product-media spotlight">
+                                        <a href="/san-pham/@item.NameSlug/@item.Id">
+                                            <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product" width="300"
+                                                 height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                        </a>
+                                    </figure>
+                                    <img src="http://www.savoy-sharm.com/media-room/images/hi-res/king-bed-room-accommodation-savoy-luxury-5-stars-accommodation-sharm-el-sheikh.jpg" alt="" />
+                                    @if (item.Discount > 1)
+                                    {
+                                        <a class="sold_out" href="https://abc.com/">- @item.Discount.ToString("N0") </a>
+                                    }
+                                    <div class="product-details">
+                                        <div class="product-cat"><a href="shop-banner-sidebar.html">@item.CategoryName</a></div>
+                                        <h4 class="product-name"><a href="product-default.html">@item.Name</a></h4>
+                                        <div class="ratings-container">
+                                            <div class="star-rating">
+                                                @for (int i = 0; i < item.Rating; i++)
+                                                {
+                                                    <span class="fa fa-star checked"></span>
+                                                }
+                                                @for (int i = 0; i < (5 - item.Rating); i++)
+                                                {
+                                                    <span class="fa fa-star"></span>
+                                                }
+
+                                            </div>
+                                        </div>
+                                        <div class="product-price">
+                                            <del class="old-price">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></del>
+                                            <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                        </div>
                                     </div>
-                                    <a href="product-default.html" class="rating-reviews">(3 reviews)</a>
                                 </div>
-                                <div class="product-pa-wrapper">
-                                    <div class="product-price">$20.00</div>
-                                </div>
-                            </div>
-                        </div>
+                            }
+
+                        }
                     </div>
                 </section>
             </div>

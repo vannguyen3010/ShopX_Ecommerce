@@ -40,10 +40,20 @@ namespace Ecommerce.UI.Services
 
             return new ApiResponse<ProductResponseDto>();
         }
-        public async Task<ApiResponse<ProductDto>> GetProductById(Guid id)
+        //public async Task<ApiResponse<ProductDto>> GetProductById(Guid id)
+        //{
+        //    var response = await _httpClient.GetFromJsonAsync<ApiResponse<ProductDto>>($"/api/Product/GetProductById/{id}");
+        //    return response;
+        //}
+        public async Task<ApiProductResponse<ProductDto, IEnumerable<ProductDto>>> GetProductByIdAsync(Guid productId)
         {
-            var response = await _httpClient.GetFromJsonAsync<ApiResponse<ProductDto>>($"/api/Product/GetProductById/{id}");
-            return response;
+            var response = await _httpClient.GetAsync($"api/Product/GetProductById/{productId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiProductResponse<ProductDto, IEnumerable<ProductDto>>>();
+            }
+            return null; // Hoặc xử lý lỗi ở đây
         }
+
     }
 }

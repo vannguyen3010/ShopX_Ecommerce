@@ -10,6 +10,7 @@ using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
+using System.Collections.Generic;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -405,22 +406,31 @@ namespace Ecommerce_Wolmart.API.Controllers
                 if (product == null)
                 {
                     _logger.LogError($"Product with id {id} not found.");
-                    return NotFound(new ApiResponse<Object>
+                    return NotFound(new ApiProductResponse<Object, Object>
                     {
                         Success = false,
                         Message = $"Product with id {id} not found.",
-                        Data = null
+                        Data = null,
+                        Data2nd = null
                     });
                 }
+
+                // Lấy danh sách sản phẩm liên quan (ví dụ: cùng danh mục)
+                var relatedProducts = await _repository.Product.GetRelatedProductsAsync(id, product.CategoryId, trackChanges: true);
+
 
                 //Ánh xạ sản phẩm sang DTO để trả về client
                 var productDto = _mapper.Map<ProductDto>(product);
 
-                return Ok(new ApiResponse<ProductDto>
+                // Ánh xạ danh sách sản phẩm liên quan sang DTO
+                var relatedProductsDto = _mapper.Map<IEnumerable<ProductDto>>(relatedProducts);
+
+                return Ok(new ApiProductResponse<ProductDto, IEnumerable<ProductDto>>
                 {
                     Success = true,
                     Message = "Product retrieved successfully.",
-                    Data = productDto
+                    Data = productDto,
+                    Data2nd = relatedProductsDto // Trả về sản phẩm liên quan trong Data2nd
                 });
             }
             catch (Exception ex)
