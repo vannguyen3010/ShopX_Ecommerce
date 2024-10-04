@@ -31,7 +31,7 @@
                     <div class="product-wrap">
                         <div class="product text-center img__wrapper">
                             <figure class="product-media spotlight">
-                                <a href="/san-pham/@item.Id">
+                                <a href="/san-pham/@item.NameSlug/@item.Id">
                                     <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product"
                                          width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
                                 </a>
@@ -42,7 +42,7 @@
                                 <a class="sold_out" href="https://abc.com/">- @item.Discount.ToString("N0") </a>
                             }
                             <div class="product-details">
-                                <h4 class="product-name"><a href="/san-pham/@item.Id">@item.Name</a></h4>
+                                <h4 class="product-name"><a href="/san-pham/@item.NameSlug/@item.Id">@item.Name</a></h4>
                                 <div class="ratings-container">
                                     <div class="star-rating">
                                         @for (int i = 0; i < item.Rating; i++)
