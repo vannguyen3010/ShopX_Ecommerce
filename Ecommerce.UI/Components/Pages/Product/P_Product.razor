@@ -122,23 +122,23 @@
             <span>Page @currentPage of @totalPages</span>
             <button @onclick="NextPage" disabled="@isLastPage">Next</button>
         </div>
-       @*  <ul class="pagination">
-            <li class="prev disabled">
-                <button @onclick="GoToPreviousPage" disabled="@(currentPage == 1)" aria-label="Previous" tabindex="-1" aria-disabled="true">
-                    <i class="w-icon-long-arrow-left"></i>Prev
-                </button>
-            </li>
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-            <li class="next">
-                <button @onclick="GoToNextPage" disabled="@(currentPage * pageSize >= totalCount)" aria-label="Next">
-                    Next<i class="w-icon-long-arrow-right"></i>
-                </button>
-            </li>
+        @*  <ul class="pagination">
+        <li class="prev disabled">
+        <button @onclick="GoToPreviousPage" disabled="@(currentPage == 1)" aria-label="Previous" tabindex="-1" aria-disabled="true">
+        <i class="w-icon-long-arrow-left"></i>Prev
+        </button>
+        </li>
+        <li class="page-item active">
+        <a class="page-link" href="#">1</a>
+        </li>
+        <li class="page-item">
+        <a class="page-link" href="#">2</a>
+        </li>
+        <li class="next">
+        <button @onclick="GoToNextPage" disabled="@(currentPage * pageSize >= totalCount)" aria-label="Next">
+        Next<i class="w-icon-long-arrow-right"></i>
+        </button>
+        </li>
         </ul> *@
     </div>
 </div>
@@ -156,7 +156,7 @@
     {
         await LoadProductsFromUrl();
         bannerProducts = await ProductServices.GetAllBannerPositionProductPopup(BannerProductWithPopupPosition.Product);
-       
+
     }
 
     // Đọc tham số từ URL và gọi API
