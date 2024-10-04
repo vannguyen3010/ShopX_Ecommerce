@@ -33,7 +33,8 @@
                                         <figure class="product-image">
                                             <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
                                                  data-zoom-image="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
-                                                 alt="Product Image" width="800" height="900" id="main-image-@(item.Id)" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                 alt="Product Image" width="800" height="900" id="main-image-@(item.Id)"
+                                                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                                         </figure>
                                     </div>
                                     <div class="product-thumbs-wrap">
@@ -42,7 +43,8 @@
                                             {
                                                 @foreach (var image in item.ProductImages.Select((img, index) => new { img, index }))
                                                 {
-                                                    <div class="product-thumb @(image.index == 0 ? "active" : "")" onclick="setActiveImage(this, '@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)')">
+                                                    <div class="product-thumb @(image.index == 0 ? "active" : "")"
+                                                         onclick="setActiveImage(this, '@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)', 'main-image-@(item.Id)')">
                                                         <img src="@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)"
                                                              onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" alt="Product thumb" width="60" height="68" />
                                                     </div>
@@ -50,13 +52,15 @@
                                             }
                                         </div>
                                     </div>
+
                                     <div class="product-label-group">
-                                        @if(item.Discount > 0)
+                                        @if (item.Discount > 0)
                                         {
-                                            <label class="product-label label-discount">- @item.Discount.ToString("N0")  </label>
+                                            <label class="product-label label-discount">- @item.Discount.ToString("N0")</label>
                                         }
                                     </div>
                                 </div>
+
                             </div>
                             <div class="col-md-6">
                                 <div class="product-details scrollable">
