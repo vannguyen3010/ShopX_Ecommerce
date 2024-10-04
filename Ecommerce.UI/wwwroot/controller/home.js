@@ -47,16 +47,18 @@
     });
    
 });
-function setActiveImage(element, imagePath) {
-    // Xóa lớp 'active' khỏi tất cả các thumbnail
-    const thumbs = document.querySelectorAll('.product-thumb');
+function setActiveImage(element, imagePath, mainImageId) {
+    // Xóa lớp 'active' khỏi tất cả các thumbnail của sản phẩm hiện tại
+    const thumbs = element.closest('.product-thumbs-wrap').querySelectorAll('.product-thumb');
     thumbs.forEach(thumb => thumb.classList.remove('active'));
 
     // Thêm lớp 'active' cho thumbnail được nhấp
     element.classList.add('active');
 
-    // Cập nhật hình ảnh lớn
-    const mainImage = document.querySelector('.product-single-carousel img');
-    mainImage.src = imagePath;
-    mainImage.dataset.zoomImage = imagePath.replace('600x675', '800x900'); // Cập nhật hình ảnh zoom
+    // Cập nhật hình ảnh lớn cho sản phẩm cụ thể dựa trên mainImageId
+    const mainImage = document.getElementById(mainImageId);
+    if (mainImage) {
+        mainImage.src = imagePath;
+        mainImage.dataset.zoomImage = imagePath.replace('600x675', '800x900'); // Cập nhật hình ảnh zoom
+    }
 }

@@ -3,6 +3,7 @@
 
 @inject ProductServices ProductServices
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+<script src="controller/home.js"></script>
 @code {
     [Parameter] public Guid id { get; set; }
     [Parameter] public string nameSlug { get; set; }
@@ -50,26 +51,29 @@
                                 <figure class="product-image">
                                     <img src="@(string.IsNullOrEmpty(product.ImageFilePath) ? "/Img_Dev/banner.png" : product.ImageFilePath)"
                                          data-zoom-image="@(string.IsNullOrEmpty(product.ImageFilePath) ? "/Img_Dev/banner.png" : product.ImageFilePath)"
-                                         alt="Bright Green IPhone" width="800" height="900" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                         alt="Bright Green IPhone" width="800" height="900" id="main-image-@(product.Id)"
+                                         onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                                 </figure>
                             </div>
+
                             <div class="product-thumbs-wrap">
                                 <div class="product-thumbs">
                                     @if (product.ProductImages != null && product.ProductImages.Any())
                                     {
-                                        @foreach (var item in product.ProductImages)
+                                        @foreach (var item in product.ProductImages.Select((img, index) => new { img, index }))
                                         {
-                                            <div class="product-thumb active">
-                                                <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product Thumb"
+                                            <div class="product-thumb @(item.index == 0 ? "active" : "")"
+                                                 onclick="setActiveImage(this, '@(string.IsNullOrEmpty(item.img.ImageFilePath) ? "/Img_Dev/banner.png" : item.img.ImageFilePath)', 'main-image-@(product.Id)')">
+                                                <img src="@(string.IsNullOrEmpty(item.img.ImageFilePath) ? "/Img_Dev/banner.png" : item.img.ImageFilePath)" alt="Product Thumb"
                                                      width="800" height="900" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                                             </div>
                                         }
                                     }
-
                                 </div>
                                 <button class="thumb-up disabled"><i class="w-icon-angle-left"></i></button>
                                 <button class="thumb-down disabled"><i class="w-icon-angle-right"></i></button>
                             </div>
+
                         </div>
                     </div>
                     <div class="col-md-6 mb-4 mb-md-6">
@@ -142,57 +146,27 @@
                 <div class="tab tab-nav-boxed tab-nav-underline product-tabs mt-3">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
-                            <a href="#product-tab-description" class="nav-link active">Mô tả</a>
+                            <a href="#product-tab-description" class="nav-link active border_unset">Mô tả</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#product-tab-reviews" class="nav-link">Bình luận</a>
+                            <a href="#product-tab-reviews" class="nav-link border_unset">Bình luận</a>
                         </li>
                     </ul>
-                    <div class="tab-content">
+                    <div class="tab-content w-100">
                         <div class="tab-pane active" id="product-tab-description">
                             <div class="row mb-4">
-                                <div class="col-md-6 mb-5">
+                                <div class="col-12 mb-5">
                                     <h4 class="title tab-pane-title font-weight-bold mb-2">Chi tiết sản phẩm</h4>
                                     <p class="mb-4">
                                         @product.Detail
                                     </p>
-                                </div>
-                                <div class="col-md-6 mb-5">
-                                    <div class="banner banner-video product-video br-xs">
-                                        <figure class="banner-media">
-                                            <a href="#">
-                                                <img src="assets/images/products/video-banner-610x300.jpg"
-                                                     alt="banner" width="610" height="300"
-                                                     style="background-color: #bebebe;">
-                                            </a>
-                                            <a class="btn-play-video btn-iframe"
-                                               href="assets/video/memory-of-a-woman.mp4"></a>
-                                        </figure>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="tab-pane" id="product-tab-reviews">
 
                             <div class="tab tab-nav-boxed tab-nav-outline tab-nav-center">
-                                <ul class="nav nav-tabs" role="tablist">
-                                    <li class="nav-item">
-                                        <a href="#show-all" class="nav-link active">Show All</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#helpful-positive" class="nav-link">Most Helpful Positive</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#helpful-negative" class="nav-link">Most Helpful Negative</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#highest-rating" class="nav-link">Highest Rating</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="#lowest-rating" class="nav-link">Lowest Rating</a>
-                                    </li>
-                                </ul>
-                                <div class="tab-content">
+                                <div class="tab-content w-100">
                                     <div class="tab-pane active" id="show-all">
                                         <ul class="comments list-style-none">
                                             <li class="comment">
@@ -231,116 +205,6 @@
                                                             <a href="#"
                                                                class="btn btn-dark btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
                                                                 <i class="far fa-thumbs-down"></i>Unhelpful (0)
-                                                            </a>
-                                                            <div class="review-image">
-                                                                <a href="#">
-                                                                    <figure>
-                                                                        <img src="assets/images/products/default/review-img-1.jpg"
-                                                                             width="60" height="60"
-                                                                             alt="Attachment image of John Doe's review on Electronics Black Wrist Watch"
-                                                                             data-zoom-image="assets/images/products/default/review-img-1-800x900.jpg" />
-                                                                    </figure>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="comment">
-                                                <div class="comment-body">
-                                                    <figure class="comment-avatar">
-                                                        <img src="assets/images/agents/2-100x100.png"
-                                                             alt="Commenter Avatar" width="90" height="90">
-                                                    </figure>
-                                                    <div class="comment-content">
-                                                        <h4 class="comment-author">
-                                                            <a href="#">John Doe</a>
-                                                            <span class="comment-date">
-                                                                March 22, 2021 at 1:52
-                                                                pm
-                                                            </span>
-                                                        </h4>
-                                                        <div class="ratings-container comment-rating">
-                                                            <div class="ratings-full">
-                                                                <span class="ratings" style="width: 80%;"></span>
-                                                                <span class="tooltiptext tooltip-top"></span>
-                                                            </div>
-                                                        </div>
-                                                        <p>
-                                                            Nullam a magna porttitor, dictum risus nec, faucibus
-                                                            sapien.
-                                                            Ultrices eros in cursus turpis massa tincidunt ante in
-                                                            nibh mauris cursus mattis.
-                                                            Cras ornare arcu dui vivamus arcu felis bibendum ut
-                                                            tristique.
-                                                        </p>
-                                                        <div class="comment-action">
-                                                            <a href="#"
-                                                               class="btn btn-secondary btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
-                                                                <i class="far fa-thumbs-up"></i>Helpful (1)
-                                                            </a>
-                                                            <a href="#"
-                                                               class="btn btn-dark btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
-                                                                <i class="far fa-thumbs-down"></i>Unhelpful (0)
-                                                            </a>
-                                                            <div class="review-image">
-                                                                <a href="#">
-                                                                    <figure>
-                                                                        <img src="assets/images/products/default/review-img-2.jpg"
-                                                                             width="60" height="60"
-                                                                             alt="Attachment image of John Doe's review on Electronics Black Wrist Watch"
-                                                                             data-zoom-image="assets/images/products/default/review-img-2.jpg" />
-                                                                    </figure>
-                                                                </a>
-                                                                <a href="#">
-                                                                    <figure>
-                                                                        <img src="assets/images/products/default/review-img-3.jpg"
-                                                                             width="60" height="60"
-                                                                             alt="Attachment image of John Doe's review on Electronics Black Wrist Watch"
-                                                                             data-zoom-image="assets/images/products/default/review-img-3.jpg" />
-                                                                    </figure>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="comment">
-                                                <div class="comment-body">
-                                                    <figure class="comment-avatar">
-                                                        <img src="assets/images/agents/3-100x100.png"
-                                                             alt="Commenter Avatar" width="90" height="90">
-                                                    </figure>
-                                                    <div class="comment-content">
-                                                        <h4 class="comment-author">
-                                                            <a href="#">John Doe</a>
-                                                            <span class="comment-date">
-                                                                March 22, 2021 at 1:21
-                                                                pm
-                                                            </span>
-                                                        </h4>
-                                                        <div class="ratings-container comment-rating">
-                                                            <div class="ratings-full">
-                                                                <span class="ratings" style="width: 60%;"></span>
-                                                                <span class="tooltiptext tooltip-top"></span>
-                                                            </div>
-                                                        </div>
-                                                        <p>
-                                                            In fermentum et sollicitudin ac orci phasellus. A
-                                                            condimentum vitae
-                                                            sapien pellentesque habitant morbi tristique senectus
-                                                            et. In dictum
-                                                            non consectetur a erat. Nunc scelerisque viverra mauris
-                                                            in aliquam sem fringilla.
-                                                        </p>
-                                                        <div class="comment-action">
-                                                            <a href="#"
-                                                               class="btn btn-secondary btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
-                                                                <i class="far fa-thumbs-up"></i>Helpful (0)
-                                                            </a>
-                                                            <a href="#"
-                                                               class="btn btn-dark btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
-                                                                <i class="far fa-thumbs-down"></i>Unhelpful (1)
                                                             </a>
                                                         </div>
                                                     </div>
