@@ -172,6 +172,11 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
         }
 
-       
+        public async Task<IEnumerable<Product>> GetRelatedProductsAsync(Guid productId, Guid categoryId, bool trackChanges)
+        {
+            return await _dbContext.Products
+                    .Where(x => x.CategoryId == categoryId && x.Id != productId)
+                    .ToListAsync();
+        }
     }
 }
