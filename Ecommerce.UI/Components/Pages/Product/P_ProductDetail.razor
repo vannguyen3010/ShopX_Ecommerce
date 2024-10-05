@@ -1,16 +1,22 @@
 ﻿@page "/san-pham/{nameSlug}/{id:guid}"
-
+@using System.IdentityModel.Tokens.Jwt
 
 @inject ProductServices ProductServices
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
 <script src="controller/home.js"></script>
 @code {
-    [Parameter] public Guid id { get; set; }
-    [Parameter] public string nameSlug { get; set; }
     private ProductDto product;
     private IEnumerable<ProductDto> relatedProducts;
     private IEnumerable<CommentProductDto> commentProduct;
+
+    [Parameter] public Guid id { get; set; }
+    [Parameter] public string nameSlug { get; set; }
+
     private bool loading = true;
+    private string errorMessage;
+    private string message;
+    private string alertClass = "alert-danger";
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -29,12 +35,72 @@
     }
     private async Task LoadCommentProduct()
     {
-        var response = await ProductServices.GetAllCommentProductByProductId(id);
-        if (response.Success)
+        try
         {
-            commentProduct = response.Data;
+            var response = await ProductServices.GetAllCommentProductByProductId(id);
+            if (response == null)
+            {
+                errorMessage = "Không thể kết nối đến server. Vui lòng thử lại sau."; // Hiển thị thông báo lỗi nếu response là null
+                commentProduct = new List<CommentProductDto>(); // Đảm bảo không bị lỗi null
+                return;
+            }
+
+            if (response.Success)
+            {
+                commentProduct = response.Data ?? new List<CommentProductDto>(); // Nếu không có data, khởi tạo danh sách trống
+                errorMessage = null; // Xóa thông báo lỗi nếu gọi API thành công
+            }
+            else
+            {
+                errorMessage = response.Message ?? "Đã có lỗi xảy ra khi tải bình luận."; // Hiển thị thông báo lỗi từ response
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi kết nối tới server: {ex.Message}"; // Xử lý ngoại lệ và hiển thị thông báo lỗi
+            commentProduct = new List<CommentProductDto>(); // Đảm bảo danh sách không bị null
         }
     }
+
+    private string commentContent;
+    private string apiResponseMessage;
+
+    private async Task SubmitComment()
+    {
+        if (string.IsNullOrWhiteSpace(commentContent))
+        {
+            apiResponseMessage = "Vui lòng nhập bình luận trước khi gửi.";
+            return;
+        }
+
+        var token = await localStorage.GetItemAsync<string>("authToken");
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+        var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        // Tạo Comment DTO
+        var commentDto = new CreateCommentProductDto
+            {
+                UserId = userId,
+                ProductId = id, // Id của sản phẩm hiện tại
+                Content = commentContent // Nội dung bình luận
+            };
+
+        // Gửi bình luận
+        var response = await ProductServices.CreateCommentProductAsync(commentDto);
+
+        if (response.Success)
+        {
+            apiResponseMessage = "Bình luận thành công!";
+            commentContent = string.Empty; // Xóa nội dung sau khi gửi
+            await LoadCommentProduct(); // Tải lại danh sách bình luận sau khi gửi thành công
+        }
+        else
+        {
+            apiResponseMessage = "Lỗi: " + response.Message;
+        }
+    }
+
 }
 
 
@@ -173,7 +239,25 @@
                             </div>
                         </div>
                         <div class="tab-pane" id="product-tab-reviews">
-
+                            <div class="col-10 mb-4">
+                                <div class="col-xl-8 col-lg-7 mb-4">
+                                    <div class="review-form-wrapper">
+                                        <h3 class="title tab-pane-title font-weight-bold mb-1">
+                                            Bình luận ở đây
+                                        </h3>
+                                      @*   <form action="#" method="POST" class="review-form">
+                                            <textarea cols="30" rows="6" placeholder="Bình luận vào đây..."
+                                                      class="form-control"></textarea>
+                                            <button type="submit" class="btn btn-dark">Gửi</button>
+                                        </form> *@
+                                        <form method="post" @onsubmit="SubmitComment" class="review-form">
+                                            <textarea @bind="commentContent" cols="30" rows="6" placeholder="Bình luận vào đây..."
+                                                      class="form-control"></textarea>
+                                            <button type="submit" class="btn btn-dark">Gửi</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="tab tab-nav-boxed tab-nav-outline tab-nav-center">
                                 <div class="tab-content w-100">
                                     <div class="tab-pane active" id="show-all">
@@ -208,6 +292,15 @@
                                                         </div>
                                                     </li>
                                                 }
+                                            }
+                                            else
+                                            {
+                                                <li class="alert alert-danger text-center">
+                                                    <span>@errorMessage</span>
+                                                    <div>
+                                                        <img src="img_Dev/data-null.png"/>
+                                                    </div>
+                                                </li>
                                             }
                                         </ul>
                                     </div>

@@ -4,9 +4,12 @@ using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Response;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -26,7 +29,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
-        [Route("Create-CommentProduct")]
+        [Route("CreateCommentProduct")]
         public async Task<IActionResult> CreateCommentProduct([FromBody] CreateCommentProductDto createCommentDto)
         {
             try
@@ -52,6 +55,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
+
 
                 //Kiểm tra tồn tại người dùng
                 var user = await _repository.CommentProduct.GetUserByIdAsync(createCommentDto.UserId);

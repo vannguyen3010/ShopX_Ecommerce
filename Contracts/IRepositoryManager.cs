@@ -21,7 +21,7 @@
         IOrderRepository Order { get; }
         ICheckoutRepository Checkout { get; }
         ISocialMediaInfoRepository SocialMediaInfo { get; }
-
+        IAccountRepository AccountRepository { get; }
 
         void SaveAsync();
     }

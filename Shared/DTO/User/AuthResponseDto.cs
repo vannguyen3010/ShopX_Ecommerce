@@ -6,6 +6,13 @@
         public string? ErrorMessage { get; set; }
         public string? Token { get; set; }
     }
+    public class RefreshTokenResponseDto
+    {
+        public bool IsAuthSuccessful { get; set; }
+        public string? ErrorMessage { get; set; }
+        public string? RefreshTokens { get; set; }
+        public string? Token { get; set; }
+    }
     public class ServiceResponse<T>
     {
         public T? Data { get; set; }

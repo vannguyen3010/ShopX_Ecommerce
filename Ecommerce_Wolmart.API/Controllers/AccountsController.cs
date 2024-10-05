@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shared.DTO.Response;
 using Shared.DTO.User;
+using System.Security.Cryptography;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -126,7 +127,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("LoginUser")]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
-
+            // Kiểm tra Email và Mật khẩu
             if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
             {
                 return NotFound(new ApiResponse<Object>
@@ -137,6 +138,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
+            // Tìm người dùng theo email
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
             if (user == null)
             {
@@ -159,6 +161,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
+            // Kiểm tra mật khẩu
             if (!await _userManager.CheckPasswordAsync(user, loginDto.Password!))
             {
                 return NotFound(new ApiResponse<Object>
@@ -169,6 +172,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
+            // Kiểm tra xác nhận email
             if (user.EmailConfirmed == false)
             {
                 return NotFound(new ApiResponse<Object>
@@ -179,11 +183,99 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
+            // Tạo JWT Token
             var token = await _jwtHandler.GenerateToken(user);
 
+            // Kiểm tra và xử lý Refresh Token
+            var refreshToken = await _repository.AccountRepository.GetByUserIdAsync(user.Id);
+            if (refreshToken == null)
+            {
+                // Nếu chưa có Refresh Token, tạo mới
+                refreshToken = new RefreshToken
+                {
+                    RefreshTokens = GenerateRefreshToken(),
+                    Expiration = DateTime.UtcNow.AddDays(7),
+                    IsUsed = false,
+                    IsRevoked = false,
+                    UserId = user.Id
+                };
+
+                // Thêm Refresh Token vào cơ sở dữ liệu
+                await _repository.AccountRepository.AddAsync(refreshToken);
+            }
+            else
+            {
+                // Nếu đã có Refresh Token, cập nhật lại thông tin
+                refreshToken.Token = GenerateRefreshToken();
+                refreshToken.Expiration = DateTime.UtcNow.AddDays(7);
+                refreshToken.IsUsed = false;
+
+                // Cập nhật Refresh Token trong cơ sở dữ liệu
+                await _repository.AccountRepository.UpdateAsync(refreshToken);
+            }
+
+            // Đặt lại số lần đăng nhập không thành công
             await _userManager.ResetAccessFailedCountAsync(user);
 
-            return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
+            // Trả về kết quả
+            return Ok(new RefreshTokenResponseDto
+            {
+                IsAuthSuccessful = true,
+                Token = token,
+                RefreshTokens = refreshToken.Token
+            });
+        }
+
+
+        private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+
+        [HttpPost]
+        [Route("RefreshToken")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
+        {
+            if (string.IsNullOrEmpty(refreshTokenDto.RefreshToken))
+            {
+                return BadRequest(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Refresh token không hợp lệ.",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra refresh token
+            var refreshToken = await _repository.AccountRepository.GetByTokenAsync(refreshTokenDto.RefreshToken);
+            if (refreshToken == null || refreshToken.IsUsed || refreshToken.Expiration < DateTime.UtcNow)
+            {
+                return Unauthorized(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Refresh token không hợp lệ.",
+                    Data = null
+                });
+            }
+
+            // Lấy user dựa trên refresh token
+            var user = await _userManager.FindByIdAsync(refreshToken.UserId);
+            if (user == null)
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Người dùng không tồn tại.",
+                    Data = null
+                });
+            }
+
+            // Tạo Token mới
+            var newToken = await _jwtHandler.GenerateToken(user);
+
+            // Đánh dấu refresh token là đã sử dụng
+            refreshToken.IsUsed = true;
+            await _repository.AccountRepository.UpdateAsync(refreshToken);
+
+            return Ok(new RefreshTokenResponseDto { IsAuthSuccessful = true, Token = newToken, RefreshTokens = refreshToken.Token });
+
         }
 
         [HttpPost]
@@ -274,31 +366,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return Ok("Mật khẩu đã được đặt lại thành công.");
         }
-
-        //[HttpPost]
-        //[Route("ResetPassword")]
-        //public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email!);
-        //    if (user == null)
-        //        return BadRequest("Invalid Request");
-
-
-        //    //Đặt Lại Mật Khẩu
-        //    var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.VerificationCode!, resetPasswordDto.Password!);
-        //    if (!resetPassResult.Succeeded)
-        //    {
-        //        var errors = resetPassResult.Errors.Select(x => x.Description);
-
-        //        return BadRequest(new { Errors = errors });
-        //    }
-        //    await _userManager.SetLockoutEndDateAsync(user, new DateTime(2000, 1, 1));
-
-        //    return Ok();
-        //}
 
         [HttpGet]
         [Route("EmailConfirmation")]
