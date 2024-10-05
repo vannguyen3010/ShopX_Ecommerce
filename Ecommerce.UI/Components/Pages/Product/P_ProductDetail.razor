@@ -9,11 +9,13 @@
     [Parameter] public string nameSlug { get; set; }
     private ProductDto product;
     private IEnumerable<ProductDto> relatedProducts;
+    private IEnumerable<CommentProductDto> commentProduct;
     private bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadProduct();
+        await LoadCommentProduct();
     }
     private async Task LoadProduct()
     {
@@ -24,6 +26,14 @@
             relatedProducts = response.Data2nd;
         }
         loading = false;
+    }
+    private async Task LoadCommentProduct()
+    {
+        var response = await ProductServices.GetAllCommentProductByProductId(id);
+        if (response.Success)
+        {
+            commentProduct = response.Data;
+        }
     }
 }
 
@@ -168,47 +178,37 @@
                                 <div class="tab-content w-100">
                                     <div class="tab-pane active" id="show-all">
                                         <ul class="comments list-style-none">
-                                            <li class="comment">
-                                                <div class="comment-body">
-                                                    <figure class="comment-avatar">
-                                                        <img src="assets/images/agents/1-100x100.png"
-                                                             alt="Commenter Avatar" width="90" height="90">
-                                                    </figure>
-                                                    <div class="comment-content">
-                                                        <h4 class="comment-author">
-                                                            <a href="#">John Doe</a>
-                                                            <span class="comment-date">
-                                                                March 22, 2021 at 1:54
-                                                                pm
-                                                            </span>
-                                                        </h4>
-                                                        <div class="ratings-container comment-rating">
-                                                            <div class="ratings-full">
-                                                                <span class="ratings" style="width: 60%;"></span>
-                                                                <span class="tooltiptext tooltip-top"></span>
+                                            @if (commentProduct != null && commentProduct.Any())
+                                            {
+                                                @foreach (var item in commentProduct)
+                                                {
+                                                    <li class="comment">
+                                                        <div class="comment-body">
+                                                            <figure class="comment-avatar">
+                                                                <img src="assets/images/agents/1-100x100.png"
+                                                                     alt="Commenter Avatar" width="90" height="90">
+                                                            </figure>
+                                                            <div class="comment-content">
+                                                                <h4 class="comment-author">
+                                                                    <a href="#">@item.UserName</a>
+                                                                    <span class="comment-date">
+                                                                        @item.CreatedAt.ToString("dd-MM-yyyy")
+                                                                    </span>
+                                                                </h4>
+                                                                <div class="ratings-container comment-rating">
+                                                                    <div class="ratings-full">
+                                                                        <span class="ratings" style="width: 60%;"></span>
+                                                                        <span class="tooltiptext tooltip-top"></span>
+                                                                    </div>
+                                                                </div>
+                                                                <p>
+                                                                    @item.Content
+                                                                </p>
                                                             </div>
                                                         </div>
-                                                        <p>
-                                                            pellentesque habitant morbi tristique senectus et. In
-                                                            dictum non consectetur a erat.
-                                                            Nunc ultrices eros in cursus turpis massa tincidunt ante
-                                                            in nibh mauris cursus mattis.
-                                                            Cras ornare arcu dui vivamus arcu felis bibendum ut
-                                                            tristique.
-                                                        </p>
-                                                        <div class="comment-action">
-                                                            <a href="#"
-                                                               class="btn btn-secondary btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
-                                                                <i class="far fa-thumbs-up"></i>Helpful (1)
-                                                            </a>
-                                                            <a href="#"
-                                                               class="btn btn-dark btn-link btn-underline sm btn-icon-left font-weight-normal text-capitalize">
-                                                                <i class="far fa-thumbs-down"></i>Unhelpful (0)
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
+                                                    </li>
+                                                }
+                                            }
                                         </ul>
                                     </div>
                                     <div class="tab-pane" id="helpful-positive">
@@ -504,7 +504,7 @@
                             'responsive': {
                                 '0': {
                                     'items': 2
-                                },
+                                },it
                                 '576': {
                                     'items': 3
                                 },
