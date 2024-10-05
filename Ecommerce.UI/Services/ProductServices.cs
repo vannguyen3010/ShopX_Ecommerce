@@ -5,6 +5,7 @@ using Shared.DTO.Response;
 using Shared.DTO.BannerProduct;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Shared.DTO.CommentProduct;
 
 namespace Ecommerce.UI.Services
 {
@@ -40,11 +41,7 @@ namespace Ecommerce.UI.Services
 
             return new ApiResponse<ProductResponseDto>();
         }
-        //public async Task<ApiResponse<ProductDto>> GetProductById(Guid id)
-        //{
-        //    var response = await _httpClient.GetFromJsonAsync<ApiResponse<ProductDto>>($"/api/Product/GetProductById/{id}");
-        //    return response;
-        //}
+     
         public async Task<ApiProductResponse<ProductDto, IEnumerable<ProductDto>>> GetProductByIdAsync(Guid productId)
         {
             var response = await _httpClient.GetAsync($"api/Product/GetProductById/{productId}");
@@ -54,6 +51,15 @@ namespace Ecommerce.UI.Services
             }
             return null; // Hoặc xử lý lỗi ở đây
         }
-
+        public async Task<ApiResponse<IEnumerable<CommentProductDto>>> GetAllCommentProductByProductId(Guid productid)
+        {
+            var response = await _httpClient.GetAsync($"/api/CommentProduct/GetAllCommentProductByProductId/{productid}");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<CommentProductDto>>>();
+                return data;
+            }
+            return null;
+        }
     }
 }

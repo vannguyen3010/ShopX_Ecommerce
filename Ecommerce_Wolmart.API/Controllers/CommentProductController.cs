@@ -54,9 +54,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 //Kiểm tra tồn tại người dùng
-                var userExits = await _repository.CommentProduct.GetUserByIdAsync(createCommentDto.UserId);
+                var user = await _repository.CommentProduct.GetUserByIdAsync(createCommentDto.UserId);
 
-                if (userExits == null)
+                if (user == null)
                 {
                     _logger.LogError($"User with id {createCommentDto.UserId} not found.");
                     return NotFound(new ApiResponse<object>
@@ -68,8 +68,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 //Kiểm tra sự tồn tại của sản phẩm
-                var productExits = await _repository.Product.GetProductByIdAsync(createCommentDto.ProductId, trackChanges: false);
-                if (productExits == null)
+                var product = await _repository.Product.GetProductByIdAsync(createCommentDto.ProductId, trackChanges: false);
+                if (product == null)
                 {
                     _logger.LogError($"Product with id {createCommentDto.ProductId} not found.");
                     return NotFound(new ApiResponse<object>
@@ -102,9 +102,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var commentEntity = _mapper.Map<CommentProduct>(createCommentDto);
 
                 commentEntity.CreatedAt = DateTime.UtcNow;
+                commentEntity.ProductName = product.Name;
+                commentEntity.UserName = user.UserName!;
 
                 //Lưu Bình luận
                 await _repository.CommentProduct.CreateCommentAsync(commentEntity);
+
 
                 return Ok(new ApiResponse<object>
                 {
@@ -179,6 +182,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     var commentDto = _mapper.Map<CommentProductDto>(comment);
                     commentDto.UserName = comment.User?.UserName;
+                    commentDto.ProductName = comment.Product?.Name;
                     return commentDto;
                 });
 
