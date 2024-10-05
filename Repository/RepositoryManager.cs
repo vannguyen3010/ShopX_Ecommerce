@@ -27,6 +27,7 @@ namespace Repository
         private IOrderRepository _order;
         private ICheckoutRepository _checkout;
         private ISocialMediaInfoRepository _socialMediaInfo;
+        private IAccountRepository _accountRepository;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -276,6 +277,19 @@ namespace Repository
                 }
 
                 return _socialMediaInfo;
+            }
+        }
+
+        public IAccountRepository AccountRepository
+        {
+            get
+            {
+                if (_accountRepository == null)
+                {
+                    _accountRepository = new AccountRepository(_repoContext);
+                }
+
+                return _accountRepository;
             }
         }
 

@@ -6,6 +6,8 @@ namespace Shared.DTO.CommentProduct
     {
         [Required]
         public string UserId { get; set; }
+        //[Required]
+        //public string Token { get; set; }
         [Required]
         public Guid ProductId { get; set; } // ID sản phẩm được comment
         [Required]

@@ -6,6 +6,7 @@ using Shared.DTO.BannerProduct;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Shared.DTO.CommentProduct;
+using System.Text;
 
 namespace Ecommerce.UI.Services
 {
@@ -41,7 +42,6 @@ namespace Ecommerce.UI.Services
 
             return new ApiResponse<ProductResponseDto>();
         }
-     
         public async Task<ApiProductResponse<ProductDto, IEnumerable<ProductDto>>> GetProductByIdAsync(Guid productId)
         {
             var response = await _httpClient.GetAsync($"api/Product/GetProductById/{productId}");
@@ -60,6 +60,25 @@ namespace Ecommerce.UI.Services
                 return data;
             }
             return null;
+        }
+
+        public async Task<ApiResponse<object>> CreateCommentProductAsync(CreateCommentProductDto createCommentDto)
+        {
+            //Gửi yêu cầu tới api
+            var response = await _httpClient.PostAsJsonAsync("/api/CommentProduct/CreateCommentProduct", createCommentDto);
+
+            //Kiểm tra phản hồi  từ server
+            if(response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
+                return result;
+            }
+            // Xử lý lỗi
+            return new ApiResponse<object>
+            {
+                Success = false,
+                Message = "Failed to create comment"
+            };
         }
     }
 }
