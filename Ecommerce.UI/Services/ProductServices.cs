@@ -62,23 +62,10 @@ namespace Ecommerce.UI.Services
             return null;
         }
 
-        public async Task<ApiResponse<object>> CreateCommentProductAsync(CreateCommentProductDto createCommentDto)
+        public async Task<bool> CreateCommentProduct(CreateCommentProductDto commentDto)
         {
-            //Gửi yêu cầu tới api
-            var response = await _httpClient.PostAsJsonAsync("/api/CommentProduct/CreateCommentProduct", createCommentDto);
-
-            //Kiểm tra phản hồi  từ server
-            if(response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
-                return result;
-            }
-            // Xử lý lỗi
-            return new ApiResponse<object>
-            {
-                Success = false,
-                Message = "Failed to create comment"
-            };
+            var response = await _httpClient.PostAsJsonAsync("/api/CommentProduct/CreateCommentProduct", commentDto);
+            return response.IsSuccessStatusCode;
         }
     }
 }

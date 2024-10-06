@@ -1,14 +1,17 @@
-﻿using Shared.DTO.Response;
+﻿using Blazored.LocalStorage;
+using Shared.DTO.Response;
 using Shared.DTO.User;
 namespace Ecommerce.UI.Services
 {
     public class AccountService
     {
         private readonly HttpClient _httpClient;
+        private readonly ILocalStorageService _localStorageService;
 
-        public AccountService(HttpClient httpClient)
+        public AccountService(HttpClient httpClient, ILocalStorageService localStorageService)
         {
             _httpClient = httpClient;
+            _localStorageService = localStorageService;
         }
 
         public async Task<RegisterResponseDto> RegisterUserAsync(RegisterDto registerDto)
@@ -37,6 +40,11 @@ namespace Ecommerce.UI.Services
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+                // Lưu UserId vào LocalStorage
+                if (result != null && result.IsAuthSuccessful)
+                {
+                    await _localStorageService.SetItemAsync("userId", result.UserId);
+                }
                 return result ?? new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "No data received" };
             }
             else
