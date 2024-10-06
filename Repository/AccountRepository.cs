@@ -24,9 +24,9 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<RefreshToken> GetByTokenAsync(string token)
+        public async Task<RefreshToken> GetByTokenAsync(string refreshToken)
         {
-            return await _dbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == token && !rt.IsRevoked);
+            return await _dbContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.RefreshTokens == refreshToken && !rt.IsRevoked);
         }
 
         public async Task<RefreshToken> GetByUserIdAsync(string userId)
