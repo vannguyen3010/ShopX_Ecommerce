@@ -206,7 +206,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             else
             {
                 // Nếu đã có Refresh Token, cập nhật lại thông tin
-                refreshToken.Token = GenerateRefreshToken();
+                refreshToken.RefreshTokens = GenerateRefreshToken();
                 refreshToken.Expiration = DateTime.UtcNow.AddDays(7);
                 refreshToken.IsUsed = false;
 
@@ -222,18 +222,17 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 IsAuthSuccessful = true,
                 Token = token,
-                RefreshTokens = refreshToken.Token
+                RefreshTokens = refreshToken.RefreshTokens
             });
         }
 
 
-        private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
         [HttpPost]
         [Route("RefreshToken")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
-            if (string.IsNullOrEmpty(refreshTokenDto.RefreshToken))
+            if (string.IsNullOrEmpty(refreshTokenDto.RefreshTokens))
             {
                 return BadRequest(new ApiResponse<Object>
                 {
@@ -244,7 +243,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
             // Kiểm tra refresh token
-            var refreshToken = await _repository.AccountRepository.GetByTokenAsync(refreshTokenDto.RefreshToken);
+            var refreshToken = await _repository.AccountRepository.GetByTokenAsync(refreshTokenDto.RefreshTokens);
             if (refreshToken == null || refreshToken.IsUsed || refreshToken.Expiration < DateTime.UtcNow)
             {
                 return Unauthorized(new ApiResponse<Object>
@@ -269,14 +268,21 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             // Tạo Token mới
             var newToken = await _jwtHandler.GenerateToken(user);
+            
+            refreshToken.RefreshTokens = GenerateRefreshToken();
+            refreshToken.Expiration = DateTime.UtcNow.AddDays(7); // Cập nhật thời gian hết hạn
+            refreshToken.IsUsed = false; // Đánh dấu là chưa sử dụng
+            refreshToken.IsRevoked = false;// Đánh dấu là chưa bị thu hồi
 
             // Đánh dấu refresh token là đã sử dụng
             refreshToken.IsUsed = true;
             await _repository.AccountRepository.UpdateAsync(refreshToken);
 
-            return Ok(new RefreshTokenResponseDto { IsAuthSuccessful = true, Token = newToken, RefreshTokens = refreshToken.Token });
+            return Ok(new RefreshTokenResponseDto { IsAuthSuccessful = true, Token = newToken, RefreshTokens = refreshToken.RefreshTokens});
 
         }
+
+        private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
         [HttpPost]
         [Route("ForgotPassword")]
