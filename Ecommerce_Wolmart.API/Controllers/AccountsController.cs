@@ -222,11 +222,10 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 IsAuthSuccessful = true,
                 Token = token,
-                RefreshTokens = refreshToken.RefreshTokens
+                RefreshTokens = refreshToken.RefreshTokens,
+                UserId = user.Id
             });
         }
-
-
 
         [HttpPost]
         [Route("RefreshToken")]
