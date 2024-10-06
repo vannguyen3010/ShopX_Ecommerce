@@ -12,9 +12,13 @@
     private ProductDto product;
     private IEnumerable<ProductDto> relatedProducts;
     private IEnumerable<CommentProductDto> commentProduct;
+    private CreateCommentProductDto newComment = new CreateCommentProductDto();
 
     [Parameter] public Guid id { get; set; }
     [Parameter] public string nameSlug { get; set; }
+    private int numberOfCommentsToShow = 5;
+    private const int increment = 5;
+    private bool showMoreButton => commentProduct != null && commentProduct.Count() > numberOfCommentsToShow;
 
     private bool loading = true;
     private string errorMessage;
@@ -27,6 +31,7 @@
         await LoadProduct();
         await LoadCommentProduct();
     }
+
     private async Task LoadProduct()
     {
         var response = await ProductServices.GetProductByIdAsync(id);
@@ -67,8 +72,6 @@
         }
     }
 
-    private CreateCommentProductDto newComment = new CreateCommentProductDto();
-
     private async Task HandleSubmit()
     {
         // Lấy UserId từ LocalStorage
@@ -92,10 +95,14 @@
         }
         else
         {
-            message = "Bình luận thất bại.";
+            message = "Bình luận thất bại. Sau 1 phút bạn mới có thể bình luận lại được";
         }
     }
 
+    private void ShowMoreComments()
+    {
+        numberOfCommentsToShow += increment;
+    }
 
 }
 
@@ -261,7 +268,7 @@
                                         <ul class="comments list-style-none">
                                             @if (commentProduct != null && commentProduct.Any())
                                             {
-                                                @foreach (var item in commentProduct)
+                                                @foreach (var item in commentProduct.Take(numberOfCommentsToShow))
                                                 {
                                                     <li class="comment">
                                                         <div class="comment-body">
@@ -287,6 +294,12 @@
                                                                 </p>
                                                             </div>
                                                         </div>
+                                                    </li>
+                                                }
+                                                @if(showMoreButton)
+                                                {
+                                                    <li class="text-center">
+                                                        <button class="btn btn-primary" @onclick="ShowMoreComments">Xem thêm</button>
                                                     </li>
                                                 }
                                             }
