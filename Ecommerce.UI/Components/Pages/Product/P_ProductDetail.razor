@@ -57,7 +57,7 @@
 
             if (response.Success)
             {
-                commentProduct = response.Data ?? new List<CommentProductDto>(); 
+                commentProduct = response.Data ?? new List<CommentProductDto>();
                 errorMessage = null;
             }
             else
@@ -296,7 +296,7 @@
                                                         </div>
                                                     </li>
                                                 }
-                                                @if(showMoreButton)
+                                                @if (showMoreButton)
                                                 {
                                                     <li class="text-center">
                                                         <button class="btn btn-primary" @onclick="ShowMoreComments">Xem thêm</button>
@@ -308,7 +308,7 @@
                                                 <li class="alert alert-danger text-center">
                                                     <span>@errorMessage</span>
                                                     <div>
-                                                        <img src="img_Dev/data-null.png"/>
+                                                        <img src="img_Dev/data-null.png" />
                                                     </div>
                                                 </li>
                                             }
@@ -596,11 +596,13 @@
                         </div>
                     </div>
                 </div>
-                <section class="vendor-product-section">
-                    <div class="title-link-wrapper mb-4">
-                        <h4 class="title text-left">Sản phẩm liên quan</h4>
-                    </div>
-                    <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2" data-owl-options="{
+                @if (relatedProducts != null && relatedProducts.Any())
+                {
+                    <section class="vendor-product-section">
+                        <div class="title-link-wrapper mb-4">
+                            <h4 class="title text-left">Sản phẩm liên quan</h4>
+                        </div>
+                        <div class="owl-carousel owl-theme row cols-lg-3 cols-md-4 cols-sm-3 cols-2" data-owl-options="{
                             'nav': false,
                             'dots': true,
                             'margin': 20,
@@ -616,8 +618,6 @@
                                 }
                             }
                         }">
-                        @if (relatedProducts != null && relatedProducts.Any())
-                        {
                             @foreach (var item in relatedProducts.Take(10))
                             {
                                 <div class="product img__wrapper">
@@ -632,7 +632,7 @@
                                             <a class="sold_out" href="https://abc.com/">- @item.Discount.ToString("N0") </a>
                                         }
                                     </figure>
-                                 
+
                                     <div class="product-details">
                                         <div class="product-cat"><a href="shop-banner-sidebar.html">@item.CategoryName</a></div>
                                         <h4 class="product-name"><a href="product-default.html">@item.Name</a></h4>
@@ -657,9 +657,10 @@
                                 </div>
                             }
 
-                        }
-                    </div>
-                </section>
+                        </div>
+                    </section>
+                }
+
             </div>
         </div>
         <!-- End of Page Content -->

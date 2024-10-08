@@ -171,6 +171,46 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetListProduct")]
+        public async Task<IActionResult> GetListProduct([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] decimal? minPrice = null, [FromQuery] decimal? maxPrice = null, [FromQuery] Guid? categoryId = null)
+        {
+            try
+            {
+                var (products, totalCount) = await _repository.Product.GetListProducAsync(pageNumber, pageSize, minPrice, maxPrice,categoryId);
+
+                if(!products.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "No products found.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        products = productDtos
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProductsPagination action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
+        [HttpGet]
         [Route("GetAllProductsPagination")]
         public async Task<IActionResult> GetAllProductsPagination([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
@@ -281,6 +321,45 @@ namespace Ecommerce_Wolmart.API.Controllers
                 _logger.LogError($"Something went wrong inside GetAllProductIsHot action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpGet]
+        [Route("GetAllProductsByPrice")]
+        public async Task<IActionResult> GetAllProductsByPrice([FromQuery] decimal minPrice, decimal? maxPrice = null, int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var (products, totalCount) = await _repository.Product.GetProductsByPriceRangeAsync(minPrice, maxPrice, pageNumber, pageSize);
+                if (products == null || !products.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy sản phẩm tầm giá này.",
+                        Data = null
+                    });
+                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        products = productDtos
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetProductsByPrice action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+          
         }
 
         //Lấy tất cả sản phẩm hết hàng
