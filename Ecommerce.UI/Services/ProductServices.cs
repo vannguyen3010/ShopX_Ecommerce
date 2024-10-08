@@ -67,5 +67,16 @@ namespace Ecommerce.UI.Services
             var response = await _httpClient.PostAsJsonAsync("/api/CommentProduct/CreateCommentProduct", commentDto);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<ApiResponses> GetProductsByCategoryIdAsync(Guid categoryId, int pageNumber , int pageSize)
+        {
+            var response = await _httpClient.GetAsync($"/api/Product/GetProductsByCategoryId/{categoryId}?pageNumber={pageNumber}&pageSize={pageSize}");
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadFromJsonAsync<ApiResponses>();
+                return data!;
+            }
+            return null;
+        }
     }
 }

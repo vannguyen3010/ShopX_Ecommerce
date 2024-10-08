@@ -133,13 +133,13 @@
                                         @foreach (var item in cateProducts)
                                         {
                                             <li>
-                                                <a href="vendor-dokan-store-list.html">@item.Name</a>
+                                                <a href="/san-pham/?c1=@item.Id">@item.Name</a>
                                                 @if(item.CategoriesObjs.Any())
                                                 {
                                                     <ul>
                                                         @foreach (var res in item.CategoriesObjs)
                                                         {
-                                                            <li><a href="vendor-dokan-store-list.html">@res.Name</a></li>
+                                                            <li><a href="/san-pham?c2=@res.Id">@res.Name</a></li>
                                                         }
                                                     </ul>
                                                 }

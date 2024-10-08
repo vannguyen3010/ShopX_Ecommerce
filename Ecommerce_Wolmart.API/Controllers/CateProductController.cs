@@ -282,7 +282,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-
         [HttpDelete]
         [Route("DeleteCategoryProduct")]
         public async Task<IActionResult> DeleteCategoryProduct(Guid id)
