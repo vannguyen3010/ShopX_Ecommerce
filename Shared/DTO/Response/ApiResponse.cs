@@ -15,6 +15,12 @@ namespace Shared.DTO.Response
         public T Data { get; set; }
         public U Data2nd { get; set; }
     }
+    public class ApiResponses
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public ProductResponseDto Data { get; set; }
+    }
     public class ProductResponseDto
     {
         public int TotalCount { get; set; }

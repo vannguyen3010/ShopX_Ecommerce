@@ -1,22 +1,40 @@
 ﻿@inject ProductServices ProductServices
-<style>
-    .pagination {
-        margin-top: 20px;
-    }
 
-    .page-button {
-        margin: 0 5px;
-        padding: 5px 10px;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        cursor: pointer;
-    }
+<aside class="sidebar shop-sidebar sticky-sidebar-wrapper sidebar-fixed">
+    <!-- Start of Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
+    <a class="sidebar-close" href="#"><i class="close-icon"></i></a>
 
-        .page-button:hover {
-            background-color: #0056b3;
-        }
-</style>
+    <!-- Start of Sidebar Content -->
+    <div class="sidebar-content scrollable">
+        <!-- Start of Sticky Sidebar -->
+        <div class="sticky-sidebar">
+            <!-- Start of Collapsible Widget -->
+            <div class="widget widget-collapsible">
+                <h3 class="widget-title"><label>Price</label></h3>
+                <div class="widget-body">
+                    <ul class="filter-items search-ul">
+                        <li><a href="#">$0.00 - $100.00</a></li>
+                        <li><a href="#">$100.00 - $200.00</a></li>
+                        <li><a href="#">$200.00 - $300.00</a></li>
+                        <li><a href="#">$300.00 - $500.00</a></li>
+                        <li><a href="#">$500.00+</a></li>
+                    </ul>
+                    <form class="price-range">
+                        <input type="number" name="min_price" class="min_price text-center"
+                               placeholder="$min"><span class="delimiter">-</span><input type="number" name="max_price" class="max_price text-center"
+                                                                                         placeholder="$max"><a href="#"
+                                                                                                               class="btn btn-primary btn-rounded">Go</a>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+        <!-- End of Sidebar Content -->
+    </div>
+    <!-- End of Sidebar Content -->
+</aside>
+
 <div class="main-content">
     <!-- Start of Shop Banner -->
     <div class="owl-carousel owl-theme"
@@ -110,34 +128,28 @@
             }
         }
     </div>
-
     <div class="toolbox toolbox-pagination justify-content-between">
         <p class="showing-info mb-2 mb-sm-0">
-            Showing<span>1-12 of 60</span>Products
+            Showing <span>@((currentPage - 1) * pageSize + 1)-@Math.Min(currentPage * pageSize, totalCount)</span> of @totalCount Products
         </p>
-        <div>
-            <button @onclick="PreviousPage" disabled="@isFirstPage">Previous</button>
-            <span>Page @currentPage of @totalPages</span>
-            <button @onclick="NextPage" disabled="@isLastPage">Next</button>
-        </div>
-        @*  <ul class="pagination">
-        <li class="prev disabled">
-        <button @onclick="GoToPreviousPage" disabled="@(currentPage == 1)" aria-label="Previous" tabindex="-1" aria-disabled="true">
-        <i class="w-icon-long-arrow-left"></i>Prev
-        </button>
-        </li>
-        <li class="page-item active">
-        <a class="page-link" href="#">1</a>
-        </li>
-        <li class="page-item">
-        <a class="page-link" href="#">2</a>
-        </li>
-        <li class="next">
-        <button @onclick="GoToNextPage" disabled="@(currentPage * pageSize >= totalCount)" aria-label="Next">
-        Next<i class="w-icon-long-arrow-right"></i>
-        </button>
-        </li>
-        </ul> *@
+        <ul class="pagination">
+            <li class="prev @(currentPage == 1 ? "disabled" : "")">
+                <a aria-label="Previous" @onclick="() => ChangePage(currentPage - 1)" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                    <i class="w-icon-long-arrow-left"></i>Prev
+                </a>
+            </li>
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link cursor" @onclick="() => ChangePage(i)">@i</a>
+                </li>
+            }
+            <li class="next @(currentPage == totalPages ? "disabled" : "")">
+                <a aria-label="Next" @onclick="() => ChangePage(currentPage + 1)">
+                    Next <i class="w-icon-long-arrow-right"></i>
+                </a>
+            </li>
+        </ul>
     </div>
 </div>
 
@@ -145,37 +157,49 @@
     private IEnumerable<BannerProductDto> bannerProducts;
     private IEnumerable<ProductDto> products;
     private int currentPage = 1;
-    private int pageSize = 20;
+    private int pageSize = 10;
     private int totalPages;
-    private bool isFirstPage => currentPage == 1;
-    private bool isLastPage => currentPage == totalPages;
+
+    private string categoryId;
+    private int totalCount;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadProductsFromUrl();
-        bannerProducts = await ProductServices.GetAllBannerPositionProductPopup(BannerProductWithPopupPosition.Product);
-
-    }
-
-    // Đọc tham số từ URL và gọi API
-    private async Task LoadProductsFromUrl()
-    {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var queryParameters = QueryHelpers.ParseQuery(uri.Query);
 
-        if (queryParameters.TryGetValue("pageNumber", out var pageNumberValue))
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("c1", out var c1Id))
         {
-            currentPage = int.Parse(pageNumberValue);
+            categoryId = c1Id!;
+            await LoadProductsCategoryType();
+        }
+        else if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("c2", out var c2Id))
+        {
+            categoryId = c2Id!;
+            await LoadProductsCategoryType();
         }
 
-        if (queryParameters.TryGetValue("pageSize", out var pageSizeValue))
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("currentPage", out var page))
         {
-            pageSize = int.Parse(pageSizeValue);
+            int.TryParse(page, out currentPage);
         }
 
         await LoadProducts();
+        await LoadBannerProducts();
     }
-    // Hàm gọi API để lấy danh sách sản phẩm
+
+    private async Task LoadBannerProducts()
+    {
+        var response = await ProductServices.GetAllBannerPositionProductPopup(BannerProductWithPopupPosition.Product);
+        if (response != null && response.Any())
+        {
+            bannerProducts = response.ToList();
+        }
+        else
+        {
+            bannerProducts = new List<BannerProductDto>();
+        }
+    }
+
     private async Task LoadProducts()
     {
         var response = await ProductServices.GetAllProductsPagination(currentPage, pageSize);
@@ -183,35 +207,38 @@
         if (response != null && response.Success)
         {
             products = response.Data.Products;
-            totalPages = (int)Math.Ceiling((double)response.Data.TotalCount / pageSize);
+            totalCount = response.Data.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         }
-    }
-    // Điều hướng đến trang trước đó
-    private async Task PreviousPage()
-    {
-        Console.WriteLine("Previous Page clicked");
-        if (!isFirstPage)
+        else
         {
-            currentPage--;
-            UpdateUrl();
-            await LoadProducts();
+            products = new List<ProductDto>();
         }
     }
 
-    // Điều hướng đến trang tiếp theo
-    private async Task NextPage()
+    private async Task LoadProductsCategoryType()
     {
-        Console.WriteLine("Previous Page clicked");
-        if (!isLastPage)
+        var response = await ProductServices.GetProductsByCategoryIdAsync(new Guid(categoryId), currentPage, pageSize);
+        if (response != null && response.Success)
         {
-            currentPage++;
-            UpdateUrl();
-            await LoadProducts();
+            totalCount = response.Data.TotalCount;
+            products = response.Data.Products;
+        }
+        else
+        {
+            products = new List<ProductDto>();
         }
     }
-    // Cập nhật URL với tham số trang mới
-    private void UpdateUrl()
+
+    private async Task ChangePage(int newPage)
     {
-        NavigationManager.NavigateTo($"/san-pham?pageNumber={currentPage}&pageSize={pageSize}", true);
+        if (newPage < 1 || newPage > totalPages)
+        {
+            return; // Nếu trang mới không hợp lệ, không làm gì cả
+        }
+
+        currentPage = newPage; // Cập nhật trang hiện tại
+        NavigationManager.NavigateTo($"/san-pham?currentPage={currentPage}&pageSize={pageSize}"); // Cập nhật URL
+        await LoadProducts(); // Tải lại sản phẩm cho trang mới
     }
 }

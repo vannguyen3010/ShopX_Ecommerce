@@ -172,7 +172,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllProductsPagination")]
-        public async Task<IActionResult> GetAllProductsPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAllProductsPagination([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             try
             {
@@ -462,16 +462,19 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
 
+                // Tạo đối tượng ProductResponseDto
+                var productResponse = new ProductResponseDto
+                {
+                    TotalCount = totalCount,
+                    Products = productDtos
+                };
+
                 // Trả về response với dữ liệu phân trang và số lượng sản phẩm
                 return Ok(new
                 {
                     success = true,
                     message = "Products retrieved successfully.",
-                    data = new
-                    {
-                        totalCount,
-                        products = productDtos
-                    }
+                    data = productResponse
                 });
             }
             catch (Exception ex)
