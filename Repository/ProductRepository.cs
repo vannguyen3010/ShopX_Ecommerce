@@ -167,16 +167,72 @@ namespace Repository
                         .ToListAsync();
         }
 
-        public async Task SaveAsync()
-        {
-            await _dbContext.SaveChangesAsync();
-        }
-
         public async Task<IEnumerable<Product>> GetRelatedProductsAsync(Guid productId, Guid categoryId, bool trackChanges)
         {
             return await _dbContext.Products
                     .Where(x => x.CategoryId == categoryId && x.Id != productId)
                     .ToListAsync();
         }
+
+        public async Task<(IEnumerable<Product>, int totalCount)> GetProductsByPriceRangeAsync(decimal minPrice, decimal? maxPrice = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var query = _dbContext.Products.AsQueryable();
+
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice && p.Price <= maxPrice.Value);
+            }
+            else
+            {
+                query = query.Where(p => p.Price >= minPrice);
+            }
+            var totalCount = await query.CountAsync();
+
+            var products = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (products, totalCount);
+        }
+
+        public async Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null)
+        {
+            var query = _dbContext.Products.AsQueryable();
+
+            //Lọc theo giá tối thiểu
+            if(minPrice.HasValue)
+            {
+                query = query.Where(x => x.Price >= minPrice.Value);
+            }
+
+            //Lọc theo gía tối đa
+            if(maxPrice.HasValue)
+            {
+                query = query.Where(x => x.Price <= maxPrice.Value);
+            }
+
+            // Lọc theo danh mục sản phẩm (Guid)
+            if (categoryId.HasValue)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value).Include(x => x.ProductImages);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Phân trang
+            var products = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (products, totalCount);
+        }
+
+        public async Task SaveAsync()
+        {
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }

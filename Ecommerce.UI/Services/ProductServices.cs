@@ -7,6 +7,7 @@ using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Shared.DTO.CommentProduct;
 using System.Text;
+using System;
 
 namespace Ecommerce.UI.Services
 {
@@ -75,6 +76,47 @@ namespace Ecommerce.UI.Services
             {
                 var data = await response.Content.ReadFromJsonAsync<ApiResponses>();
                 return data!;
+            }
+            return null;
+        }
+
+        public async Task<ApiResponse<ProductResponseDto>> GetAllProductsByPrice(decimal minPrice, decimal? maxPrice, int pageNumber, int pageSize)
+        {
+            var response = await _httpClient.GetAsync($"/api/Product/GetAllProductsByPrice?=min?minPrice={minPrice}&maxPrice={maxPrice}&pageNumber={pageNumber}&pageSize={pageSize}");
+            if(response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<ProductResponseDto>>();
+                return result;
+            }
+            return new ApiResponse<ProductResponseDto>
+            {
+                Success = false,
+                Message = "Không thể tải sản phẩm."
+            };
+        }
+        
+        public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null)
+        {
+            var query = $"/api/Product/GetListProduct?pageNumber={pageNumber}&pageSize={pageSize}";
+
+            if(minPrice.HasValue)
+            {
+                query += $"&minPrice={minPrice.Value}";
+            }
+            if (maxPrice.HasValue)
+            {
+                query += $"&maxPrice={maxPrice.Value}";
+            }
+            if (categoryId.HasValue)
+            {
+                query += $"&categoryId={categoryId.Value}";
+            }
+
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<ProductResponseDto>>();
+                return result;
             }
             return null;
         }
