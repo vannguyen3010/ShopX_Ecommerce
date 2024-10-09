@@ -99,7 +99,7 @@ namespace Ecommerce.UI.Services
         {
             var query = $"/api/Product/GetListProduct?pageNumber={pageNumber}&pageSize={pageSize}";
 
-            if(minPrice.HasValue)
+            if (minPrice.HasValue)
             {
                 query += $"&minPrice={minPrice.Value}";
             }

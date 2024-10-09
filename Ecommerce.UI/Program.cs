@@ -18,6 +18,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<HomeServices>();
 builder.Services.AddScoped<BaseServices>();
+builder.Services.AddScoped<IntroduceServices>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

@@ -1,4 +1,33 @@
 ﻿@page "/gioi-thieu"
+@inject IntroduceServices IntroduceServices
+
+@code{
+    private IEnumerable<IntroduceDto> introduces;
+
+
+    private Guid? categoryId = null;
+    private string keyword = null;
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListProducts();
+    }
+    private async Task LoadListProducts()
+    {
+        var response = await IntroduceServices.GetListIntroduce(currentPage, pageSize, categoryId, keyword);
+
+        if (response != null && response.Success)
+        {
+            introduces = response.Data;
+        }
+        else
+        {
+            introduces = new List<IntroduceDto>();
+        }
+    }
+}
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
 
@@ -6,7 +35,7 @@
     <!-- Start of Page Header -->
     <div class="page-header">
         <div class="container">
-            <h1 class="page-title mb-0">Giới thiệu</h1>
+            <h1 class="page-title mb-0">Grid Sidebar</h1>
         </div>
     </div>
     <!-- End of Page Header -->
@@ -16,7 +45,7 @@
             <ul class="breadcrumb">
                 <li><a href="demo1.html">Home</a></li>
                 <li><a href="blog.html">Blog</a></li>
-                <li>List</li>
+                <li>Grid Sidebar</li>
             </ul>
         </div>
     </nav>
@@ -26,34 +55,39 @@
         <div class="container">
             <div class="row gutter-lg">
                 <div class="main-content">
-                    <article class="post post-list post-listing mb-md-10 mb-6 pb-2 overlay-zoom mb-4">
-                        <figure class="post-media br-sm">
-                            <a href="post-single.html">
-                                <img src="assets/images/blog/classic/1.jpg" width="930"
-                                     height="500" alt="blog">
-                            </a>
-                        </figure>
-                        <div class="post-details">
-                            <div class="post-cats text-primary">
-                                <a href="#">Fashion</a>
-                            </div>
-                            <h4 class="post-title">
-                                <a href="post-single.html">New found the men dress for summer</a>
-                            </h4>
-                            <div class="post-content">
-                                <p>
-                                    Sed pretium, ligula sollicitudin laoreet viverra, tortor libero sodales leo,
-                                    eget blandit nunc tortor eu nibh. Suspendisse potenti.Sed egstas, ant at
-                                    vulputate volutpat, uctus metus libero eu augue, vitae luctus…
-                                </p>
-                                <a href="post-single.html" class="btn btn-link btn-primary">(read more)</a>
-                            </div>
-                            <div class="post-meta">
-                                by <a href="#" class="post-author">John Doe</a>
-                                - <a href="#" class="post-date">03.05.2021</a>
-                            </div>
-                        </div>
-                    </article>
+                    <div class="row cols-sm-2">
+                        @if(introduces != null && introduces.Any())
+                        {
+                            @foreach (var item in introduces)
+                            {
+                                <article class="post post-grid-type overlay-zoom mb-6 fashion">
+                                    <figure class="post-media br-sm">
+                                        <a href="post-single.html">
+                                            <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" width="600"
+                                                 height="420" alt="blog" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                        </a>
+                                    </figure>
+                                    <div class="post-details">
+                                        <div class="post-cats text-primary">
+                                            <a href="#">@item.CategoryName</a>
+                                        </div>
+                                        <h4 class="post-title">
+                                            <a href="post-single.html">@item.Name</a>
+                                        </h4>
+                                        <div class="post-content no_wrap_3">
+                                            <p>
+                                                @item.Description
+                                            </p>
+                                        </div>
+                                        <div class="post-meta">
+                                           <a href="#" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                        </div>
+                                    </div>
+                                </article>
+                            }
+                        }
+                       
+                    </div>
                     <ul class="pagination justify-content-center">
                         <li class="prev disabled">
                             <a href="#" aria-label="Previous" tabindex="-1" aria-disabled="true">
@@ -94,6 +128,113 @@
                                             <i class="w-icon-search"></i>
                                         </button>
                                     </form>
+                                </div>
+                            </div>
+                            <!-- End of Widget search form -->
+                            <div class="widget widget-categories mb-0">
+                                <h3 class="widget-title bb-no">Categories</h3>
+                                <ul class="widget-body filter-items search-ul">
+                                    <li><a href="blog.html">Clothes</a></li>
+                                    <li><a href="blog.html">Entertainment</a></li>
+                                    <li><a href="blog.html">Fashion</a></li>
+                                    <li><a href="blog.html">Lifestyle</a></li>
+                                    <li><a href="blog.html">Others</a></li>
+                                    <li><a href="blog.html">Shoes</a></li>
+                                    <li><a href="blog.html">Technology</a></li>
+                                </ul>
+                            </div>
+                            <!-- End of Widget categories -->
+                            <div class="widget widget-posts">
+                                <h3 class="widget-title bb-no">Popular Posts</h3>
+                                <div class="widget-body">
+                                    <div class="owl-carousel owl-theme owl-nav-top row cols-1" data-owl-options="{
+                                                'nav': true,
+                                                'dots': false,
+                                                'margin': 20
+                                            }">
+                                        <div class="widget-col">
+                                            <div class="post-widget mb-4">
+                                                <figure class="post-media br-sm">
+                                                    <img src="assets/images/blog/sidebar/1.jpg" alt="150" height="150" />
+                                                </figure>
+                                                <div class="post-details">
+                                                    <div class="post-meta">
+                                                        <a href="#" class="post-date">March 1, 2021</a>
+                                                    </div>
+                                                    <h4 class="post-title">
+                                                        <a href="post-single.html">Fashion tells about who you are from external point</a>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="post-widget mb-4">
+                                                <figure class="post-media br-sm">
+                                                    <img src="assets/images/blog/sidebar/2.jpg" alt="150" height="150" />
+                                                </figure>
+                                                <div class="post-details">
+                                                    <div class="post-meta">
+                                                        <a href="#" class="post-date">March 5, 2021</a>
+                                                    </div>
+                                                    <h4 class="post-title">
+                                                        <a href="post-single.html">New found the men dress for summer</a>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="post-widget mb-2">
+                                                <figure class="post-media br-sm">
+                                                    <img src="assets/images/blog/sidebar/3.jpg" alt="150" height="150" />
+                                                </figure>
+                                                <div class="post-details">
+                                                    <div class="post-meta">
+                                                        <a href="#" class="post-date">March 1, 2021</a>
+                                                    </div>
+                                                    <h4 class="post-title">
+                                                        <a href="post-single.html">Cras ornare tristique elit</a>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="widget-col">
+                                            <div class="post-widget mb-4">
+                                                <figure class="post-media br-sm">
+                                                    <img src="assets/images/blog/sidebar/4.jpg" alt="150" height="150" />
+                                                </figure>
+                                                <div class="post-details">
+                                                    <div class="post-meta">
+                                                        <a href="#" class="post-date">March 1, 2021</a>
+                                                    </div>
+                                                    <h4 class="post-title">
+                                                        <a href="post-single.html">Vivamus vestibulum ntulla nec ante</a>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="post-widget mb-4">
+                                                <figure class="post-media br-sm">
+                                                    <img src="assets/images/blog/sidebar/5.jpg" alt="150" height="150" />
+                                                </figure>
+                                                <div class="post-details">
+                                                    <div class="post-meta">
+                                                        <a href="#" class="post-date">March 5, 2021</a>
+                                                    </div>
+                                                    <h4 class="post-title">
+                                                        <a href="post-single.html">Fusce lacinia arcuet nulla</a>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                            <div class="post-widget mb-2">
+                                                <figure class="post-media br-sm">
+                                                    <img src="assets/images/blog/sidebar/6.jpg" alt="150" height="150" />
+                                                </figure>
+                                                <div class="post-details">
+                                                    <div class="post-meta">
+                                                        <a href="#" class="post-date">March 1, 2021</a>
+                                                    </div>
+                                                    <h4 class="post-title">
+                                                        <a href="post-single.html">Comes a cool blog post with Images</a>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
