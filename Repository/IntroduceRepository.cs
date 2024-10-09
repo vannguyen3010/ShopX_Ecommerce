@@ -93,5 +93,34 @@ namespace Repository
 
             return (products, totalCount);
         }
+
+        public async Task<IEnumerable<Introduce>> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string? keyword = null)
+        {
+            var introducesQuery = _dbContext.Introduces.AsQueryable();
+
+            //Lọc bài viết theo danh mục
+            if (categoryId.HasValue)
+            {
+                introducesQuery = introducesQuery.Where(x => x.CategoryId == categoryId.Value);
+            }
+
+            //Lọc theo keyword nếu có
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                string lowerCaseName = keyword.ToLower();
+
+                introducesQuery = introducesQuery.Where(x => x.Name.ToLower().Contains(lowerCaseName));
+            }
+
+            //Phân trang
+            var introduces = await introducesQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return introduces;
+        }
+
+
     }
 }

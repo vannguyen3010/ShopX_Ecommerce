@@ -5,6 +5,7 @@ namespace Contracts
     public interface IIntroduceRepository
     {
         Task<Introduce> CreateIntroduceAsync(Introduce introduce);
+        Task<IEnumerable<Introduce>> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string ? keyword = null);
         Task<(IEnumerable<Introduce> Introducdes, int Total)> GetAllIntroducePaginationAsync(int pageNumber, int pageSize);
         Task<IEnumerable<Introduce>> GetAllIntroduceIsHotAsync();
         Task<Introduce> GetIntroduceByIdAsync(Guid introduceId, bool trackChanges);

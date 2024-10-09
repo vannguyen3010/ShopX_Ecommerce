@@ -122,6 +122,41 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetListIntroduce")]
+        public async Task<IActionResult> GetListIntroduce([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] Guid? categoryId = null, [FromQuery] string? keyword = null)
+        {
+            try
+            {
+                var introduces = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword);
+
+                if(!introduces.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không có bài viết",
+                        Data = null
+                    });
+                }
+
+                var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = introduceDtos
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllIntroducesPagination action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
         [Route("GetAllIntroducesPagination")]
         public async Task<IActionResult> GetAllIntroducesPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
