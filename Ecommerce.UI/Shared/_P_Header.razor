@@ -6,10 +6,12 @@
 @code
 {
     private IEnumerable<CateProductDto> cateProducts;
+    private IEnumerable<CategoryIntroduceDto> cateIntroduces;
 
     protected override async Task OnInitializedAsync()
     {
         cateProducts = await BaseServices.GetAllCategoryProducts();
+        cateIntroduces = await BaseServices.GetAllCategoryIntroduces();
     }
     private async Task Logout()
     {
@@ -153,12 +155,16 @@
                             <li>
                                 <a href="/gioi-thieu">Giới Thiệu</a>
                                 <ul>
-                                    <li>
-                                        <a href="blog-grid-3cols.html">Grid</a>
-                                        <ul>
-                                            <li><a href="blog-grid-2cols.html">Grid 2 columns</a></li>
-                                        </ul>
-                                    </li>
+                                    @if (cateIntroduces != null && cateIntroduces.Any())
+                                    {
+                                        @foreach (var item in cateIntroduces)
+                                        {
+                                            <li>
+                                                <a href="/gioi-thieu?c=@item.Id">@item.Name</a>
+                                            </li>
+                                        }
+                                    }
+                                  
                                 </ul>
                             </li>
                             <li>

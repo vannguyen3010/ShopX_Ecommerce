@@ -23,7 +23,11 @@ namespace Repository
 
         public async Task<IEnumerable<CategoryIntroduce>> GetAllCategoryIntroduceAsync(bool trackChanges)
         {
-            return await FindAll(trackChanges).OrderBy(x => x.Id).ToListAsync();
+            return await _dbContext.CategoryIntroduces
+                    .Include(x => x.Introduces)
+                    .OrderBy(x => x.Id)
+                    .ToListAsync();
+
         }
 
         public async Task<CategoryIntroduce> GetCategoryIntroduceByIdAsync(Guid categoryId, bool trackChanges)

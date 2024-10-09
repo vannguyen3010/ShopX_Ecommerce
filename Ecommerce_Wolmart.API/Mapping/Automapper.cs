@@ -78,7 +78,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CreateCategoryIntroDto, CategoryIntroduce>();
 
-            CreateMap<CategoryIntroduce, CategoryIntroduceDto>();
+            CreateMap<CategoryIntroduce, CategoryIntroduceDto>()
+                .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.Introduces.Count()));
 
             CreateMap<UpdateCateIntroDto, CategoryIntroduceDto>();
 

@@ -68,32 +68,6 @@ namespace Ecommerce.UI.Services
             var response = await _httpClient.PostAsJsonAsync("/api/CommentProduct/CreateCommentProduct", commentDto);
             return response.IsSuccessStatusCode;
         }
-
-        public async Task<ApiResponses> GetProductsByCategoryIdAsync(Guid categoryId, int pageNumber , int pageSize)
-        {
-            var response = await _httpClient.GetAsync($"/api/Product/GetProductsByCategoryId/{categoryId}?pageNumber={pageNumber}&pageSize={pageSize}");
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadFromJsonAsync<ApiResponses>();
-                return data!;
-            }
-            return null;
-        }
-
-        public async Task<ApiResponse<ProductResponseDto>> GetAllProductsByPrice(decimal minPrice, decimal? maxPrice, int pageNumber, int pageSize)
-        {
-            var response = await _httpClient.GetAsync($"/api/Product/GetAllProductsByPrice?=min?minPrice={minPrice}&maxPrice={maxPrice}&pageNumber={pageNumber}&pageSize={pageSize}");
-            if(response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<ApiResponse<ProductResponseDto>>();
-                return result;
-            }
-            return new ApiResponse<ProductResponseDto>
-            {
-                Success = false,
-                Message = "Không thể tải sản phẩm."
-            };
-        }
         
         public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null)
         {

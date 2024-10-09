@@ -1,6 +1,6 @@
-﻿using Shared.DTO.CateProduct;
+﻿using Shared.DTO.CategoryIntroduce;
+using Shared.DTO.CateProduct;
 using Shared.DTO.Response;
-using System.Net.Http;
 
 namespace Ecommerce.UI.Services
 {
@@ -23,6 +23,19 @@ namespace Ecommerce.UI.Services
             else
             {
                 return Enumerable.Empty<CateProductDto>();
+            }
+        }
+        public async Task<IEnumerable<CategoryIntroduceDto>> GetAllCategoryIntroduces()
+        {
+            var response = await _httpClient.GetAsync("/api/CategoryIntroduce/GetAllCategory");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<CategoryIntroduceDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<CategoryIntroduceDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<CategoryIntroduceDto>();
             }
         }
     }
