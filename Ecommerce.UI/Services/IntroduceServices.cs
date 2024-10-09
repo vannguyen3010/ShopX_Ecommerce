@@ -1,4 +1,5 @@
 ﻿using Shared.DTO.Introduce;
+using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce.UI.Services
@@ -33,6 +34,19 @@ namespace Ecommerce.UI.Services
                 return result;
             }
             return null;
+        }
+        public async Task<IEnumerable<IntroduceDto>> GetListIntroduceIsHotAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/Introduce/GetAllIntroduceIsHot");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<IntroduceDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<IntroduceDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<IntroduceDto>();
+            }
         }
     }
 }

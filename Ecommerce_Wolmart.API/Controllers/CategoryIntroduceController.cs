@@ -95,8 +95,8 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var categorys = await _repository.CategoryIntroduce.GetAllCategoryIntroduceAsync(trackChanges: false);
-                if (categorys == null)
+                var categories = await _repository.CategoryIntroduce.GetAllCategoryIntroduceAsync(trackChanges: false);
+                if (categories == null)
                 {
                     _logger.LogError("Không có danh mục nào!");
                     return NotFound(new ApiResponse<Object>
@@ -107,11 +107,14 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+
+                var categoryDtos = _mapper.Map<IEnumerable<CategoryIntroduceDto>>(categories);
+
                 return Ok(new ApiResponse<IEnumerable<CategoryIntroduceDto>>
                 {
                     Success = true,
                     Message = "Category retrieved successfully.",
-                    Data = _mapper.Map<IEnumerable<CategoryIntroduceDto>>(categorys)
+                    Data = categoryDtos
                 });
             }
             catch (Exception ex)
