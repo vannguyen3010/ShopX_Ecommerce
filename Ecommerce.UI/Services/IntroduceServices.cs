@@ -12,9 +12,9 @@ namespace Ecommerce.UI.Services
             _httpClient = httpClient;
         }
         
-        public async Task<ApiResponse<IEnumerable<IntroduceDto>>> GetListIntroduce(int pageNumber = 1, int pageSize = 10, Guid? categoryId = null, string? keyword = null)
+        public async Task<ApiResponse<IntroduceResponse>> GetListIntroduce(int pageNumber = 1, int pageSize = 10, Guid? categoryId = null, string? keyword = null)
         {
-            var query = $"?pageNumber={pageNumber}&pageSize={pageSize}";
+            var query = $"/api/Introduce/GetListIntroduce?pageNumber={pageNumber}&pageSize={pageSize}";
 
             if (categoryId.HasValue)
             {
@@ -26,8 +26,13 @@ namespace Ecommerce.UI.Services
                 query += $"&keyword={keyword}";
             }
 
-            var response = await _httpClient.GetFromJsonAsync<ApiResponse<IEnumerable<IntroduceDto>>>($"/api/Introduce/GetListIntroduce{query}");
-            return response;
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<IntroduceResponse>>();
+                return result;
+            }
+            return null;
         }
     }
 }

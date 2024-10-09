@@ -167,8 +167,10 @@
             </li>
             @for (int i = 1; i <= totalPages; i++)
             {
-                <li class="page-item @(i == currentPage ? "active" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(i))">@i</a>
+                var pageNumber = i;  // Tạo biến tạm để lưu giá trị của trang hiện tại
+
+                <li class="page-item @(pageNumber == currentPage ? "active" : "")">
+                    <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
                 </li>
             }
             <li class="next @(currentPage == totalPages ? "disabled" : "")">

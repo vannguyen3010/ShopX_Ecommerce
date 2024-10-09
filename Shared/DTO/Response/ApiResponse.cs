@@ -1,4 +1,5 @@
-﻿using Shared.DTO.Product;
+﻿using Shared.DTO.Introduce;
+using Shared.DTO.Product;
 
 namespace Shared.DTO.Response
 {
@@ -25,5 +26,10 @@ namespace Shared.DTO.Response
     {
         public int TotalCount { get; set; }
         public IEnumerable<ProductDto> Products { get; set; }
+    }
+    public class IntroduceResponse
+    {
+        public int TotalCount { get; set; }
+        public IEnumerable<IntroduceDto> Introduces { get; set; }
     }
 }
