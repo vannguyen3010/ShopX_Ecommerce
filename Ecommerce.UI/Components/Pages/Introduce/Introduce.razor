@@ -1,33 +1,6 @@
 ﻿@page "/gioi-thieu"
 @inject IntroduceServices IntroduceServices
-
-@code{
-    private IEnumerable<IntroduceDto> introduces;
-
-
-    private Guid? categoryId = null;
-    private string keyword = null;
-    private int currentPage = 1;
-    private int pageSize = 10;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadListProducts();
-    }
-    private async Task LoadListProducts()
-    {
-        var response = await IntroduceServices.GetListIntroduce(currentPage, pageSize, categoryId, keyword);
-
-        if (response != null && response.Success)
-        {
-            introduces = response.Data;
-        }
-        else
-        {
-            introduces = new List<IntroduceDto>();
-        }
-    }
-}
+@rendermode InteractiveServer
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
 
@@ -89,20 +62,23 @@
                        
                     </div>
                     <ul class="pagination justify-content-center">
-                        <li class="prev disabled">
-                            <a href="#" aria-label="Previous" tabindex="-1" aria-disabled="true">
-                                <i class="w-icon-long-arrow-left"></i>Prev
+                        <li class="prev @(currentPage == 1 ? "disabled" : "")">
+                            <a href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                <i class="w-icon-long-arrow-left"></i> Prev
                             </a>
                         </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="next">
-                            <a href="#" aria-label="Next">
-                                Next<i class="w-icon-long-arrow-right"></i>
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                var pageNumber = i;  // Tạo biến tạm để lưu giá trị của trang hiện tại
+
+                                <li class="page-item @(pageNumber == currentPage ? "active" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                </li>
+                            }
+
+                        <li class="next @(currentPage == totalPages ? "disabled" : "")">
+                            <a href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                Next <i class="w-icon-long-arrow-right"></i>
                             </a>
                         </li>
                     </ul>
@@ -245,3 +221,100 @@
     </div>
     <!-- End of Page Content -->
 </main>
+
+
+@code {
+    private IEnumerable<IntroduceDto> introduces;
+
+
+    private Guid? categoryId = null;
+    private string? keyword = null;
+    private int currentPage = 1;
+    private int pageSize = 1;
+
+    private int totalPages;
+    private int totalCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("pageNumber", out var page))
+        {
+            int.TryParse(page, out currentPage);
+        }
+
+        await LoadListIntroduces();
+    }
+    private async Task LoadListIntroduces()
+    {
+        var response = await IntroduceServices.GetListIntroduce(currentPage, pageSize, categoryId, keyword);
+
+        if (response != null && response.Success)
+        {
+            introduces = response.Data.Introduces;
+            totalCount = response.Data.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        }
+        else
+        {
+            introduces = new List<IntroduceDto>();
+        }
+    }
+    private async Task ChangePage(int page)
+    {
+        // Chỉ cập nhật nếu page khác currentPage
+        if (page != currentPage)
+        {
+            currentPage = page;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse(e.Value.ToString());
+
+        currentPage = 1;
+        await UpdateUrlAndLoadProducts();
+    }
+
+    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
+    private async Task UpdateUrlAndLoadProducts()
+    {
+        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
+        var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = currentPage.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+
+        // Tạo URL query string
+        var newUrl = QueryHelpers.AddQueryString("gioi-thieu", queryParameters!);
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+
+        // Tải lại danh sách sản phẩm
+        await LoadListIntroduces();
+    }
+}

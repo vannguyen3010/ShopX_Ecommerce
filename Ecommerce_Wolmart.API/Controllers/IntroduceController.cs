@@ -127,7 +127,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var introduces = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword);
+                var (introduces, totalCount) = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword);
 
                 if(!introduces.Any())
                 {
@@ -145,7 +145,11 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     success = true,
                     message = "Products retrieved successfully.",
-                    data = introduceDtos
+                    data = new
+                    {
+                        totalCount,
+                        introduces = introduceDtos
+                    }
                 });
             }
             catch (Exception ex)

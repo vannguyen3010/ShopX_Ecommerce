@@ -94,7 +94,7 @@ namespace Repository
             return (products, totalCount);
         }
 
-        public async Task<IEnumerable<Introduce>> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string? keyword = null)
+        public async Task<(IEnumerable<Introduce> Introduces, int Total)> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string? keyword = null)
         {
             var introducesQuery = _dbContext.Introduces.AsQueryable();
 
@@ -112,13 +112,15 @@ namespace Repository
                 introducesQuery = introducesQuery.Where(x => x.Name.ToLower().Contains(lowerCaseName));
             }
 
+            int totalCount = await introducesQuery.CountAsync();
+
             //Phân trang
             var introduces = await introducesQuery
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return introduces;
+            return (introduces, totalCount);
         }
 
 
