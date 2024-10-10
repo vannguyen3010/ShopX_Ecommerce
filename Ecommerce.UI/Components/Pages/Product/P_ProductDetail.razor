@@ -5,7 +5,7 @@
 
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
-
+<link href="css/product.css" rel="stylesheet" />
 <script src="controller/home.js"></script>
 
 @rendermode InteractiveServer
@@ -68,7 +68,7 @@
                                         <div class="product-meta">
                                             <div class="product-categories">
                                                 Danh mục:
-                                                <span class="product-category"><a href="/san-pham/?c2=@product.CategoryId">@product.CategoryName</a></span>
+                                                <span class="product-category"><a class="category_product" href="/san-pham/?c2=@product.CategoryId">@product.CategoryName</a></span>
                                             </div>
                                         </div>
                                     </div>
@@ -139,7 +139,7 @@
                                         <div class="product-link-wrapper d-flex">
                                             <a href="#"
                                                class="btn-product-icon btn-wishlist w-icon-heart"><span></span></a>
-                                            <a href="#"
+                                            <a href="javascripts(void)"
                                                class="btn-product-icon btn-compare btn-icon-left w-icon-compare"><span></span></a>
                                         </div>
                                     </div>
@@ -773,7 +773,6 @@
         await LoadCommentProduct();
         await LoadListProductIshot();
     }
-
 
     private async Task LoadListProductIshot()
     {

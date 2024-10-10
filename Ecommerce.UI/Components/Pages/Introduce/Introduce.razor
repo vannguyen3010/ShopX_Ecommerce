@@ -125,24 +125,6 @@
                                     }
                                 </div>
                             </div>
-                            <!-- End of Widget search form -->
-                            <div class="widget widget-categories mb-0">
-                                <h3 class="widget-title bb-no">Danh mục bài viết</h3>
-                                <ul class="widget-body filter-items search-ul">
-                                    @if (cateIntroduces != null && cateIntroduces.Any())
-                                    {
-                                        @foreach (var item in cateIntroduces)
-                                        {
-                                            <li class="position-relative">
-                                                <a href="/gioi-thieu?c=@item.Id">@item.Name</a>
-                                                <span class="category_introduce_item position-absolute">@item.TotalCount</span>
-                                            </li>
-                                        }
-                                    }
-                                   
-                                </ul>
-                            </div>
-                            <!-- End of Widget categories -->
                             <div class="widget widget-posts">
                                 <h3 class="widget-title bb-no">Bài viết nổi bật</h3>
                                 <div class="widget-body">

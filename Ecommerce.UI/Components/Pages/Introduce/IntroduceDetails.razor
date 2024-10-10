@@ -55,26 +55,22 @@
                         {
                             <h4 class="title title-lg font-weight-bold mt-10 pt-1 mb-5">Bài viết liên quan</h4>
                             <div class="post-slider owl-carousel owl-theme owl-nav-top row cols-lg-3 cols-md-4 cols-sm-3 cols-xs-2 cols-1 pb-2" data-owl-options="{
-                                'nav': true,
-                                'dots': false,
-                                'margin': 20,
-                                'responsive': {
-                                '0': {
-                                'items': 1
-                                },
-                                '576': {
-                                'items': 2
-                                },
-                                '768': {
-                                'items': 3
-                                },
-                                '992': {
-                                'items': 2
-                                },
-                                '1200': {
-                                'items': 3
-                                }
-                                }
+                                    'items': 3,
+                                    'loop': true,
+                                    'nav': true,
+                                    'dots': true,
+                                    'margin': 20,
+                                    'responsive': {
+                                        '0': {
+                                            'items': 1
+                                        },
+                                        '576': {
+                                            'items': 2
+                                        },
+                                        '768': {
+                                            'items': 3
+                                        }
+                                    }
                                 }">
                                 @foreach (var item in relatedIntroduces)
                                 {
@@ -85,17 +81,26 @@
                                                      height="190" style="background-color: #bcbcb4;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
                                             </a>
                                         </figure>
-                                        <div class="post-details text-center">
-                                            <div class="post-meta">
-                                                <a href="#" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                        <div class="post-details">
+                                            <h4 class="post-title row d-flex">
+                                                <a class="col-6" href="/gioi-thieu/@item.NameSlug/@item.id">@item.CategoryName</a>
+                                                <span class="col-6 fs-4 text-primary">
+                                                    <i class="far fa-calendar"></i>
+                                                    @item.CreatedAt.ToString("dd-MM-yyyy")
+                                                </span>
+                                            </h4>
+                                            <div class="post-content">
+                                                <span class="no_wrap_2 fs-5">@item.Description</span>
                                             </div>
-                                            <h4 class="post-title mb-3"><a href="post-single.html">@item.Name</a></h4>
+                                            <a href="/gioi-thieu/@item.NameSlug/@item.id" class="btn btn-link btn-dark btn-underline mt-3">
+                                                Xem thêm<i class="w-icon-long-arrow-right"></i>
+                                            </a>
                                         </div>
                                     </div>
                                 }
-
                             </div>
                         }
+
 
                     </div>
                     <!-- End of Main Content -->
