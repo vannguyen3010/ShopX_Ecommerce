@@ -39,7 +39,20 @@ namespace Repository
 
         public async Task<Introduce> GetIntroduceByIdAsync(Guid introduceId, bool trackChanges)
         {
-            return await FindByCondition(introduce => introduce.id.Equals(introduceId), trackChanges).FirstOrDefaultAsync();
+            //return await FindByCondition(introduce => introduce.id.Equals(introduceId), trackChanges).FirstOrDefaultAsync();
+            if (trackChanges)
+            {
+                return await _dbContext.Introduces
+                    .Include(x => x.CategoryIntroduce)
+                    .FirstOrDefaultAsync(x => x.Id == introduceId);
+            }
+            else
+            {
+                return await _dbContext.Introduces
+                 .AsNoTracking()
+                .Include(x => x.CategoryIntroduce)
+                .FirstOrDefaultAsync(x => x.Id == introduceId);
+            }
         }
 
         public void UpdateIntroduce(Introduce introduce)
@@ -123,6 +136,11 @@ namespace Repository
             return (introduces, totalCount);
         }
 
-
+        public async Task<IEnumerable<Introduce>> GetRelatedIntroducesAsync(Guid introduceId, Guid categoryId, bool trackChanges)
+        {
+            return await _dbContext.Introduces
+                  .Where(x => x.CategoryId == categoryId && x.Id != introduceId)
+                  .ToListAsync();
+        }
     }
 }

@@ -297,12 +297,19 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var introduceResult = _mapper.Map<IntroduceDto>(introduce);
-                return Ok(new ApiResponse<IntroduceDto>
+                // Lấy danh sách bài viết liên quan (ví dụ: cùng danh mục)
+                var relateIntroduces = await _repository.Introduce.GetRelatedIntroducesAsync(id, introduce.CategoryId, trackChanges: true);
+
+                var introduceDto = _mapper.Map<IntroduceDto>(introduce);
+
+                var introduceResult = _mapper.Map<IEnumerable<IntroduceDto>>(relateIntroduces);
+
+                return Ok(new ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>
                 {
                     Success = true,
-                    Message = "Banner Products retrieved successfully.",
-                    Data = introduceResult
+                    Message = "Introduce retrieved successfully.",
+                    Data = introduceDto,
+                    Data2nd = introduceResult // Trả về bài viết liên quan trong Data2nd
                 });
             }
             catch (Exception ex)

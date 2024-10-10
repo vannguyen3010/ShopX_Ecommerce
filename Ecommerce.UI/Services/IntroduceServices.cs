@@ -13,7 +13,7 @@ namespace Ecommerce.UI.Services
             _httpClient = httpClient;
         }
         
-        public async Task<ApiResponse<IntroduceResponse>> GetListIntroduce(int pageNumber = 1, int pageSize = 10, Guid? categoryId = null, string? keyword = null)
+        public async Task<ApiResponse<IntroduceResponse>> GetListIntroduceAsync(int pageNumber = 1, int pageSize = 10, Guid? categoryId = null, string? keyword = null)
         {
             var query = $"/api/Introduce/GetListIntroduce?pageNumber={pageNumber}&pageSize={pageSize}";
 
@@ -32,6 +32,15 @@ namespace Ecommerce.UI.Services
             {
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse<IntroduceResponse>>();
                 return result;
+            }
+            return null;
+        }
+        public async Task<ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>> GetIntroduceByIdAsync(Guid Id)
+        {
+            var response = await _httpClient.GetAsync($"api/Introduce/GetIntroduceById/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>>();
             }
             return null;
         }
