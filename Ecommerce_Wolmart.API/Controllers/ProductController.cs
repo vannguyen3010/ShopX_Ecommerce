@@ -172,11 +172,11 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetListProduct")]
-        public async Task<IActionResult> GetListProduct([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] decimal? minPrice = null, [FromQuery] decimal? maxPrice = null, [FromQuery] Guid? categoryId = null, string? keyword = null)
+        public async Task<IActionResult> GetListProduct([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] decimal? minPrice = null, [FromQuery] decimal? maxPrice = null, [FromQuery] Guid? categoryId = null, string? keyword = null, int? type = null)
         {
             try
             {
-                var (products, totalCount) = await _repository.Product.GetListProducAsync(pageNumber, pageSize, minPrice, maxPrice,categoryId, keyword);
+                var (products, totalCount) = await _repository.Product.GetListProducAsync(pageNumber, pageSize, minPrice, maxPrice,categoryId, keyword, type);
 
                 if(!products.Any())
                 {

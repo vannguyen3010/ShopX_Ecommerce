@@ -174,12 +174,25 @@ namespace Repository
                     .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null)
+        public async Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null, int? type = null)
         {
             var query = _dbContext.Products.AsQueryable();
 
+            //type = 3 : nổi bật, 4: giảm giá
+            if (type.HasValue)
+            {
+                if(type == 3)
+                {
+                    query = query.Where(x => x.IsHot == true);
+                }
+                else if(type == 4)
+                {
+                    query = query.Where(x => x.Discount > 0);
+                }
+            }
+
             //Lọc theo giá tối thiểu
-            if(minPrice.HasValue)
+            if (minPrice.HasValue)
             {
                 query = query.Where(x => x.Price >= minPrice.Value);
             }

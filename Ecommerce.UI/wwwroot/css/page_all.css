@@ -1,6 +1,7 @@
-﻿.border_unset{
+﻿.border_unset {
     border: unset;
 }
+
 .cursor {
     cursor: pointer;
 }
@@ -31,6 +32,7 @@
     -webkit-box-orient: vertical;
     white-space: normal;
 }
+
 .btn_language {
     display: flex;
 }
@@ -158,6 +160,7 @@
         -o-transform: scale3d(1.9, 1.4, 1) rotate3d(0, 0, 1, 45deg) translate3d(0, 120%, 0);
         transform: scale3d(1.9, 1.4, 1) rotate3d(0, 0, 1, 45deg) translate3d(0, 120%, 0);
     }
+
 .product-price {
     display: flex;
     align-items: center;
@@ -178,4 +181,16 @@
 .currency-symbol {
     font-size: 12px;
     vertical-align: super;
+}
+
+.submenu_item_custom {
+    width: 300px;
+}
+
+.submenu_item_custom li a img {
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid #bfdcc1;
 }

@@ -10,6 +10,7 @@ using System.Text;
 using System;
 using Shared.DTO.Introduce;
 using Shared.DTO.CateProduct;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Ecommerce.UI.Services
 {
@@ -70,30 +71,44 @@ namespace Ecommerce.UI.Services
             var response = await _httpClient.PostAsJsonAsync("/api/CommentProduct/CreateCommentProduct", commentDto);
             return response.IsSuccessStatusCode;
         }
-        
-        public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null)
-        {
-            var query = $"/api/Product/GetListProduct?pageNumber={pageNumber}&pageSize={pageSize}";
 
+        public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null, int? type = null)
+        {
+            // Tạo URL gốc cho API
+            var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = pageNumber.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+            // Thêm các tham số tùy chọn nếu có giá trị
             if (minPrice.HasValue)
             {
-                query += $"&minPrice={minPrice.Value}";
+                queryParameters["minPrice"] = minPrice.Value.ToString();
             }
 
             if (maxPrice.HasValue)
             {
-                query += $"&maxPrice={maxPrice.Value}";
+                queryParameters["maxPrice"] = maxPrice.Value.ToString();
             }
 
             if (categoryId.HasValue)
             {
-                query += $"&categoryId={categoryId.Value}";
+                queryParameters["categoryId"] = categoryId.Value.ToString();
             }
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                query += $"&keyword={keyword}";
+                queryParameters["keyword"] = keyword;
             }
+
+            if (type.HasValue)
+            {
+                queryParameters["type"] = type.Value.ToString();  // Thêm tham số type vào chuỗi truy vấn
+            }
+
+            // Sử dụng QueryHelpers để tạo chuỗi truy vấn
+            var query = QueryHelpers.AddQueryString("/api/Product/GetListProduct", queryParameters);
 
             var response = await _httpClient.GetAsync(query);
             if (response.IsSuccessStatusCode)
@@ -101,6 +116,7 @@ namespace Ecommerce.UI.Services
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse<ProductResponseDto>>();
                 return result;
             }
+
             return null;
         }
 
