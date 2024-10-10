@@ -174,29 +174,7 @@ namespace Repository
                     .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Product>, int totalCount)> GetProductsByPriceRangeAsync(decimal minPrice, decimal? maxPrice = null, int pageNumber = 1, int pageSize = 10)
-        {
-            var query = _dbContext.Products.AsQueryable();
-
-            if (maxPrice.HasValue)
-            {
-                query = query.Where(p => p.Price >= minPrice && p.Price <= maxPrice.Value);
-            }
-            else
-            {
-                query = query.Where(p => p.Price >= minPrice);
-            }
-            var totalCount = await query.CountAsync();
-
-            var products = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (products, totalCount);
-        }
-
-        public async Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null)
+        public async Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null)
         {
             var query = _dbContext.Products.AsQueryable();
 
@@ -216,6 +194,14 @@ namespace Repository
             if (categoryId.HasValue)
             {
                 query = query.Where(p => p.CategoryId == categoryId.Value).Include(x => x.ProductImages);
+            }
+
+            //Lọc theo keyword nếu có
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                string lowerCaseName = keyword.ToLower();
+
+                query = query.Where(x => x.Name.ToLower().Contains(lowerCaseName));
             }
 
             var totalCount = await query.CountAsync();

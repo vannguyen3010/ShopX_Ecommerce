@@ -1,5 +1,4 @@
 ﻿@inject ProductServices ProductServices
-@using Helpers
 @rendermode InteractiveServer
 
 
@@ -197,11 +196,17 @@
     private Guid? categoryId = null;
     private decimal? minPrice = null;
     private decimal? maxPrice = null;
+    private string? keyword = null;
 
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("keyword", out var searchKeyword))
+        {
+            keyword = searchKeyword;
+        }
 
         if (query.TryGetValue("c1", out var c1Id))
         {
@@ -239,7 +244,7 @@
 
     private async Task LoadListProducts()
     {
-        var response = await ProductServices.GetListProductAsync(currentPage, pageSize, minPrice, maxPrice, categoryId);
+        var response = await ProductServices.GetListProductAsync(currentPage, pageSize, minPrice, maxPrice, categoryId, keyword);
         if (response != null && response.Success)
         {
             products = response.Data.Products;
