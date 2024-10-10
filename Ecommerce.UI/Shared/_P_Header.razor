@@ -65,7 +65,7 @@
                 <form @onsubmit="PerformSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
                     <input @bind="keyword" type="text" class="form-control input_item" name="search" id="search"
                            placeholder="Tìm kiếm sản phẩm..." required />
-                      @*   <button class="btn btn-search" type="submit">
+                    @*   <button class="btn btn-search" type="submit">
                     <i class="fa-solid fa-microphone" style="color: #63E6BE;"></i>
                     </button> *@
                     <button class="btn btn-search" type="submit">
@@ -109,27 +109,32 @@
                             </li>
                             <li>
                                 <a href="/san-pham">Sản phẩm</a>
-                                <ul>
-                                    @if(cateProducts != null && cateProducts.Any())
+                                <ul class="submenu_item_custom">
+                                    @if (cateProducts != null && cateProducts.Any())
                                     {
                                         @foreach (var item in cateProducts)
                                         {
                                             <li>
-                                                <a href="/san-pham/?c1=@item.Id">@item.Name</a>
-                                                @if(item.CategoriesObjs.Any())
+                                                <a href="/san-pham/?c1=@item.Id">
+                                                    <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/default.png" : item.FilePath)" alt="Category Image" />
+                                                    <span>@item.Name</span>
+                                                </a>
+                                                @if (item.CategoriesObjs.Any())
                                                 {
                                                     <ul>
                                                         @foreach (var res in item.CategoriesObjs)
                                                         {
-                                                            <li><a href="/san-pham?c2=@res.Id">@res.Name</a></li>
+                                                            <li>
+                                                                <a href="/san-pham?c2=@res.Id">@res.Name</a>
+                                                            </li>
                                                         }
                                                     </ul>
                                                 }
-                                              
+
                                             </li>
                                         }
                                     }
-                                   
+
                                 </ul>
                             </li>
                             <li>
@@ -144,7 +149,7 @@
                                             </li>
                                         }
                                     }
-                                  
+
                                 </ul>
                             </li>
                             <li>

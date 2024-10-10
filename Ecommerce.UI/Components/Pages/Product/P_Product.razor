@@ -169,35 +169,35 @@
             </div>
         }
     </div>
-    <div class="toolbox toolbox-pagination justify-content-between">
-        <p class="showing-info mb-2 mb-sm-0">
-            <span class="text-danger fs-4">Kết quả :</span>
-            <span class="fs-4 mx-0"> @totalCount Sản phẩm</span>
-        </p>
-        <ul class="pagination">
-            <li class="prev @(currentPage == 1 ? "disabled" : "")">
-                <a href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
-                    <i class="w-icon-long-arrow-left"></i> Prev
-                </a>
-            </li>
-            @for (int i = 1; i <= totalPages; i++)
-            {
-                var pageNumber = i;  // Tạo biến tạm để lưu giá trị của trang hiện tại
-
-                <li class="page-item @(pageNumber == currentPage ? "active" : "")">
-                    <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+    @if (totalPages > 1)
+    {
+        <div class="toolbox toolbox-pagination justify-content-between">
+            <p class="showing-info mb-2 mb-sm-0">
+                <span class="text-danger fs-4">Kết quả :</span>
+                <span class="fs-4 mx-0"> @totalCount Sản phẩm</span>
+            </p>
+            <ul class="pagination">
+                <li class="prev @(currentPage == 1 ? "disabled" : "")">
+                    <a href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                        <i class="w-icon-long-arrow-left"></i> Prev
+                    </a>
                 </li>
-            }
-            <li class="next @(currentPage == totalPages ? "disabled" : "")">
-                <a href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
-                    Next <i class="w-icon-long-arrow-right"></i>
-                </a>
-            </li>
-        </ul>
-    </div>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    var pageNumber = i;  // Tạo biến tạm để lưu giá trị của trang hiện tại
 
-
-
+                    <li class="page-item @(pageNumber == currentPage ? "active" : "")">
+                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                    </li>
+                }
+                <li class="next @(currentPage == totalPages ? "disabled" : "")">
+                    <a href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                        Next <i class="w-icon-long-arrow-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    }
 </div>
 
 @code {
@@ -209,6 +209,7 @@
     private int pageSize = 10;
     private int totalPages;
     private int totalCount;
+    private int? type;
 
     private Guid? categoryId = null;
     private decimal? minPrice = null;
@@ -241,6 +242,12 @@
             int.TryParse(page, out currentPage);
         }
 
+        if (query.TryGetValue("type", out var typeValue))
+        {
+            int.TryParse(typeValue, out var parsedType);
+            type = parsedType;
+        }
+
         await LoadListProducts();
         await LoadBannerProducts();
         await LoadListCategoryProduct();
@@ -266,7 +273,7 @@
 
     private async Task LoadListProducts()
     {
-        var response = await ProductServices.GetListProductAsync(currentPage, pageSize, minPrice, maxPrice, categoryId, keyword);
+        var response = await ProductServices.GetListProductAsync(currentPage, pageSize, minPrice, maxPrice, categoryId, keyword, type);
         if (response != null && response.Success)
         {
             products = response.Data.Products;
@@ -353,6 +360,11 @@
         if (maxPrice.HasValue)
         {
             queryParameters["maxPrice"] = maxPrice.Value.ToString();
+        }
+
+        if (type.HasValue)
+        {
+            queryParameters["type"] = type.Value.ToString();
         }
 
         // Tạo URL query string
