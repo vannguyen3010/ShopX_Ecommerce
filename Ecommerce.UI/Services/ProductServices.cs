@@ -8,6 +8,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using Shared.DTO.CommentProduct;
 using System.Text;
 using System;
+using Shared.DTO.Introduce;
 
 namespace Ecommerce.UI.Services
 {
@@ -69,7 +70,7 @@ namespace Ecommerce.UI.Services
             return response.IsSuccessStatusCode;
         }
         
-        public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null)
+        public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null)
         {
             var query = $"/api/Product/GetListProduct?pageNumber={pageNumber}&pageSize={pageSize}";
 
@@ -77,13 +78,20 @@ namespace Ecommerce.UI.Services
             {
                 query += $"&minPrice={minPrice.Value}";
             }
+
             if (maxPrice.HasValue)
             {
                 query += $"&maxPrice={maxPrice.Value}";
             }
+
             if (categoryId.HasValue)
             {
                 query += $"&categoryId={categoryId.Value}";
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query += $"&keyword={keyword}";
             }
 
             var response = await _httpClient.GetAsync(query);
@@ -93,6 +101,20 @@ namespace Ecommerce.UI.Services
                 return result;
             }
             return null;
+        }
+
+        public async Task<IEnumerable<ProductDto>> GetAllProductIsHotAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/Product/GetAllProductIsHot");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<ProductDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<ProductDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<ProductDto>();
+            }
         }
     }
 }

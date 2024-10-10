@@ -20,8 +20,7 @@ namespace Contracts
         Task<IEnumerable<Product>> GetAllNewProductsAsync(DateTime startDate, bool trackChanges);
         Task<IEnumerable<Product>> GetRelatedProductsAsync(Guid productId, Guid categoryId, bool trackChanges);
         Task UpdateProductAsync(Product product, byte[] rowVersion);
-        Task<(IEnumerable<Product>, int totalCount)> GetProductsByPriceRangeAsync(decimal minPrice, decimal? maxPrice = null, int pageNumber = 1, int pageSize = 10);
-        Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null);
+        Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null);
         Task SaveAsync();
 
     }
