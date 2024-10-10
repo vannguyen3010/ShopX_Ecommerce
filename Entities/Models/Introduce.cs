@@ -6,10 +6,11 @@ namespace Entities.Models
 {
     public class Introduce
     {
-        public Guid id { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string NameSlug { get; set; }
-        [Required]
+
+        [ForeignKey("CategoryIntroduce")]
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
         public string Description { get; set; }
@@ -23,5 +24,6 @@ namespace Entities.Models
         public bool IsHot { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public CategoryIntroduce CategoryIntroduce { get; set; }
     }
 }

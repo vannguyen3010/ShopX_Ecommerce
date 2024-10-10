@@ -1,1 +1,213 @@
 ﻿@page "/gioi-thieu/{nameSlug}/{id:guid}"
+@inject IntroduceServices IntroduceServices
+@inject BaseServices BaseServices
+
+@rendermode InteractiveServer
+
+<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+<link href="css/introduce.css" rel="stylesheet" />
+
+@if (introduce != null)
+{
+    <main class="main">
+        <nav class="breadcrumb-nav">
+            <div class="container">
+                <ul class="breadcrumb bb-no">
+                    <li><a href="demo1.html">Home</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li>Blog Single</li>
+                </ul>
+            </div>
+        </nav>
+        <div class="page-content mb-8">
+            <div class="container">
+                <div class="row gutter-lg">
+                    <div class="main-content post-single-content">
+                        <div class="post post-grid post-single">
+                            <figure class="post-media br-sm">
+                                <img src="@(string.IsNullOrEmpty(introduce.FilePath) ? "/Img_Dev/banner.png" : introduce.FilePath)" alt="Blog" width="930" height="500" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                            </figure>
+                            <div class="post-details">
+                                <div class="post-meta">
+                                    <a href="#" class="post-date">@introduce.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                </div>
+                                <h2 class="post-title"><a href="#">@introduce.Name</a></h2>
+                                <div class="post-content">
+                                    <p>
+                                        @introduce.Description
+                                    </p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Tag -->
+                        <div class="social-links mb-10">
+                            <div class="social-icons social-no-color border-thin">
+                                <a href="#" class="social-icon social-facebook w-icon-facebook"></a>
+                                <a href="#" class="social-icon social-twitter w-icon-twitter"></a>
+                                <a href="#" class="social-icon social-pinterest w-icon-pinterest"></a>
+                                <a href="#" class="social-icon social-instagram w-icon-instagram"></a>
+                                <a href="#" class="social-icon social-youtube w-icon-youtube"></a>
+                            </div>
+                        </div>
+                        <!-- End Post Navigation -->
+                        @if (relatedIntroduces != null && relatedIntroduces.Any())
+                        {
+                            <h4 class="title title-lg font-weight-bold mt-10 pt-1 mb-5">Bài viết liên quan</h4>
+                            <div class="post-slider owl-carousel owl-theme owl-nav-top row cols-lg-3 cols-md-4 cols-sm-3 cols-xs-2 cols-1 pb-2" data-owl-options="{
+                                'nav': true,
+                                'dots': false,
+                                'margin': 20,
+                                'responsive': {
+                                '0': {
+                                'items': 1
+                                },
+                                '576': {
+                                'items': 2
+                                },
+                                '768': {
+                                'items': 3
+                                },
+                                '992': {
+                                'items': 2
+                                },
+                                '1200': {
+                                'items': 3
+                                }
+                                }
+                                }">
+                                @foreach (var item in relatedIntroduces)
+                                {
+                                    <div class="post post-grid">
+                                        <figure class="post-media br-sm">
+                                            <a href="post-single.html">
+                                                <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Post" width="296"
+                                                     height="190" style="background-color: #bcbcb4;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                            </a>
+                                        </figure>
+                                        <div class="post-details text-center">
+                                            <div class="post-meta">
+                                                <a href="#" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                            </div>
+                                            <h4 class="post-title mb-3"><a href="post-single.html">@item.Name</a></h4>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        }
+
+                    </div>
+                    <!-- End of Main Content -->
+                    <aside class="sidebar right-sidebar blog-sidebar sidebar-fixed sticky-sidebar-wrapper">
+                        <div class="sidebar-overlay">
+                            <a href="#" class="sidebar-close">
+                                <i class="close-icon"></i>
+                            </a>
+                        </div>
+                        <a href="#" class="sidebar-toggle">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                        <div class="sidebar-content">
+                            <div class="sticky-sidebar">
+                                <!-- End of Widget categories -->
+                                <div class="widget widget-tags">
+                                    <h3 class="widget-title bb-no">Danh mục</h3>
+                                    <div class="widget-body tags position-relative">
+                                        @if (cateIntroduces != null && cateIntroduces.Any())
+                                        {
+                                            @foreach (var item in cateIntroduces)
+                                            {
+                                                <a href="/gioi-thieu?c=@item.Id" class="tag position-relative">
+                                                    @item.Name
+                                                    <span class="category_introduce_item position-absolute">@item.TotalCount</span>
+                                                </a>
+                                            }
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="widget widget-posts">
+                                    <h3 class="widget-title bb-no">Bài viết nổi bật</h3>
+                                    <div class="widget-body">
+                                        <div class="owl-carousel owl-theme owl-nav-top row cols-1" data-owl-options="{
+                                                'nav': true,
+                                                'dots': false,
+                                                'margin': 20
+                                            }">
+                                            @if (introduceIsHot != null && introduceIsHot.Any())
+                                            {
+                                                var postChunks = introduceIsHot.Chunk(6); // Chia bài viết thành nhóm 3
+                                                foreach (var chunk in postChunks)
+                                                {
+                                                    <div class="widget-col">
+                                                        @foreach (var item in chunk)
+                                                        {
+                                                            <div class="post-widget mb-4">
+                                                                <figure class="post-media br-sm" style="flex: 0 0 35.6% !important;max-width: unset !important">
+                                                                    <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Blog" style="height: 80px" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                                                </figure>
+                                                                <div class="post-details">
+                                                                    <div class="post-meta">
+                                                                        <a href="/gioi-thieu/@item.NameSlug/@item.id" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                                                    </div>
+                                                                    <h4 class="post-title">
+                                                                        <a href="/gioi-thieu/@item.NameSlug/@item.id">@item.Name</a>
+                                                                    </h4>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+        <!-- End of Page Content -->
+    </main>
+}
+
+
+@code {
+    private IntroduceDto introduce;
+    private IEnumerable<IntroduceDto> relatedIntroduces;
+    private IEnumerable<CategoryIntroduceDto> cateIntroduces;
+    private IEnumerable<IntroduceDto> introduceIsHot;
+
+    [Parameter] public Guid id { get; set; }
+    [Parameter] public string nameSlug { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIntroduce();
+        await LoadListCategoryIntroduces();
+        await LoadListIntroducesIshot();
+    }
+
+    private async Task LoadIntroduce()
+    {
+        var response = await IntroduceServices.GetIntroduceByIdAsync(id);
+        if (response.Success)
+        {
+            introduce = response.Data;
+            relatedIntroduces = response.Data2nd;
+        }
+    }
+    private async Task LoadListCategoryIntroduces()
+    {
+        cateIntroduces = await BaseServices.GetAllCategoryIntroduces();
+    }
+    private async Task LoadListIntroducesIshot()
+    {
+        introduceIsHot = await IntroduceServices.GetListIntroduceIsHotAsync();
+    }
+}
