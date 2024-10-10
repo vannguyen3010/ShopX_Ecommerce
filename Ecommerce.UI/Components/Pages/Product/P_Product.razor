@@ -11,6 +11,22 @@
     <div class="sidebar-content scrollable">
         <!-- Start of Sticky Sidebar -->
         <div class="sticky-sidebar">
+            <div class="widget widget-collapsible">
+                <h3 class="widget-title"><span>Danh mục</span></h3>
+                <ul class="widget-body filter-items search-ul">
+                    @if (cateProducts != null && cateProducts.Any())
+                    {
+                        @foreach (var item in cateProducts)
+                        {
+                            <li>
+                                <a href="/san-pham/?c1=@item.Id">
+                                    @item.Name
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
             <!-- Start of Collapsible Widget -->
             <div class="widget widget-collapsible">
                 <h3 class="widget-title"><label>Giá</label></h3>
@@ -187,6 +203,7 @@
 @code {
     private IEnumerable<BannerProductDto> bannerProducts;
     private IEnumerable<ProductDto> products;
+    private IEnumerable<CateProductDto> cateProducts;
 
     private int currentPage = 1;
     private int pageSize = 10;
@@ -226,8 +243,8 @@
 
         await LoadListProducts();
         await LoadBannerProducts();
+        await LoadListCategoryProduct();
     }
-
 
     private async Task LoadBannerProducts()
     {
@@ -240,6 +257,11 @@
         {
             bannerProducts = new List<BannerProductDto>();
         }
+    }
+
+    private async Task LoadListCategoryProduct()
+    {
+        cateProducts = await ProductServices.GetAllCategoryProductsHaveProduct();
     }
 
     private async Task LoadListProducts()

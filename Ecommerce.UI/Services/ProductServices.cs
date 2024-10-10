@@ -9,6 +9,7 @@ using Shared.DTO.CommentProduct;
 using System.Text;
 using System;
 using Shared.DTO.Introduce;
+using Shared.DTO.CateProduct;
 
 namespace Ecommerce.UI.Services
 {
@@ -114,6 +115,19 @@ namespace Ecommerce.UI.Services
             else
             {
                 return Enumerable.Empty<ProductDto>();
+            }
+        }
+        public async Task<IEnumerable<CateProductDto>> GetAllCategoryProductsHaveProduct()
+        {
+            var response = await _httpClient.GetAsync("/api/CateProduct/GetAllCategoryProductsHaveProduct");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<CateProductDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<CateProductDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<CateProductDto>();
             }
         }
     }

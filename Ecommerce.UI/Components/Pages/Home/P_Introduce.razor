@@ -36,14 +36,14 @@
         {
             <div class="post">
                 <figure class="post-media br-sm">
-                    <a href="post-single.html">
+                    <a href="/gioi-thieu/@item.NameSlug/@item.id">
                         <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Post" width="620" height="398"
                              style="background-color: #898078;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                     </a>
                 </figure>
                 <div class="post-details">
                     <h4 class="post-title row d-flex">
-                        <a class="col-6" href="post-single.html">
+                        <a class="col-6" href="/gioi-thieu/@item.NameSlug/@item.id">
                             @item.Name
                         </a>
                         <span class="col-6 fs-4 text-primary">
@@ -54,7 +54,7 @@
                     <div class="post-content">
                         <span class="no_wrap_2 fs-5">@item.Description</span>
                     </div>
-                    <a href="post-single.html" class="btn btn-link btn-dark btn-underline mt-3">
+                    <a href="/gioi-thieu/@item.NameSlug/@item.id" class="btn btn-link btn-dark btn-underline mt-3">
                         Xem thêm<i class="w-icon-long-arrow-right"></i>
                     </a>
                 </div>
