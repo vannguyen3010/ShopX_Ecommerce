@@ -153,15 +153,16 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpGet]
-        [Route("GetCateProductById/{id}")]
-        public async Task<IActionResult> GetCateProductById(Guid id)
+        [Route("GetCategoryProductByCategoryId/{id}")]
+        public async Task<IActionResult> GetCategoryProductByCategoryId(Guid id)
         {
             try
             {
                 // Lấy category cấp 1 theo id
-                var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
-                if (parentCategory == null)
+                var currentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
+                if (currentCategory == null)
                 {
                     _logger.LogError($"Category with id: {id} not found.");
                     return NotFound(new ApiResponse<object>
@@ -172,30 +173,44 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Lấy danh sách các cấp con của category cấp 1
+                //Chuyển đổi dữ liệu sang DTO
+                var currentCategoryDto = _mapper.Map<CateProductDto>(currentCategory);
+
+
+                // Lấy danh sách các danh mục con nếu có
                 var childCategories = await _repository.CateProduct.GetChildCategoriesByParentIdAsync(id, trackChanges: false);
 
-
-                //Chuyển đổi dữ liệu sang DTO
-                var parentCategoryProductDto = _mapper.Map<CateProductDto>(parentCategory);
 
                 //Nếu có các cấp con, thêm chúng vào trong categoriesObj
                 if(childCategories != null && childCategories.Any())
                 {
                     var childCategoriesDto = _mapper.Map<IEnumerable<CateProductDto>>(childCategories);
 
-                    parentCategoryProductDto.CategoriesObjs = childCategoriesDto.ToList();
+                    currentCategoryDto.CategoriesObjs = childCategoriesDto.ToList();
                 }
                 else
                 {
                     // Nếu không có cấp con, trả về mảng rỗng
-                    parentCategoryProductDto.CategoriesObjs = new List<CateProductDto>();
+                    currentCategoryDto.CategoriesObjs = new List<CateProductDto>();
                 }
+
+                //Nếu danh mục hiện tại có danh mục cấp cha (ParenCategoryId)
+                if(currentCategory.ParentCategoryId != null)
+                {
+                    var parenCategory = await _repository.CateProduct.GetCategoryProductByIdAsync((Guid)currentCategory.ParentCategoryId, trackChanges: false);
+                    if(parenCategory != null)
+                    {
+                        // Chuyển đổi dữ liệu danh mục cha sang DTO và gán vào thuộc tính `ParentCategory`
+                        currentCategoryDto.ParentCategory = _mapper.Map<CateProductDto>(parenCategory);
+                    }
+
+                }
+
                 return Ok(new ApiResponse<CateProductDto>
                 {
                     Success = true,
                     Message = "Category retrieved successfully.",
-                    Data = parentCategoryProductDto
+                    Data = currentCategoryDto
                 });
             }
             catch (Exception ex)

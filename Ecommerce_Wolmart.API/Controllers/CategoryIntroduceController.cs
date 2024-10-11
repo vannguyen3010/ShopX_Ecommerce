@@ -125,6 +125,48 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetCateIntroduceByCategoryId/{categoryId}")]
+        public async Task<IActionResult> GetCateIntroduceByCategoryId(Guid categoryId)
+        {
+            try
+            {
+                // Lấy category cấp 1 theo id
+                var categoryEntity = await _repository.CategoryIntroduce.GetCategoryIntroduceByIdAsync(categoryId, trackChanges: false);
+                if (categoryEntity == null)
+                {
+                    _logger.LogError($"Category with id: {categoryId} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Category with id: {categoryId} not found.",
+                        Data = null
+                    });
+                }
+
+                //Chuyển đổi dữ liệu sang DTO
+                var categoryIntrolduceDto = _mapper.Map<CategoryIntroduceDto>(categoryEntity);
+
+                return Ok(new ApiResponse<CategoryIntroduceDto>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = categoryIntrolduceDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetCategoryById action: {ex.Message}");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Internal server error",
+                    Data = null
+                });
+            }
+        }
+
         [HttpPut]
         [Route("UpdateCategoryIntroduce/{Id}")]
         public async Task<IActionResult> UpdateCategoryIntroduce(Guid Id, [FromBody] UpdateCateIntroDto introduce)

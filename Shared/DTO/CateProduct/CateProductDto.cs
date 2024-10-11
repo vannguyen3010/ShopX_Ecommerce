@@ -1,4 +1,6 @@
-﻿namespace Shared.DTO.CateProduct
+﻿using System.Text.Json.Serialization;
+
+namespace Shared.DTO.CateProduct
 {
     public class CateProductDto
     {
@@ -10,6 +12,9 @@
         public DateTime CreateAt { get; set; }
         public DateTime DateTime { get; set; }
         public ICollection<CateProductDto> CategoriesObjs { get; set; } = new List<CateProductDto>();
+
+        //[JsonIgnore]
+        public CateProductDto ParentCategory { get; set; }
 
     }
 }

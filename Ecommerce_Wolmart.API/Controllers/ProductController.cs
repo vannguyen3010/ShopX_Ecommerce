@@ -458,9 +458,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Lấy danh sách sản phẩm liên quan (ví dụ: cùng danh mục)
                 var relatedProducts = await _repository.Product.GetRelatedProductsAsync(id, product.CategoryId, trackChanges: true);
 
-
                 //Ánh xạ sản phẩm sang DTO để trả về client
                 var productDto = _mapper.Map<ProductDto>(product);
+
 
                 // Ánh xạ danh sách sản phẩm liên quan sang DTO
                 var relatedProductsDto = _mapper.Map<IEnumerable<ProductDto>>(relatedProducts);
