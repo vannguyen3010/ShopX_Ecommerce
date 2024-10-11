@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Entities.Models
 {
@@ -11,7 +12,10 @@ namespace Entities.Models
 
         [ForeignKey("ParentCategory")]
         public Guid? ParentCategoryId { get; set; }
+
+        [JsonIgnore]
         public CateProduct ParentCategory { get; set; }
+
         public ICollection<CateProduct> CategoriesObjs { get; set; }
         public ICollection<Product> Products { get; set; }
 

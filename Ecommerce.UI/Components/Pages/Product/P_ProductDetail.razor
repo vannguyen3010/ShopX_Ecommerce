@@ -15,14 +15,7 @@
 {
 
     <main class="main mb-10 pb-1">
-        <!-- Start of Breadcrumb -->
-        <nav class="breadcrumb-nav container">
-            <ul class="breadcrumb bb-no">
-                <li><a href="demo1.html">Home</a></li>
-                <li>Products</li>
-            </ul>
-        </nav>
-        <!-- End of Breadcrumb -->
+        <P_BreadCrumb BreadCrumb="@breadCrumb" />
         <!-- Start of Page Content -->
         <div class="page-content">
             <div class="container">
@@ -749,6 +742,7 @@
 }
 
 @code {
+    private VM_BreadCrumb breadCrumb;
     private ProductDto product;
     private IEnumerable<ProductDto> relatedProducts;
     private IEnumerable<CommentProductDto> commentProduct;
@@ -786,6 +780,15 @@
         {
             product = response.Data;
             relatedProducts = response.Data2nd;
+
+            breadCrumb = new VM_BreadCrumb
+            {
+                lv1Name = "Trang chủ",
+                lv1Url = "/",
+                lv2Name = product.CategoryName,
+                lv2Url = $"/san-pham?c2={product.CategoryId}",
+                currentName = product.Name
+            };
         }
         loading = false;
     }

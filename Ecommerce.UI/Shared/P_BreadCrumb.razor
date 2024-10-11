@@ -1,0 +1,39 @@
+﻿
+@code{
+    [Parameter]
+    public VM_BreadCrumb BreadCrumb { get; set; }
+}
+
+
+@if (BreadCrumb != null)
+{
+    <nav class="breadcrumb-nav mb-6">
+        <div class="container">
+            <ul class="breadcrumb bb-no">
+                @if (!string.IsNullOrEmpty(BreadCrumb?.lv1Name))
+                {
+                    <li><a href="@BreadCrumb.lv1Url">@BreadCrumb.lv1Name</a></li>
+                }
+                @if (!string.IsNullOrEmpty(BreadCrumb?.lv2Name))
+                {
+                    <li><a href="@BreadCrumb.lv2Url">@BreadCrumb.lv2Name</a></li>
+                }
+                @if (!string.IsNullOrEmpty(BreadCrumb?.lv3Name))
+                {
+                    <li><a href="@BreadCrumb.lv3Url">@BreadCrumb.lv3Name</a></li>
+                }
+                <li>@BreadCrumb.currentName</li>
+            </ul>
+        </div>
+    </nav>
+}
+else
+{
+    <nav class="breadcrumb-nav mb-6">
+        <div class="container">
+            <ul class="breadcrumb">
+                <li><a>Trang chủ</a></li>
+            </ul>
+        </div>
+    </nav>
+}

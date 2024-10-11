@@ -10,15 +10,7 @@
 @if (introduce != null)
 {
     <main class="main">
-        <nav class="breadcrumb-nav">
-            <div class="container">
-                <ul class="breadcrumb bb-no">
-                    <li><a href="demo1.html">Home</a></li>
-                    <li><a href="blog.html">Blog</a></li>
-                    <li>Blog Single</li>
-                </ul>
-            </div>
-        </nav>
+        <P_BreadCrumb BreadCrumb="@breadCrumb" />
         <div class="page-content mb-8">
             <div class="container">
                 <div class="row gutter-lg">
@@ -183,6 +175,7 @@
 
 
 @code {
+    private VM_BreadCrumb breadCrumb;
     private IntroduceDto introduce;
     private IEnumerable<IntroduceDto> relatedIntroduces;
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
@@ -205,6 +198,15 @@
         {
             introduce = response.Data;
             relatedIntroduces = response.Data2nd;
+
+            breadCrumb = new VM_BreadCrumb
+            {
+                lv1Name = "Trang chủ",
+                lv1Url = "/",
+                lv2Name = introduce.CategoryName,
+                lv2Url = $"/gioi-thieu?c={introduce.CategoryId}",
+                currentName = introduce.Name
+            };
         }
     }
     private async Task LoadListCategoryIntroduces()

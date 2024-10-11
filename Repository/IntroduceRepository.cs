@@ -107,9 +107,17 @@ namespace Repository
             return (products, totalCount);
         }
 
-        public async Task<(IEnumerable<Introduce> Introduces, int Total)> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string? keyword = null)
+        public async Task<(IEnumerable<Introduce> Introduces, int Total)> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string? keyword = null, int? type = null)
         {
             var introducesQuery = _dbContext.Introduces.AsQueryable();
+
+            if(type.HasValue)
+            {
+                if (type == 3)
+                {
+                    introducesQuery = introducesQuery.Where(x => x.IsHot == true);
+                }
+            }
 
             //Lọc bài viết theo danh mục
             if (categoryId.HasValue)

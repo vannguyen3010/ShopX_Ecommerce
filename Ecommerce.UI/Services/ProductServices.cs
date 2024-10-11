@@ -146,5 +146,15 @@ namespace Ecommerce.UI.Services
                 return Enumerable.Empty<CateProductDto>();
             }
         }
+
+        public async Task<ApiResponse<CateProductDto>> GetCategoryProductByCategoryId(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"/api/CateProduct/GetCategoryProductByCategoryId/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<CateProductDto>>();
+            }
+            return null;
+        }
     }
 }
