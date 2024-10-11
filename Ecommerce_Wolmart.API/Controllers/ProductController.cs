@@ -87,18 +87,18 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                //Kiểm tra danh mục 1 có danh mục con không
-                var hasChildCategories = await _repository.CateProduct.HasChildCategoriesAsync(createProductDto.CategoryId);
-                if (hasChildCategories)
-                {
-                    _logger.LogError("Không thể tạo danh mục chứa các danh mục con của danh mục này.");
-                    return NotFound(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = $"Không thể tạo danh mục chứa các danh mục con của danh mục này.",
-                        Data = null
-                    });
-                }
+                ////Kiểm tra danh mục 1 có danh mục con không
+                //var hasChildCategories = await _repository.CateProduct.HasChildCategoriesAsync(createProductDto.CategoryId);
+                //if (hasChildCategories)
+                //{
+                //    _logger.LogError("Không thể tạo danh mục chứa các danh mục con của danh mục này.");
+                //    return NotFound(new ApiResponse<Object>
+                //    {
+                //        Success = false,
+                //        Message = $"Không thể tạo danh mục chứa các danh mục con của danh mục này.",
+                //        Data = null
+                //    });
+                //}
 
                 // Kiểm tra Discount lớn hơn Price hay không
                 if (createProductDto.Discount > createProductDto.Price)
@@ -455,15 +455,45 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Lấy danh sách sản phẩm liên quan (ví dụ: cùng danh mục)
-                var relatedProducts = await _repository.Product.GetRelatedProductsAsync(id, product.CategoryId, trackChanges: true);
+                // Lấy thông tin danh mục của sản phẩm
+                var category = await _repository.CateProduct.GetCategoryProductByIdAsync(product.CategoryId, trackChanges: false);
+
+                if (category == null)
+                {
+                    _logger.LogError($"Category for product with id {id} not found.");
+                    return NotFound(new ApiProductResponse<Object, Object>
+                    {
+                        Success = false,
+                        Message = $"Category for product with id {id} not found.",
+                        Data = null,
+                        Data2nd = null
+                    });
+                }
+
+                //Kiểm tra danh mục có cấp cha không nếu có
+                CateProductDto parentCategoryDto = null;
+                if(category.ParentCategoryId != null)
+                {
+                    var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync((Guid)category.ParentCategoryId, trackChanges: false);
+                    if(parentCategory != null)
+                    {
+                        parentCategoryDto = _mapper.Map<CateProductDto>(parentCategory);
+                    }
+                }
+
 
                 //Ánh xạ sản phẩm sang DTO để trả về client
                 var productDto = _mapper.Map<ProductDto>(product);
 
+                // Ánh xạ danh mục cha vào DTO sản phẩm
+                productDto.ParentCategory = parentCategoryDto;
+
+                // Lấy danh sách sản phẩm liên quan (ví dụ: cùng danh mục)
+                var relatedProducts = await _repository.Product.GetRelatedProductsAsync(id, product.CategoryId, trackChanges: true);
 
                 // Ánh xạ danh sách sản phẩm liên quan sang DTO
                 var relatedProductsDto = _mapper.Map<IEnumerable<ProductDto>>(relatedProducts);
+
 
                 return Ok(new ApiProductResponse<ProductDto, IEnumerable<ProductDto>>
                 {
