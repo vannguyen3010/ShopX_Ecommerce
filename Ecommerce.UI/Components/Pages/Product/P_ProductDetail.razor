@@ -781,14 +781,31 @@
             product = response.Data;
             relatedProducts = response.Data2nd;
 
-            breadCrumb = new VM_BreadCrumb
+            if(product.ParentCategory != null)
             {
-                lv1Name = "Trang chủ",
-                lv1Url = "/",
-                lv2Name = product.CategoryName,
-                lv2Url = $"/san-pham?c2={product.CategoryId}",
-                currentName = product.Name
-            };
+                breadCrumb = new VM_BreadCrumb
+                {
+                    lv1Name = "Trang chủ",
+                    lv1Url = "/",
+                    lv2Name = product.ParentCategory.Name,
+                    lv2Url = $"/san-pham?c1={product.ParentCategory.Id}",
+                    lv3Name = product.CategoryName,
+                    lv3Url = $"/san-pham?c2={product.CategoryId}",
+                    currentName = product.Name
+                };
+            }
+            else
+            {
+                breadCrumb = new VM_BreadCrumb
+                {
+                    lv1Name = "Trang chủ",
+                    lv1Url = "/",
+                    lv2Name = product.CategoryName,
+                    lv2Url = $"/san-pham?c1={product.CategoryId}",
+                    currentName = product.Name
+                };
+            }
+
         }
         loading = false;
     }

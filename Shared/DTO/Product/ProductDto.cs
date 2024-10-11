@@ -1,4 +1,6 @@
-﻿namespace Shared.DTO.Product
+﻿using Shared.DTO.CateProduct;
+
+namespace Shared.DTO.Product
 {
     public class ProductDto
     {
@@ -11,6 +13,7 @@
         public decimal Discount { get; set; }
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
+        public CateProductDto ParentCategory { get; set; }
         public string ImageFilePath { get; set; }
         public bool IsHot { get; set; }
         public int Rating { get; set; }
