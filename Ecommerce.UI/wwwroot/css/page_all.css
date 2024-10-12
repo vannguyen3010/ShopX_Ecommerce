@@ -194,3 +194,122 @@
     margin-right: 8px;
     border: 1px solid #bfdcc1;
 }
+
+.sticky-icon-links {
+    position: fixed;
+    right: 10px;
+    top: 200px;
+    z-index: 1101
+}
+
+@media (max-width: 767px) {
+    .demos-list, .sticky-icon-links {
+        display: none
+    }
+}
+
+.sticky-icon-links ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style: none;
+    padding: 0.5rem;
+    border-radius: 3rem;
+    margin: 0;
+    background: #333
+}
+
+.sticky-icon-links li {
+    position: relative
+}
+
+.sticky-icon-links li:not(:last-child) {
+    margin-bottom: 5px
+}
+
+.sticky-icon-links .fa-shopping-cart:before {
+    margin-left: -2px
+}
+
+.sticky-icon-links li a {
+    display: flex;
+    align-items: center;
+    transition: color 0.3s,background 0.3s;
+    border-radius: 50%;
+    color: #fff;
+    perspective: 200px
+}
+
+    .sticky-icon-links li a:focus, .sticky-icon-links li a:hover {
+        text-decoration: none;
+        background: linear-gradient(104deg,#1c72dd,#5349ff)
+    }
+
+.sticky-icon-links li:nth-child(5) a {
+    background: linear-gradient(104deg,#1c72dd,#5349ff)
+}
+
+.expanded-label {
+    position: absolute;
+    display: block;
+    padding: 10px 20px;
+    right: 140%;
+    top: 50%;
+    transform: translate(0%,-50%) rotateY(-60deg);
+    transform-origin: right;
+    border-radius: 7px;
+    background-color: #333;
+    color: #fff;
+    perspective: 300px;
+    transform-style: preserve-3d;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s,visibility 0.3s,transform 0.3s cubic-bezier(0.22,0.61,0.36,1);
+    visibility: hidden;
+    backface-visibility: hidden;
+    white-space: nowrap
+}
+
+    .expanded-label:after {
+        content: "";
+        position: absolute;
+        border: 10px solid transparent;
+        border-left-color: #333;
+        top: 50%;
+        margin-top: -10px;
+        right: -20px
+    }
+
+a:hover > .expanded-label {
+    transform: translate(0,-50%);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s,transform 0.3s cubic-bezier(0.22,0.61,0.36,1)
+}
+
+.sticky-icon-links li i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    font-size: 20px
+}
+
+
+.lightning-icon {
+    font-size: 20px;
+    color: #FFD700; /* Màu vàng cho tia sét */
+    animation: blink 1s infinite; /* Hiệu ứng nhấp nháy */
+}
+
+/* Animation nhấp nháy */
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
