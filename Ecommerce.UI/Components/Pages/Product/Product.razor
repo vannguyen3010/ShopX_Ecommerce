@@ -74,30 +74,30 @@
 
                     <div class="owl-carousel owl-theme"
                          data-owl-options="{
-        'loop': true,
-        'autoplay': true,
-        'autoplayTimeout': 5000,
-        'nav': true,
-        'dots': true,
-        'margin': 20,
-        'responsive': {
-            '0': {
-                'items': 1
-            },
-            '576': {
-                'items': 1
-            },
-            '768': {
-                'items': 1
-            },
-            '992': {
-                'items': 1
-            },
-            '1200': {
-                'items': 1
-            }
-        }
-     }">
+                            'loop': true,
+                            'autoplay': true,
+                            'autoplayTimeout': 5000,
+                            'nav': true,
+                            'dots': true,
+                            'margin': 20,
+                            'responsive': {
+                                '0': {
+                                    'items': 1
+                                },
+                                '576': {
+                                    'items': 1
+                                },
+                                '768': {
+                                    'items': 1
+                                },
+                                '992': {
+                                    'items': 1
+                                },
+                                '1200': {
+                                    'items': 1
+                                }
+                            }
+                         }">
                         @if (bannerProducts != null && bannerProducts.Any())
                         {
                             @foreach (var item in bannerProducts)
@@ -120,6 +120,13 @@
                         }
                     </div>
                     <nav class="toolbox sticky-toolbox sticky-content fix-top">
+
+                        <div class="toolbox-left">
+                            <a href="#" class="btn btn-primary btn-outline btn-rounded left-sidebar-toggle
+                                        btn-icon-left d-block d-lg-none">
+                                <i class="w-icon-category"></i><span>Filters</span>
+                            </a>
+                        </div>
                         <div class="toolbox-right">
                             <div class="toolbox-item toolbox-show select-box">
                                 <select @onchange="OnPageSizeChanged" class="form-control select_item">
@@ -166,10 +173,20 @@
 
                                                 </div>
                                             </div>
-                                            <div class="product-price">
-                                                <del class="old-price">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
-                                                <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
-                                            </div>
+                                            @if(item.Discount > 0)
+                                            {
+                                                <div class="product-price">
+                                                    <del class="old-price">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                                    <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="product-price">
+                                                    <ins class="new-price text-danger">@((item.Price).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                                </div>
+                                            }
+
                                         </div>
                                     </div>
                                 </div>

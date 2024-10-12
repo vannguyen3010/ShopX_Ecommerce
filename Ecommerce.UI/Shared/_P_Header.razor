@@ -84,8 +84,7 @@
                     </div>
                 </div>
                 <div class="dropdown cart-dropdown cart-offcanvas mr-0 mr-lg-2">
-                    <div class="cart-overlay"></div>
-                    <a href="#" class="cart-toggle label-down">
+                    <a href="/gio-hang" class="cart-toggle label-down">
                         <i class="w-icon-cart">
                             <span class="cart-count">2</span>
                         </i>
@@ -169,7 +168,142 @@
         </div>
     </div>
 </header>
+<div class="sticky-footer sticky-content fix-bottom">
+    <a href="/" class="sticky-link active">
+        <i class="w-icon-home"></i>
+        <p>Tran chủ</p>
+    </a>
+    <a href="/san-pham" class="sticky-link">
+        <i class="w-icon-category"></i>
+        <p>Sản phẩm</p>
+    </a>
+    <a href="my-account.html" class="sticky-link">
+        <i class="w-icon-account"></i>
+        <p>Thông tin</p>
+    </a>
 
+    <div class="header-search hs-toggle dir-up">
+        <a href="#" class="search-toggle sticky-link">
+            <i class="w-icon-search"></i>
+            <p>Tìm kiếm</p>
+        </a>
+        <form action="#" class="input-wrapper">
+            <input type="text" class="form-control" name="search" autocomplete="off" placeholder="Search"
+                   required />
+            <button class="btn btn-search" type="submit">
+                <i class="w-icon-search"></i>
+            </button>
+        </form>
+    </div>
+</div>
+<!-- End of Sticky Footer -->
+<!-- Start of Scroll Top -->
+<a id="scroll-top" href="#top" title="Top" role="button" class="scroll-top"><i class="fas fa-chevron-up"></i></a>
+<!-- End of Scroll Top -->
+<!-- Start of Mobile Menu -->
+<div class="mobile-menu-wrapper">
+    <div class="mobile-menu-overlay"></div>
+    <!-- End of .mobile-menu-overlay -->
+
+    <a href="#" class="mobile-menu-close"><i class="close-icon"></i></a>
+    <!-- End of .mobile-menu-close -->
+
+    <div class="mobile-menu-container scrollable">
+        <form action="#" method="get" class="input-wrapper">
+            <input type="text" class="form-control" name="search" autocomplete="off" placeholder="Search"
+                   required />
+            <button class="btn btn-search" type="submit">
+                <i class="w-icon-search"></i>
+            </button>
+        </form>
+        <!-- End of Search Form -->
+        <div class="tab">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a href="#main-menu" class="nav-link active">Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#categories" class="nav-link">Danh Mục</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane active" id="main-menu">
+                <ul class="mobile-menu">
+                    <li><a href="/">Trang Chủ</a></li>
+                    <li>
+                        <a href="/san-pham">Sản phẩm</a>
+                        <ul>
+                            @if (cateProducts != null && cateProducts.Any())
+                            {
+                                @foreach (var item in cateProducts)
+                                {
+                                    <li>
+                                        <a href="/san-pham/?c1=@item.Id">@item.Name</a>
+                                        @if (item.CategoriesObjs.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var res in item.CategoriesObjs)
+                                                {
+                                                    <li><a href="/san-pham?c2=@res.Id">@res.Name</a></li>
+                                                }
+                                            </ul>
+                                        }
+
+                                    </li>
+                                }
+                            }
+
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/gioi-thieu">Giới thiệu</a>
+                        <ul>
+                            @if (cateIntroduces != null && cateIntroduces.Any())
+                            {
+                                @foreach (var item in cateIntroduces)
+                                {
+                                    <li><a href="/gioi-thieu?c=@item.Id">@item.Name</a></li>
+
+                                }
+                            }
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="/lien-he">Liên hệ</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-pane" id="categories">
+                <ul class="mobile-menu">
+                    @if (cateProducts != null && cateProducts.Any())
+                    {
+                        @foreach (var item in cateProducts)
+                        {
+                            <li>
+                                <a href="/san-pham/?c1=@item.Id">
+                                    @item.Name
+                                </a>
+                                <ul>
+                                    @if (item.CategoriesObjs.Any())
+                                    {
+                                        @foreach (var res in item.CategoriesObjs)
+                                        {
+                                            <li>
+                                                <a href="/san-pham/?c2=@res.Id">@res.Name</a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code
 {
