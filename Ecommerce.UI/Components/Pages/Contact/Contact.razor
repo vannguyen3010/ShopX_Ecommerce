@@ -1,6 +1,35 @@
 ﻿@page "/lien-he"
 
-<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+@inject ContactServices ContactServices
+@inject ILocalStorageService LocalStorage
+@rendermode InteractiveServer
+
+<link href="css/contact.css" rel="stylesheet" />
+
+@code{
+    private CreateContactDto contact = new CreateContactDto();
+    private bool isSuccess = false;
+    private bool isError = false;
+    private string errorMessage = "";
+
+
+    private async Task HandleSubmit()
+    {
+        isSuccess = false;
+        isError = false;
+
+        var result = await ContactServices.CreateContactAsync(contact);
+        if (result)
+        {
+            isSuccess = true;
+        }
+        else
+        {
+            isError = true;
+            errorMessage = "Không thể gửi biểu mẫu. Vui lòng thử lại.";
+        }
+    }
+}
 
 <main class="main">
     <!-- Start of Page Header -->
@@ -103,25 +132,54 @@
             <section class="contact-section">
                 <div class="row gutter-lg pb-3">
                     <div class="col-lg-6 mb-8">
-                        <h4 class="title mb-3">Send Us a Message</h4>
-                        <form class="form contact-us-form" action="#" method="post">
-                            <div class="form-group">
-                                <label for="username">Your Name</label>
-                                <input type="text" id="username" name="username"
-                                       class="form-control">
+                        <h4 class="title mb-3">Liên hệ với chúng tôi</h4>
+                        @if (isSuccess)
+                        {
+                            <div class="succes_item">
+                                <div class="success-container">
+                                    <div class="checkmark">✔</div>
+                                    <h2>Cảm ơn bạn đã liên hệ!</h2>
+                                    <p>Chúng tôi đã nhận được thông tin của bạn và sẽ sớm liên lạc lại.</p>
+                                    <button onclick="window.location.href='/';">Quay lại trang chủ</button>
+                                </div>
+
                             </div>
-                            <div class="form-group">
-                                <label for="email_1">Your Email</label>
-                                <input type="email" id="email_1" name="email_1"
-                                       class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Your Message</label>
-                                <textarea id="message" name="message" cols="30" rows="5"
-                                          class="form-control"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-dark btn-rounded">Send Now</button>
-                        </form>
+                        }
+                        else
+                        {
+                            <EditForm Model="@contact" OnValidSubmit="HandleSubmit" class="form contact-us-form">
+                                <DataAnnotationsValidator />
+                                <div class="form-group">
+                                    <ValidationMessage class="text-danger" For="@(() => contact.Name)" />
+                                    <label>Họ và tên</label>
+                                    <InputText @bind-Value="contact.Name" type="text" id="username" name="username"
+                                               class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <ValidationMessage class="text-danger" For="@(() => contact.Email)" />
+                                    <label>Địa chỉ Email</label>
+                                    <InputText @bind-Value="contact.Email" type="email" id="email_1" name="email_1"
+                                               class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <ValidationMessage class="text-danger" For="@(() => contact.PhoneNumber)" />
+                                    <label>Số điện thoại</label>
+                                    <InputText @bind-Value="contact.PhoneNumber"
+                                               class="form-control" />
+                                </div>
+                                <div class="form-group">
+                                    <ValidationMessage class="text-danger" For="@(() => contact.Message)" />
+                                    <label>Nội dung</label>
+                                    <InputTextArea @bind-Value="contact.Message" id="message" name="message" cols="30" rows="5"
+                                              class="form-control"></InputTextArea>
+                                </div>
+                                <button type="submit" class="btn btn-dark btn-rounded">Gửi</button>
+                            </EditForm>
+                            @if (isError)
+                            {
+                                <div class="alert alert-danger">@errorMessage</div>
+                            }
+                        }
                     </div>
                     <div class="google-map contact-google-map col-lg-6 mb-8" id="googlemaps">
                         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7836.841642343006!2d106.74907189053008!3d10.855562807192118!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752790f9e63781%3A0x9b530205de0bd8c1!2zTGluaCBUw6J5LCBUaOG7pyDEkOG7qWMsIEhvIENoaSBNaW5oIENpdHksIFZpZXRuYW0!5e0!3m2!1sen!2s!4v1724657747088!5m2!1sen!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>

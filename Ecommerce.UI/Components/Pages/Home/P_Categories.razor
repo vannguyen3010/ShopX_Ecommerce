@@ -34,18 +34,37 @@
             {
                 @foreach (var item in cateProducts)
                 {
-                    <div class="category category-classic category-absolute overlay-zoom br-xs">
-                        <a href="shop-banner-sidebar.html" class="category-media">
-                            <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
-                                 height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                        </a>
-                        <div class="category-content">
-                            <h4 class="category-name">@item.Name</h4>
-                            <a href="shop-banner-sidebar.html" class="btn btn-primary btn-link btn-underline mt-1">
-                                Xem thêm
+                    @if(item.ParentCategory != null)
+                    {
+                        <div class="category category-classic category-absolute overlay-zoom br-xs">
+                            <a href="/san-pham/?c2=@item.Id" class="category-media">
+                                <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
+                                     height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                             </a>
+                            <div class="category-content">
+                                <h4 class="category-name"></h4>
+                                <a href="/san-pham/?c2=@item.Id" class="btn btn-primary btn-link btn-underline mt-1">
+                                    Xem thêm
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="category category-classic category-absolute overlay-zoom br-xs">
+                            <a href="/san-pham/?c1=@item.Id" class="category-media">
+                                <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
+                                     height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                            </a>
+                            <div class="category-content">
+                                <h4 class="category-name"></h4>
+                                <a href="/san-pham/?c1=@item.Id" class="btn btn-primary btn-link btn-underline mt-1">
+                                    Xem thêm
+                                </a>
+                            </div>
+                        </div>
+                    }
+                  
                 }
             }
         </div>

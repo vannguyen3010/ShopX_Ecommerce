@@ -100,7 +100,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4c2d2bac-06e1-4ca0-bcf1-b04d37846c07",
+                            ConcurrencyStamp = "37a665d5-b6a5-4b4c-8981-8a1d9853a3f7",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -108,7 +108,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDX1AtXpSS8rQEeoZaahawT9476H0O19YgbmEyXgrJNLkYVBfCpH6MRwW91y3tz5nQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGl/XqDmpapZ4VuQ2FoCUT7tYtA1DbU7spndyKW+n2E9GDIjxLWf6y+gpxuOOBleyw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -118,7 +118,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1bf4632a-81c5-4296-ab5c-f2c70e775e94",
+                            ConcurrencyStamp = "0d7eafea-cbce-4e28-9b10-1676e141e245",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -126,7 +126,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFViXWkHgRGewqoFFS5y3jtuOo6ESvJspBTY0GK/Yg9Gs0Fm2qz+xMWRR6NLEmsPVQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPTeRqpjMECtoW2604sv/XKzBm5CaSKhT4jdUdgm/mtBbe40PpIfWe+c1uHddPrkog==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -724,6 +724,10 @@ namespace Ecommerce_Wolmart.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
