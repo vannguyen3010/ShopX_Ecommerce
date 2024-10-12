@@ -161,11 +161,11 @@
         transform: scale3d(1.9, 1.4, 1) rotate3d(0, 0, 1, 45deg) translate3d(0, 120%, 0);
     }
 
-.product-price {
+/*.product-price {
     display: flex;
     align-items: center;
 }
-
+*/
 .old-price {
     font-size: 18px !important color: #b6b6b6;
     text-decoration: line-through;
