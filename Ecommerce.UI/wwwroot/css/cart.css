@@ -1,0 +1,9 @@
+﻿.product__quantity_item{
+    width: 18% !important;
+}
+.total_price {
+    font-weight: 600;
+    padding: 1em 2em;
+    background-color: #fff;
+    color: #333;
+}

@@ -283,11 +283,11 @@
                     lv2Url = $"/gioi-thieu?c1={category.Id}",
                 };
             }
+            await LoadListProducts();
         }
         else if (query.TryGetValue("c2", out var c2Id))
         {
             categoryId = new Guid(c2Id!);
-            // await LoadListProducts();
             var categoryResponse = await ProductServices.GetCategoryProductByCategoryId(categoryId.Value);
 
             if (categoryResponse != null && categoryResponse.Success)
@@ -304,6 +304,7 @@
                         lv3Url = $"/san-pham?c2={category.Id}",
                     };
             }
+            await LoadListProducts();
         }
 
         if (query.TryGetValue("pageNumber", out var page))
@@ -438,7 +439,7 @@
 
         // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("san-pham", queryParameters!);
-        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+        NavigationManager.NavigateTo(newUrl, forceLoad: true);
 
         // Tải lại danh sách sản phẩm
         await LoadListProducts();
