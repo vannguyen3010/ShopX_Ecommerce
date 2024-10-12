@@ -10,6 +10,8 @@ namespace Entities.Models
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        [Required]
+        public string PhoneNumber { get; set; }
 
         [Required]
         public string Message { get; set; }

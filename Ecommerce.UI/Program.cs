@@ -14,11 +14,12 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7105/") });
 
-builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<AccountServices>();
 builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<HomeServices>();
 builder.Services.AddScoped<BaseServices>();
 builder.Services.AddScoped<IntroduceServices>();
+builder.Services.AddScoped<ContactServices>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

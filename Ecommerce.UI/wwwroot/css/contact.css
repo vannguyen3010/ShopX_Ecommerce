@@ -1,0 +1,68 @@
+﻿.succes_item {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 44vh;
+    background-color: #f4f4f4;
+}
+
+.success-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 445px;
+    width: 100%;
+}
+
+.success-container .checkmark {
+    font-size: 50px;
+    color: #4CAF50; /* Màu xanh lá cây cho dấu tích */
+    margin-bottom: 20px;
+}
+
+.success-container h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.success-container p {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.success-container button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.success-container button:hover {
+    background-color: #45a049;
+}
+.spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border .75s linear infinite;
+}
+@keyframes spinner-border {
+    100% {
+        transform: rotate(360deg);
+    }
+}

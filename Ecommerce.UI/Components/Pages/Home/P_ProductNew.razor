@@ -212,10 +212,19 @@
 
                                                 </div>
                                             </div>
-                                            <div class="product-price">
-                                                <del class="old-price fs-5">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
-                                                <del class="new-price text-danger fs-5">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></del>
-                                            </div>
+                                            @if(item.Discount > 0)
+                                            {
+                                                <div class="product-price">
+                                                    <del class="old-price fs-5">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                                    <del class="new-price text-danger fs-5">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></del>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="product-price">
+                                                    <del class="new-price text-danger fs-5">@((item.Price).ToString("N0")) <span class="currency-symbol">đ</span></del>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 }
