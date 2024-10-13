@@ -20,17 +20,17 @@
                         {
                             <article class="post post-list post-listing mb-md-10 mb-6 pb-2 overlay-zoom mb-4">
                                 <figure class="post-media br-sm">
-                                    <a href="/gioi-thieu/@item.NameSlug/@item.id">
+                                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">
                                         <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" width="930"
                                              height="500" alt="blog" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                                     </a>
                                 </figure>
                                 <div class="post-details">
                                     <div class="post-cats text-primary">
-                                        <a href="/gioi-thieu/@item.NameSlug/@item.id">@item.CategoryName</a>
+                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.CategoryName</a>
                                     </div>
                                     <h4 class="post-title">
-                                        <a href="/gioi-thieu/@item.NameSlug/@item.id">@item.Name</a>
+                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
                                     </h4>
                                     <div class="post-content no_wrap_3">
                                         <p>
@@ -38,7 +38,7 @@
                                         </p>
                                     </div>
                                     <div class="post-meta">
-                                        <a href="/gioi-thieu/@item.NameSlug/@item.id" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
                                     </div>
                                 </div>
                             </article>
@@ -107,7 +107,7 @@
                                     {
                                         @foreach (var item in cateIntroduces)
                                         {
-                                            <a href="/gioi-thieu?c=@item.Id" class="tag position-relative">
+                                            <a onclick="window.location.href='/gioi-thieu?c=@item.Id';" class="tag position-relative cursor">
                                                 @item.Name
                                                 <span class="category_introduce_item position-absolute">@item.TotalCount</span>
                                             </a>
@@ -152,10 +152,10 @@
                                                             </figure>
                                                             <div class="post-details">
                                                                 <div class="post-meta">
-                                                                    <a href="/gioi-thieu/@item.NameSlug/@item.id" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                                                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
                                                                 </div>
                                                                 <h4 class="post-title">
-                                                                    <a href="/gioi-thieu/@item.NameSlug/@item.id">@item.Name</a>
+                                                                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
                                                                 </h4>
                                                             </div>
                                                         </div>

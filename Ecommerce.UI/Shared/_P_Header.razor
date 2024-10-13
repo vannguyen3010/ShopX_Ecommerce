@@ -30,7 +30,7 @@
                     <div class="dropdown-box">
                         <AuthorizeView>
                             <Authorized>
-                                <a href="/account/thong-tin-ca-nhan">
+                                <a onclick="window.location.href='/account/thong-tin-ca-nhan';" class="cursor">
                                     Profile
                                 </a>
                                 <button class="cursor" @onclick="Logout">
@@ -38,10 +38,10 @@
                                 </button>
                             </Authorized>
                             <NotAuthorized>
-                                <a href="/account/dang-nhap">
+                                <a onclick="window.location.href='/account/dang-nhap';" class="cursor">
                                     Đăng Nhập
                                 </a>
-                                <a href="/account/dang-ky">
+                                <a onclick="window.location.href='/account/dang-ky';" class="cursor">
                                     Đăng Ký
                                 </a>
                             </NotAuthorized>
@@ -59,7 +59,7 @@
             <div class="header-left mr-md-4">
                 <a href="#" class="mobile-menu-toggle w-icon-hamburger">
                 </a>
-                <a href="/" class="logo ml-lg-0">
+                <a onclick="window.location.href='/';" class="logo ml-lg-0 cursor">
                     <img src="img_dev/image/logo/logo.svg" alt="logo" width="144" height="45" />
                 </a>
                 <form @onsubmit="PerformSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 <div class="cart-dropdown cart-offcanvas mr-0 mr-lg-2">
-                    <a href="/gio-hang" class="label-down py-0 position-relative">
+                    <a onclick="window.location.href='/gio-hang';" class="label-down py-0 position-relative cursor">
                         <i class="w-icon-cart">
                             <span class="cart-count">2</span>
                         </i>
@@ -104,17 +104,17 @@
                     <nav class="main-nav ml-0">
                         <ul class="menu">
                             <li class="">
-                                <a href="/">Trang Chủ</a>
+                                <a class="cursor" onclick="window.location.href='/';">Trang Chủ</a>
                             </li>
                             <li>
-                                <a href="/san-pham">Sản phẩm</a>
+                                <a class="cursor" onclick="window.location.href='/san-pham';">Sản phẩm</a>
                                 <ul class="submenu_item_custom">
                                     @if (cateProducts != null && cateProducts.Any())
                                     {
                                         @foreach (var item in cateProducts)
                                         {
                                             <li>
-                                                <a href="/san-pham/?c1=@item.Id">
+                                                <a class="cursor" onclick="window.location.href='/san-pham/?c1=@item.Id';">
                                                     <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/default.png" : item.FilePath)" alt="Category Image" />
                                                     <span>@item.Name</span>
                                                 </a>
@@ -124,7 +124,7 @@
                                                         @foreach (var res in item.CategoriesObjs)
                                                         {
                                                             <li>
-                                                                <a href="/san-pham?c2=@res.Id">@res.Name</a>
+                                                                <a class="cursor" onclick="window.location.href='/san-pham?c2=@res.Id';">@res.Name</a>
                                                             </li>
                                                         }
                                                     </ul>
@@ -137,14 +137,14 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="/gioi-thieu">Giới Thiệu</a>
+                                <a class="cursor" onclick="window.location.href='/gioi-thieu';">Giới Thiệu</a>
                                 <ul>
                                     @if (cateIntroduces != null && cateIntroduces.Any())
                                     {
                                         @foreach (var item in cateIntroduces)
                                         {
                                             <li>
-                                                <a href="/gioi-thieu?c=@item.Id">@item.Name</a>
+                                                <a class="cursor" onclick="window.location.href='/gioi-thieu?c=@item.Id';">@item.Name</a>
                                             </li>
                                         }
                                     }
@@ -152,7 +152,7 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="/lien-he">Liên hệ</a>
+                                <a class="cursor" onclick="window.location.href='/lien-he';">Liên hệ</a>
                             </li>
                         </ul>
                     </nav>
@@ -169,11 +169,11 @@
     </div>
 </header>
 <div class="sticky-footer sticky-content fix-bottom">
-    <a href="/" class="sticky-link active">
+    <a onclick="window.location.href='/';" class="sticky-link active cursor">
         <i class="w-icon-home"></i>
         <p>Tran chủ</p>
     </a>
-    <a href="/san-pham" class="sticky-link">
+    <a onclick="window.location.href='/san-pham';" class="sticky-link cursor">
         <i class="w-icon-category"></i>
         <p>Sản phẩm</p>
     </a>

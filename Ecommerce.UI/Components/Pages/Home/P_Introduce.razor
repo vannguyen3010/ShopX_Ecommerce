@@ -36,14 +36,14 @@
         {
             <div class="post">
                 <figure class="post-media br-sm">
-                    <a href="/gioi-thieu/@item.NameSlug/@item.id">
+                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">
                         <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Post" width="620" height="398"
                              style="background-color: #898078;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                     </a>
                 </figure>
                 <div class="post-details">
                     <h4 class="post-title row d-flex">
-                        <a class="col-6 no_wrap_1" href="/gioi-thieu/@item.NameSlug/@item.id">
+                        <a class="col-6 no_wrap_1 cursor" onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';">
                             @item.Name
                         </a>
                         <span class="col-6 fs-4 text-primary">
@@ -54,7 +54,7 @@
                     <div class="post-content">
                         <span class="no_wrap_2 fs-5">@item.Description</span>
                     </div>
-                    <a href="/gioi-thieu/@item.NameSlug/@item.id" class="btn btn-link btn-dark btn-underline mt-3">
+                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="btn btn-link btn-dark btn-underline mt-3 cursor">
                         Xem thêm<i class="w-icon-long-arrow-right"></i>
                     </a>
                 </div>
@@ -65,5 +65,5 @@
 
 </div>
 <div class="row text-center">
-    <a href="/gioi-thieu?type=3">Xem thêm</a>
+    <a class="cursor" onclick="window.location.href='/gioi-thieu?type=3';">Xem thêm</a>
 </div>
