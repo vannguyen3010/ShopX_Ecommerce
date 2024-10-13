@@ -37,13 +37,13 @@
                     @if(item.ParentCategory != null)
                     {
                         <div class="category category-classic category-absolute overlay-zoom br-xs">
-                            <a href="/san-pham/?c2=@item.Id" class="category-media">
+                            <a onclick="window.location.href='/san-pham/?c2=@item.Id';" class="category-media cursor">
                                 <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
                                      height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                             </a>
                             <div class="category-content">
                                 <h4 class="category-name"></h4>
-                                <a href="/san-pham/?c2=@item.Id" class="btn btn-primary btn-link btn-underline mt-1">
+                                <a onclick="window.location.href='/san-pham/?c2=@item.Id';" class="btn btn-primary btn-link btn-underline mt-1 cursor">
                                     Xem thêm
                                 </a>
                             </div>
@@ -52,13 +52,13 @@
                     else
                     {
                         <div class="category category-classic category-absolute overlay-zoom br-xs">
-                            <a href="/san-pham/?c1=@item.Id" class="category-media">
+                            <a onclick="window.location.href='/san-pham/?c1=@item.Id';" class="category-media cursor">
                                 <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
                                      height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                             </a>
                             <div class="category-content">
                                 <h4 class="category-name"></h4>
-                                <a href="/san-pham/?c1=@item.Id" class="btn btn-primary btn-link btn-underline mt-1">
+                                <a onclick="window.location.href='/san-pham/?c1=@item.Id';" class="btn btn-primary btn-link btn-underline mt-1 cursor">
                                     Xem thêm
                                 </a>
                             </div>

@@ -21,9 +21,9 @@
                             </figure>
                             <div class="post-details">
                                 <div class="post-meta">
-                                    <a href="#" class="post-date">@introduce.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                    <a class="post-date">@introduce.CreatedAt.ToString("dd-MM-yyyy")</a>
                                 </div>
-                                <h2 class="post-title"><a href="#">@introduce.Name</a></h2>
+                                <h2 class="post-title"><a>@introduce.Name</a></h2>
                                 <div class="post-content">
                                     <p>
                                         @introduce.Description
@@ -115,7 +115,7 @@
                                         {
                                             @foreach (var item in cateIntroduces)
                                             {
-                                                <a href="/gioi-thieu?c=@item.Id" class="tag position-relative">
+                                                <a onclick="window.location.href='/gioi-thieu?c=@item.Id';" class="tag position-relative cursor">
                                                     @item.Name
                                                     <span class="category_introduce_item position-absolute">@item.TotalCount</span>
                                                 </a>
@@ -146,10 +146,10 @@
                                                                 </figure>
                                                                 <div class="post-details">
                                                                     <div class="post-meta">
-                                                                        <a href="/gioi-thieu/@item.NameSlug/@item.id" class="post-date">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
                                                                     </div>
                                                                     <h4 class="post-title">
-                                                                        <a href="/gioi-thieu/@item.NameSlug/@item.id">@item.Name</a>
+                                                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
                                                                     </h4>
                                                                 </div>
                                                             </div>

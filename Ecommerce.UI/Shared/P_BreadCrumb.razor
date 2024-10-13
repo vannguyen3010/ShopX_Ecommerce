@@ -12,15 +12,15 @@
             <ul class="breadcrumb bb-no">
                 @if (!string.IsNullOrEmpty(BreadCrumb?.lv1Name))
                 {
-                    <li><a href="@BreadCrumb.lv1Url">@BreadCrumb.lv1Name</a></li>
+                    <li><a onclick="window.location.href='@BreadCrumb.lv1Url';" class="cursor">@BreadCrumb.lv1Name</a></li>
                 }
                 @if (!string.IsNullOrEmpty(BreadCrumb?.lv2Name))
                 {
-                    <li><a href="@BreadCrumb.lv2Url">@BreadCrumb.lv2Name</a></li>
+                    <li><a onclick="window.location.href='@BreadCrumb.lv2Url';" class="cursor">@BreadCrumb.lv2Name</a></li>
                 }
                 @if (!string.IsNullOrEmpty(BreadCrumb?.lv3Name))
                 {
-                    <li><a href="@BreadCrumb.lv3Url">@BreadCrumb.lv3Name</a></li>
+                    <li><a onclick="window.location.href='@BreadCrumb.lv3Url';" class="cursor">@BreadCrumb.lv3Name</a></li>
                 }
                 <li>@BreadCrumb.currentName</li>
             </ul>
@@ -32,7 +32,7 @@ else
     <nav class="breadcrumb-nav mb-6">
         <div class="container">
             <ul class="breadcrumb">
-                <li><a>Trang chủ</a></li>
+                <li><a onclick="window.location.href='/';" class="cursor">Trang chủ</a></li>
             </ul>
         </div>
     </nav>
