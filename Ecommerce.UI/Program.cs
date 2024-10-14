@@ -20,6 +20,7 @@ builder.Services.AddScoped<HomeServices>();
 builder.Services.AddScoped<BaseServices>();
 builder.Services.AddScoped<IntroduceServices>();
 builder.Services.AddScoped<ContactServices>();
+builder.Services.AddScoped<CartServices>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

@@ -1,5 +1,7 @@
 ﻿@page "/gio-hang"
 
+@inject ILocalStorageService LocalStorage
+@inject CartServices CartServices
 
 <link href="css/cart.css" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
@@ -18,8 +20,6 @@
             </ul>
         </div>
     </nav>
-    <!-- End of Breadcrumb -->
-    <!-- Start of PageContent -->
     <div class="page-content">
         <div class="container">
             <div class="row gutter-lg mb-10">
@@ -29,55 +29,82 @@
                             <tr>
                                 <th class="product-name"><span>Sản phẩm</span></th>
                                 <th></th>
-                                <th class="product-price"><span>Giá</span></th>
                                 <th class="product-price"><span>Giá Giảm</span></th>
+                                <th class="product-price"><span>Giá</span></th>
                                 <th class="product-quantity product__quantity_item"><span>Số lượng</span></th>
                                 <th class="product-subtotal text-center"><span>Hành động</span></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="product-thumbnail">
-                                    <div class="p-relative">
-                                        <a href="product-default.html">
-                                            <figure>
-                                                <img src="assets/images/shop/12.jpg" alt="product"
-                                                     width="300" height="338">
-                                            </figure>
-                                        </a>
-                                        <button type="submit" class="btn btn-close">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                                <td class="product-name">
-                                    <a href="product-default.html">
-                                        Classic Simple Backpack
-                                    </a>
-                                </td>
-                                <td class="product-price"><span class="amount">$40.00</span></td>
-                                <td class="product-price"><span class="amount">$40.00</span></td>
-                                <td class="product-quantity product__quantity_item">
-                                    <div class="input-group">
-                                        <input class="quantity form-control" type="number" min="1" max="100000">
-                                        <button class="quantity-plus w-icon-plus"></button>
-                                        <button class="quantity-minus w-icon-minus"></button>
-                                    </div>
-                                </td>
+                            @if (carts != null && carts.Any())
+                            {
+                                @foreach (var item in carts)
+                                {
+                                    // Kiểm tra nếu StockQuantity = 0
+                                    var disableClass = item.StockQuantity == 0 ? "disable" : "";
+                                    <tr class="@disableClass">
+                                        <td class="product-thumbnail">
+                                            <div class="p-relative">
+                                                <a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id'">
+                                                    <figure>
+                                                        <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="product"
+                                                             width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                    </figure>
+                                                </a>
+                                                <button @onclick="() => DeleteCartItem(item.ProductId)" class="btn btn-close">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td class="product-name">
+                                            <a class="no_wrap_2">
+                                                @item.Name
+                                            </a>
+                                            <span class="product-category"><a class="category_product">@item.CategoryName</a></span>
+                                        </td>
+                                        <td class="product-price">
+                                            <del class="old-price">@item.Discount.ToString("N0")<span class="currency-symbol">đ</span>  </del>
+                                        </td>
+                                        <td class="product-price">
+                                            <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                        </td>
+                                        <td class="product-quantity product__quantity_item">
+                                            <div class="input-group">
+                                                <input class="quantity form-control" type="number" value="@item.Quantity" @onchange="(e) => UpdateCartItemQuantity(item.ProductId, int.Parse(e.Value.ToString()))" min="1" max="10" disabled="@(item.StockQuantity == 0)">
+                                                <button class="quantity-plus w-icon-plus" @onclick="() => UpdateCartItemQuantity(item.ProductId, item.Quantity + 1)" disabled="@((item.StockQuantity == 0) ? true : false)"></button>
+                                                <button class="quantity-minus w-icon-minus" @onclick="() => UpdateCartItemQuantity(item.ProductId, item.Quantity - 1)" disabled="@((item.StockQuantity == 0) ? true : false)"></button>
+                                            </div>
+                                        </td>
 
-                                <td class="product-subtotal text-center">
-                                    <a class="amount">
-                                        <i class="fas fa-trash-alt" style="color: red;"></i>
-                                    </a>
-                                </td>
+                                        <td class="product-subtotal text-center">
+                                            <a href="javascript:void()" @onclick="() => DeleteCartItem(item.ProductId)" class="amount">
+                                                <i class="fas fa-trash-alt" style="color: red;"></i>
+                                            </a>
+                                        </td>
 
-                            </tr>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+
+                                </tr>
+                            }
                         </tbody>
                     </table>
 
                     <div class="cart-action mb-6">
-                        <a href="/san-pham" class="btn btn-dark btn-rounded btn-icon-left btn-shopping mr-auto"><i class="w-icon-long-arrow-left"></i>Về trang mua sắm</a>
-                        <span class="total_price">Tổng tiền : 100$</span>
+                        <a onclick="window.location.href='/san-pham'" class="btn btn-dark btn-rounded btn-icon-left btn-shopping mr-auto"><i class="w-icon-long-arrow-left"></i>Về trang mua sắm</a>
+                        <span class="total_price">Tổng tiền : @totalPrice.ToString("N0")</span>
                         <button type="submit" class="btn btn-rounded btn-update" name="update_cart" value="Update Cart">Mua hàng</button>
                     </div>
                 </div>
@@ -86,3 +113,94 @@
     </div>
     <!-- End of PageContent -->
 </main>
+
+@code {
+    private IEnumerable<CartItemDto> carts = new List<CartItemDto>();
+    private string message;
+    private decimal totalPrice;
+    private bool isRendered = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRendered)
+        {
+            isRendered = false; // Đảm bảo LoadListCarts chỉ gọi một lần khi render
+            await LoadListCarts();
+        }
+    }
+
+    private async Task LoadListCarts()
+    {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để bình luận.";
+            return;
+        }
+
+        var response = await CartServices.GetCartAsync(userId);
+        if (response != null && response.Success)
+        {
+            carts = response.Data.Items;
+            totalPrice = response.Data.TotalPrice;
+        }
+        else
+        {
+            carts = new List<CartItemDto>();
+            message = response?.Message ?? "Lỗi khi lấy giỏ hàng.";
+        }
+        StateHasChanged();
+    }
+
+    private async Task UpdateCartItemQuantity(Guid productId, int quantity)
+    {
+        if (quantity < 1)
+        {
+            quantity = 1;
+        }
+
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+
+        var request = new UpdateCartItemDto
+        {
+            ProductId = productId,
+            UserId = userId,
+            Quantity = quantity
+        };
+
+        var response = await CartServices.UpdateCartItemQuantityAsync(request);
+        if (response != null && response.Success)
+        {
+            await LoadListCarts();
+        }
+        else
+        {
+            message = response?.Message ?? "Lỗi khi cập nhật số lượng.";
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task DeleteCartItem(Guid productId)
+    {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Bạn cần đăng nhập để thực hiện thao tác này.";
+            return;
+        }
+
+        var response = await CartServices.DeleteFromCartAsync(userId, productId);
+
+        if (response.Success)
+        {
+            await LoadListCarts();
+            message = response.Message;
+        }
+        else
+        {
+            message = response.Message;
+        }
+    }
+}

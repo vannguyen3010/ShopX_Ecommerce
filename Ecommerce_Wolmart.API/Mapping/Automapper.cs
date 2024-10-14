@@ -106,9 +106,13 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<AddToCartDto, CartItem>();
 
-            CreateMap<CartItem, CartItemDto>();
+            //CreateMap<CartItem, CartItemDto>();
 
-            CreateMap<CartItem, CartItemDto>();
+            CreateMap<CartItem, CartItemDto>()
+                .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => (src.Price * src.Quantity) - (src.Discount * src.Quantity)));
+
+            //CreateMap<CartItem, CartItemDto>()
+            //    .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => src.Price - src.Discount));
 
             CreateMap<UpdateCartItemDto, CartItem>();
 

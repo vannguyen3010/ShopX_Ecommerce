@@ -7,3 +7,15 @@
     background-color: #fff;
     color: #333;
 }
+.category_product {
+    line-height: 16px;
+    background: #56a6f0;
+    color: #fff !important;
+    font-size: 11px;
+    padding: 3px;
+    border-radius: 4px;
+}
+.disable {
+    opacity: 0.5;
+    pointer-events: none;
+}
