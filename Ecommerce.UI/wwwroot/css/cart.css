@@ -19,3 +19,22 @@
     opacity: 0.5;
     pointer-events: none;
 }
+.out_of_stock {
+    align-items: center;
+    display: flex;
+}
+.out_of_stock span {
+    border: 1px solid #ee4d2d;
+    border-radius: 2px;
+    box-sizing: border-box;
+    color: #ee4d2d;
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 12px;
+    margin: 0 5px 5px 0;
+    overflow: hidden;
+    padding: 2px 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
