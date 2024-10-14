@@ -230,6 +230,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                     {
                         // Nếu sản phẩm đã hết hàng, đặt quantity = 0
                         item.StockQuantity = 0;
+                        item.Name = product.Name;
+                        item.Price = product.Price;
+                        item.Discount = product.Discount;
+                        item.CategoryName = product.CategoryName;
+                        item.CategoryName = product.CategoryName;
+                        item.ImageFilePath = product.ImageFilePath;
                         _repository.Cart.UpdateCartItem(item);
                     }
                     else
@@ -238,6 +244,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                         if(item.StockQuantity < product.StockQuantity)
                         {
                             item.StockQuantity = product.StockQuantity;
+                            item.Name = product.Name;
+                            item.Price = product.Price;
+                            item.Discount = product.Discount;
+                            item.CategoryName = product.CategoryName;
+                            item.CategoryName = product.CategoryName;
+                            item.ImageFilePath = product.ImageFilePath;
                             _repository.Cart.UpdateCartItem(item);
                         }
                     }

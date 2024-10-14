@@ -64,11 +64,19 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="product-price">
-                                        <del class="old-price">@product.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
-                                        <ins class="new-price text-danger">@((product.Price - product.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
-                                    </div>
+                                    @if(product.Discount > 0)
+                                    {
+                                        <div class="product-price">
+                                            <del class="old-price">@product.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                            <ins class="new-price text-danger">@((product.Price - product.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="product-price">
+                                            <ins class="new-price text-danger">@product.Price.ToString("N0") <span class="currency-symbol">đ</span></ins>
+                                        </div>
+                                    }
 
                                     <div class="ratings-container">
                                         <div class="star-rating">
@@ -103,16 +111,20 @@
                                             <div class="product-qty-form">
                                                 <div class="input-group">
                                                     <input class="quantity form-control" type="number" min="1"
-                                                           max="10000000" @bind="quantity">
-                                                    <button class="quantity-plus w-icon-plus" @onclick="IncreaseQuantity"></button>
-                                                    <button class="quantity-minus w-icon-minus" @onclick="DecreaseQuantity"></button>
+                                                           max="@product.StockQuantity" @bind="quantity" disabled="@(product.StockQuantity == 0)" @oninput="ValidateQuantityInput">
+                                                    <button class="quantity-plus w-icon-plus" @onclick="IncreaseQuantity" disabled="@(product.StockQuantity == 0 || quantity >= product.StockQuantity)"></button>
+                                                    <button class="quantity-minus w-icon-minus" @onclick="DecreaseQuantity" disabled="@(product.StockQuantity == 0 || quantity >= product.StockQuantity)"></button>
                                                 </div>
                                             </div>
-                                            <button class="btn btn-primary btn-cart" @onclick="AddToCart">
+                                            <button class="btn btn-primary btn-cart" @onclick="AddToCart" disabled="@(product.StockQuantity == 0)">
                                                 <i class="w-icon-cart"></i>
                                                 <span>Thêm vào Giỏ hàng</span>
                                             </button>
                                         </div>
+                                        @if (!string.IsNullOrEmpty(message))
+                                        {
+                                            <div class="alert alert-warning">@message</div>
+                                        }
                                     </div>
 
                                     <div class="social-links-wrapper">
@@ -771,6 +783,12 @@
 
     private async Task AddToCart()
     {
+        if (quantity > product.StockQuantity)
+        {
+            message = $"Vì cửa hàng chỉ còn {product.StockQuantity} sản phẩm, bạn không được đặt quá số lượng.";
+            return; 
+        }
+
         var userId = await LocalStorage.GetItemAsync<string>("userId");
         if (string.IsNullOrEmpty(userId))
         {
@@ -804,18 +822,6 @@
         }
     }
 
-    private void IncreaseQuantity()
-    {
-        quantity++;
-    }
-
-    private void DecreaseQuantity()
-    {
-        if (quantity > 1) // Đảm bảo số lượng không nhỏ hơn 1
-        {
-            quantity--;
-        }
-    }
 
     private async Task LoadListProductIshot()
     {
@@ -920,4 +926,46 @@
         numberOfCommentsToShow += increment;
     }
 
+    private void IncreaseQuantity()
+    {
+        if (quantity < product.StockQuantity)
+        {
+            quantity++;
+        }
+        else
+        {
+            message = $"Vì cửa hàng chỉ còn {product.StockQuantity} sản phẩm, bạn không được đặt quá số lượng.";
+        }
+    }
+
+    private void DecreaseQuantity()
+    {
+        if (quantity > 1) // Đảm bảo số lượng không nhỏ hơn 1
+        {
+            quantity--;
+            message = null;
+        }
+    }
+
+    private void ValidateQuantityInput(ChangeEventArgs e)
+    {
+        int inputQuantity;
+        if (int.TryParse(e.Value.ToString(), out inputQuantity))
+        {
+            if (inputQuantity > product.StockQuantity)
+            {
+                quantity = product.StockQuantity;
+                message = $"Vì cửa hàng chỉ còn {product.StockQuantity} sản phẩm, bạn không được đặt quá số lượng.";
+            }
+            else if (inputQuantity < 1)
+            {
+                quantity = 1; // Không cho phép số lượng dưới 1
+            }
+            else
+            {
+                quantity = inputQuantity;
+                message = null; // Xóa thông báo nếu số lượng hợp lệ
+            }
+        }
+    }
 }
