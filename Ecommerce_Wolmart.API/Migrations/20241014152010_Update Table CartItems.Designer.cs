@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20241014152010_Update Table CartItems")]
+    partial class UpdateTableCartItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,7 +103,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "58094d00-6572-44b4-b77b-b3cb12932593",
+                            ConcurrencyStamp = "2852668b-f9aa-41a8-bc8d-05f743f70691",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -108,7 +111,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENATQ6pS1dxZth+Roy+9jnnuJiWUtSAVg/qqIceF3VjJFTUeHoUkZQ0leaME3r6n/g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELtpEHGziSPoO26CxER1pZhONc9QOvelDLXH3e2poF9AwjgbAbqfZ3YcuiHFWJfJkg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -118,7 +121,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8d6bfe48-73cc-456a-92f6-478549eb266c",
+                            ConcurrencyStamp = "ccddd426-887e-49ca-b243-11e75c8c87d0",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -126,7 +129,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHHecY9AbmsvYLkNPb7Bxim4UchPq+zGBVpVr7jBNVfQX8HbcD5qtdPEhWjfRcx/ug==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOGX4PPsHUwxC0meEvyatmAD7bPWK+IcX3HjeeEg0N1oPTmcEKk4V7y6YpYx5rTDPQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -513,9 +516,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StockQuantity")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")

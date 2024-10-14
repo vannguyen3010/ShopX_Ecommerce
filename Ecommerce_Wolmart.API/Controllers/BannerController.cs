@@ -8,8 +8,6 @@ using Repository;
 using Microsoft.AspNetCore.Hosting;
 using Shared.DTO.Response;
 using Shared.DTO.BannerProduct;
-//using BannerPosition = Entities.Models.BannerPosition;
-//using BannerDto = Shared.DTO.Banner.BannerPosition;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {

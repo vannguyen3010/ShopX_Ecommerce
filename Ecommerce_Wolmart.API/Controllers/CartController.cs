@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Shared.DTO.Cart;
+using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -105,7 +106,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                     existingCartItem.Price += product.Price * addToCartDto.Quantity;
                     existingCartItem.Discount += product.Discount * addToCartDto.Quantity;
                     existingCartItem.ImageFilePath = product.ImageFilePath;
-                    existingCartItem.ProductName = product.Name;
+                    existingCartItem.Name = product.Name;
+                    existingCartItem.NameSlug = product.NameSlug;
+                    existingCartItem.StockQuantity = product.StockQuantity;
                     existingCartItem.CategoryName = product.CategoryName;
 
                     _repository.Cart.UpdateCartItem(existingCartItem);
@@ -140,8 +143,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Price = product.Price * addToCartDto.Quantity,
                         Discount = product.Discount * addToCartDto.Quantity,
                         ImageFilePath = product.ImageFilePath,
-                        ProductName = product.Name,
-                        //CategoryName = product.CategoryName != null ? product.CategoryName : "Unknown",
+                        Name = product.Name,
+                        NameSlug = product.NameSlug,
+                        StockQuantity = product.StockQuantity,
                         CategoryName = product.CategoryName,
                     });
 
@@ -213,35 +217,47 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-
-                //var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
-                var cartItemDtos = cartItems.Select(item => new CartItemDto
+                // Kiểm tra lại StockQuantity cho mỗi sản phẩm trong giỏ hàng
+                foreach (var item in cartItems)
                 {
-                    Id = item.Id,
-                    UserId = userId,
-                    ProductId = item.ProductId,
-                    ProductName = item.ProductName,
-                    CategoryName = item.CategoryName,
-                    Price = item.Price,
-                    Discount = item.Discount,
-                    FinalPrice = item.Price - item.Discount,
-                    Quantity = item.Quantity,
-                    ImageFilePath = item.ImageFilePath,
-                }).ToList();
+                    var product = await _repository.Product.GetProductByIdAsync(item.ProductId, trackChanges: false);
+                    if(product == null)
+                    {
+                        //item.StockQuantity = 0;
+                        _repository.Cart.DeleteCartItem(item);
+                    }
+                    else if(product.StockQuantity == 0)
+                    {
+                        // Nếu sản phẩm đã hết hàng, đặt quantity = 0
+                        item.StockQuantity = 0;
+                        _repository.Cart.UpdateCartItem(item);
+                    }
+                    else
+                    {
+                        // Nếu sản phẩm còn hàng, bạn có thể cập nhật lại giỏ hàng nếu cần
+                        if(item.StockQuantity < product.StockQuantity)
+                        {
+                            item.StockQuantity = product.StockQuantity;
+                            _repository.Cart.UpdateCartItem(item);
+                        }
+                    }
+                }
+
+                await _repository.Cart.SaveAsync();
+
+                var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
 
                 var totalPrice = cartItemDtos.Sum(item => item.FinalPrice);
 
-                var cartDto = new CartDtos
+                return Ok(new
                 {
-                    Items = cartItemDtos,
-                    TotalPrice = totalPrice,
-                };
-
-                return Ok(new ApiResponse<CartDtos>
-                {
-                    Success = true,
-                    Message = "Cart retrieved successfully.",
-                    Data = cartDto
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalPrice,
+                        Items = cartItemDtos
+                    }
                 });
             }
             catch (Exception ex)

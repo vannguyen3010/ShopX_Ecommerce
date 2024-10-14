@@ -173,7 +173,7 @@
 
                                                 </div>
                                             </div>
-                                            @if(item.Discount > 0)
+                                            @if (item.Discount > 0)
                                             {
                                                 <div class="product-price">
                                                     <del class="old-price">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
@@ -276,12 +276,12 @@
                 var category = categoryResponse.Data;
 
                 breadCrumb = new VM_BreadCrumb
-                {
-                    lv1Name = "Trang chủ",
-                    lv1Url = "/",
-                    lv2Name = category.Name,
-                    lv2Url = $"/gioi-thieu?c1={category.Id}",
-                };
+                    {
+                        lv1Name = "Trang chủ",
+                        lv1Url = "/",
+                        lv2Name = category.Name,
+                        lv2Url = $"/gioi-thieu?c1={category.Id}",
+                    };
             }
             await LoadListProducts();
         }

@@ -5,7 +5,7 @@ namespace Shared.DTO.Product
 {
     public class UpdateProductDto
     {
-        public string RowVersion { get; set; }
+        public string? RowVersion { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Detail { get; set; }
