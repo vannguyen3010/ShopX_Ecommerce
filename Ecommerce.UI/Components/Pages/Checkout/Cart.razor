@@ -45,7 +45,7 @@
                                     <tr class="">
                                         <td class="product-thumbnail">
                                             <div class="p-relative">
-                                                <a>
+                                                <a onclick="window.location.href='/san-pham/@item.NameSlug/@item.ProductId'" class="cursor">
                                                     <figure>
                                                         <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="product"
                                                              width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
@@ -58,22 +58,24 @@
                                             </div>
                                         </td>
                                         <td class="product-name">
-                                            <a class="no_wrap_2">
+                                            <a class="no_wrap_2 cursor" onclick="window.location.href='/san-pham/@item.NameSlug/@item.ProductId'">
                                                 @item.Name
                                             </a>
                                             <span class="product-category"><a class="category_product">@item.CategoryName</a></span>
                                             @if (item.StockQuantity == 0)
                                             {
-                                                <div class="fs-3 mt-1 out_of_stock">
+                                                <div class="fs-3 mt-1 out_of_stock d-flex align-items-center">
+                                                    <i class="fas fa-exclamation-circle text-danger lightning-icon me-2 fs-4"></i>
                                                     <span>Hết hàng</span>
                                                 </div>
                                             }
                                         </td>
                                         <td class="product-price">
-                                            <del class="old-price">@item.Discount.ToString("N0")<span class="currency-symbol">đ</span>  </del>
+                                            <del class="old-price">@((item.Discount * item.Quantity).ToString("N0"))<span class="currency-symbol">đ</span></del>
+
                                         </td>
                                         <td class="product-price">
-                                            <ins class="new-price text-danger">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></ins>
+                                            <ins class="new-price text-danger">@((item.Price * item.Quantity).ToString("N0")) <span class="currency-symbol">đ</span></ins>
                                         </td>
                                         <td class="product-quantity product__quantity_item">
                                             <div class="input-group @disableClass">
@@ -246,9 +248,9 @@
         // Chuyển đổi giá trị nhập từ input sang kiểu số nguyên
         if (int.TryParse(inputValue, out int quantity))
         {
-            if (item.Quantity < item.StockQuantity)
+            if (quantity > item.StockQuantity)
             {
-                item.Quantity = item.StockQuantity;
+                // item.Quantity = item.StockQuantity;
                 errorMessage = $"Vì cửa hàng chỉ còn {item.StockQuantity} sản phẩm, bạn không được đặt quá số lượng..";
             }
             else if (quantity < 1)
