@@ -103,8 +103,10 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     // Nếu sản phẩm đã có trong giỏ hàng, cộng dồn số lượng
                     existingCartItem.Quantity += addToCartDto.Quantity;
-                    existingCartItem.Price += product.Price * addToCartDto.Quantity;
-                    existingCartItem.Discount += product.Discount * addToCartDto.Quantity;
+                    //existingCartItem.Price += product.Price * addToCartDto.Quantity;
+                    existingCartItem.Price = product.Price;
+                    //existingCartItem.Discount += product.Discount * addToCartDto.Quantity;
+                    existingCartItem.Discount = product.Discount;
                     existingCartItem.ImageFilePath = product.ImageFilePath;
                     existingCartItem.Name = product.Name;
                     existingCartItem.NameSlug = product.NameSlug;
@@ -140,8 +142,10 @@ namespace Ecommerce_Wolmart.API.Controllers
                         UserId = addToCartDto.UserId,
                         ProductId = addToCartDto.ProductId,
                         Quantity = addToCartDto.Quantity,
-                        Price = product.Price * addToCartDto.Quantity,
-                        Discount = product.Discount * addToCartDto.Quantity,
+                        //Price = product.Price * addToCartDto.Quantity,
+                        Price = product.Price,
+                        //Discount = product.Discount * addToCartDto.Quantity,
+                        Discount = product.Discount,
                         ImageFilePath = product.ImageFilePath,
                         Name = product.Name,
                         NameSlug = product.NameSlug,
@@ -217,6 +221,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+
                 // Kiểm tra lại StockQuantity cho mỗi sản phẩm trong giỏ hàng
                 foreach (var item in cartItems)
                 {
@@ -253,13 +258,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                             _repository.Cart.UpdateCartItem(item);
                         }
                     }
+
                 }
 
                 await _repository.Cart.SaveAsync();
 
                 var cartItemDtos = _mapper.Map<IEnumerable<CartItemDto>>(cartItems);
 
-                var totalPrice = cartItemDtos.Sum(item => item.FinalPrice);
+                // Tính tổng giá chỉ cho những sản phẩm có StockQuantity > 0
+                var totalPrice = cartItemDtos
+                                    .Where(item => item.StockQuantity > 0)
+                                    .Sum(item => item.FinalPrice);
 
                 return Ok(new
                 {

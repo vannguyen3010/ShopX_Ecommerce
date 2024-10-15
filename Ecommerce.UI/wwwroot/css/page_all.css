@@ -313,3 +313,27 @@ a:hover > .expanded-label {
         opacity: 0;
     }
 }
+.out_of_stock {
+    align-items: center;
+    display: flex;
+}
+
+.out_of_stock span {
+    border: 1px solid #ee4d2d;
+    border-radius: 2px;
+    box-sizing: border-box;
+    color: #ee4d2d;
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 12px;
+    overflow: hidden;
+    padding: 2px 4px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.disable {
+    opacity: 0.5;
+    pointer-events: none;
+}
