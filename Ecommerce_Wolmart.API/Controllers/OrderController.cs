@@ -118,6 +118,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Cập nhật thông tin bổ sung cho Order
                 order.ShippingCostId = shippingCost.Id;
                 order.ShippingCost = shippingCost.Cost;
+                order.UserName = address.UserName;
+                order.PhoneNumber = address.PhoneNumber;
                 order.Discount = totalDiscount;
                 order.Price = totalPrice;
                 order.TotalAmount = totalPrice - totalDiscount + shippingCost.Cost;

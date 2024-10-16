@@ -23,6 +23,7 @@ builder.Services.AddScoped<ContactServices>();
 builder.Services.AddScoped<CartServices>();
 builder.Services.AddScoped<AddressServices>();
 builder.Services.AddScoped<ShippingCost>();
+builder.Services.AddScoped<OrderServices>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

@@ -57,7 +57,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    background-color: #0da487;
+    background-color: #369;
     padding: 2px 8px;
     border-radius: 4px;
     color: #fff;
@@ -113,4 +113,18 @@
     font-size: 12px;
     padding: 9px 8px;
     border-radius: 4px;
+}
+.product_image_custom {
+    width: 70px;
+    height: auto;
+    margin-right: 10px;
+}
+.product_checkout_item {
+    width: 47%;
+}
+.product_checkout_price {
+    width: 17%;
+}
+.test_price {
+    color: #369 !important;
 }

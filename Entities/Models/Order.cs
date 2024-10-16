@@ -11,8 +11,8 @@ namespace Entities.Models
         public Guid AddressId { get; set; }
         public Guid PaymentMethodId { get; set; } // ID của phương thức thanh toán
         public Guid ShippingCostId { get; set; } // ID của chi phí vận chuyển
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        //public string FirstName { get; set; }
+        //public string LastName { get; set; }
         public string UserName { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
