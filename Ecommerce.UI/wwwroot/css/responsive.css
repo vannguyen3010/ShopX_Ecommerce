@@ -2,3 +2,8 @@
 {
 
 }
+@media (max-width: 768px) {
+    .product_image_custom {
+        width: 30px;
+    }
+}
