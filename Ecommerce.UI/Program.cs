@@ -21,6 +21,8 @@ builder.Services.AddScoped<BaseServices>();
 builder.Services.AddScoped<IntroduceServices>();
 builder.Services.AddScoped<ContactServices>();
 builder.Services.AddScoped<CartServices>();
+builder.Services.AddScoped<AddressServices>();
+builder.Services.AddScoped<ShippingCost>();
 
 builder.Services.AddSingleton<AuthState>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

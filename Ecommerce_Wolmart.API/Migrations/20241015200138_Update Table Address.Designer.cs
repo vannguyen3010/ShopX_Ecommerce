@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20241015200138_Update Table Address")]
+    partial class UpdateTableAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,7 +103,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "79379dbf-a641-4e18-83ff-8e4f7f10854f",
+                            ConcurrencyStamp = "db140bc5-dc5a-4cd8-8a36-047e80787320",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -108,7 +111,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENgzhe5Jk2M7ypMcEzJo1mRgsg2UyM2pK/vp5uVFSEkxuaRJkzbgLtrHShSKDQqPcg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO8OYZSANjU7geHV3xKDWTSx0zQTdhypXXM4+/6wY95fbuj/d7dGdHn+2vbTJ9VZGQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -118,7 +121,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ab34e3f5-d15a-41fa-9e62-88733359bb8d",
+                            ConcurrencyStamp = "747e58df-c76c-48ea-9b28-300c40b73228",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -126,7 +129,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPuCpQYyVJ4/zHiTYm2ZO6Sfb4Uu6sFkbKzDpfvYjMv14IWkE76PUtsUTryGNDHyOw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOpF7PPVgU3MuSORjBpeBN19ZGZUcbsW59+l3MiVOZpUAHcOF2tKKr7820g9oe03nQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -139,9 +142,6 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("AddressType")
-                        .HasColumnType("int");
 
                     b.Property<string>("DistrictCode")
                         .IsRequired()
