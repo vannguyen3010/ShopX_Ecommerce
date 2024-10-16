@@ -86,10 +86,15 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ Dto sang Enity
                 var addressEntities = _mapper.Map<Address>(createAddressDto);
 
+                addressEntities.ProvinceName = province.Name;
+                addressEntities.DistrictName = district.Name;
+                addressEntities.WardName = ward.Name;
+
                 await _repository.Address.CreateAddressAsync(addressEntities);
 
                 //Ánh xa Entity sang Dto
                 var addressDto = _mapper.Map<AddressDto>(addressEntities);
+
 
                 return Ok(new ApiResponse<AddressDto>
                 {

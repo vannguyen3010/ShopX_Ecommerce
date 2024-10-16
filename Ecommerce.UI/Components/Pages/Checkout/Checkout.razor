@@ -1,0 +1,548 @@
+﻿@page "/thanh-toan"
+
+@inject AddressServices AddressServices
+@inject ShippingCost ShippingCost
+
+
+<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+
+<link href="css/cart.css" rel="stylesheet" />
+
+@rendermode InteractiveServer
+@code {
+    private CreateAddressDto newAddress = new CreateAddressDto();
+    private IEnumerable<AddressDto> addresses;
+    private List<Province> provinces = new();
+    private List<District> districts = new();
+    private List<Ward> wards = new();
+    private ShippingCostDto shipCost;
+
+    private string selectedProvinceCode;
+    private string selectedDistrictCode;
+    private string selectedWardCode;
+
+    private Guid selectedAddressId;
+    private decimal shippingCost;
+    private bool isLoadingShippingCost = false;
+    private string errorMessage;
+    private string message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetListAddress();
+        await GetListProvinces();
+    }
+
+    private async Task GetListAddress()
+    {
+        addresses = await AddressServices.GetListAddressAsync();
+    }
+
+    private async Task OnAddressSelected(Guid addressId)
+    {
+        selectedAddressId = addressId; // Cập nhật ID địa chỉ đã chọn
+        await GetShippingCostForAddress(addressId); // Gọi hàm lấy phí vận chuyển
+    }
+
+    private async Task GetShippingCostForAddress(Guid addressId)
+    {
+        try
+        {
+            isLoadingShippingCost = true;
+
+            var response = await ShippingCost.GetShippingCostByAddressIdAsync(addressId);
+
+            if(response.Success)
+            {
+                shipCost = response.Data;
+                errorMessage = null;
+            }
+            else
+            {
+                errorMessage = response.Message;
+                shippingCost = 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Lỗi khi gọi API: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingShippingCost = false; // Tắt loading khi hoàn tất
+        }
+    }
+
+    private async Task GetListProvinces()
+    {
+        provinces = await AddressServices.GetAllProvincesAsync();
+    }
+
+    private async Task OnProvinceChanged(ChangeEventArgs e)
+    {
+        selectedProvinceCode = e.Value.ToString();
+        districts = await AddressServices.GetAllDistrictsAsync(selectedProvinceCode);
+        wards.Clear();
+    }
+
+    private async Task OnDistrictChanged(ChangeEventArgs e)
+    {
+        selectedDistrictCode = e.Value.ToString();
+        wards = await AddressServices.GetAllWardsAsync(selectedDistrictCode);
+    }
+
+    private async Task SubmitAddress()
+    {
+        newAddress.ProvinceCode = selectedProvinceCode;
+        newAddress.DistrictCode = selectedDistrictCode;
+
+        var result = await AddressServices.CreateAddressAsync(newAddress);
+
+        if (result)
+        {
+            message = "Địa chỉ đã được tạo thành công";
+            await GetListAddress();
+        }
+        else
+        {
+            message = "Tạo địa chỉ thất bại";
+        }
+    }
+}
+
+
+
+<main class="main checkout">
+    <!-- Start of Breadcrumb -->
+    <nav class="breadcrumb-nav">
+        <div class="container">
+            <ul class="breadcrumb shop-breadcrumb bb-no">
+                <li class="passed"><a href="cart.html">Shopping Cart</a></li>
+                <li class="active"><a href="checkout.html">Checkout</a></li>
+                <li><a href="order.html">Order Complete</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- End of Breadcrumb -->
+    <!-- Start of PageContent -->
+    <div class="page-content">
+        <div class="container">
+            <form class="form checkout-form" action="#" method="post">
+                <div class="row mb-9">
+                    <div class="col-lg-7 pr-lg-4 mb-4">
+                        <h3 class="title billing-title text-uppercase ls-10 pt-1 pb-3 mb-0">
+                            CHI TIẾT THANH TOÁN
+                        </h3>
+                        <div class="form-group checkbox-toggle pb-2">
+                            <input type="checkbox" class="custom-checkbox" id="shipping-toggle"
+                                   name="shipping-toggle">
+                            <label for="shipping-toggle">Thêm đia chỉ mới</label>
+                        </div>
+                        <div class="checkbox-content">
+                            <div class="form-group">
+                                <label> Tỉnh *</label>
+                                <div class="select-box">
+                                    <select name="country" class="form-control form-control-md" @onchange="OnProvinceChanged">
+                                        <option value="default" selected="selected">
+                                            Chọn tỉnh
+                                        </option>
+                                        @if(provinces != null && provinces.Any())
+                                        {
+                                            @foreach (var item in provinces)
+                                            {
+                                                <option value="@item.Code">@item.Name</option>
+                                            }
+                                        }
+                                       
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row gutter-sm">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Thành phố *</label>
+                                        <div class="select-box">
+                                            <select name="country" class="form-control form-control-md" @onchange="OnDistrictChanged">
+                                                <option value="default" selected="selected">Chọn thành phố</option>
+                                                @if(districts != null && districts.Any())
+                                                {
+                                                    @foreach (var item in districts)
+                                                    {
+
+                                                        <option value="@item.Code">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Số điện thoại *</label>
+                                        <input type="text" @bind="newAddress.PhoneNumber" class="form-control form-control-md" name="number" maxlength="10" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Phường, xã *</label>
+                                        <div class="select-box">
+                                            <select name="country" class="form-control form-control-md" @bind="newAddress.WardCode">
+                                                <option value="default" selected="selected">Chọn phường, xã</option>
+                                                @if(wards != null && wards.Any())
+                                                {
+                                                    @foreach (var item in wards)
+                                                    {
+                                                        <option value="@item.Code">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Họ và tên *</label>
+                                        <input type="text" @bind="newAddress.UserName" class="form-control form-control-md" name="text">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row gutter-sm">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Nơi ở *</label>
+                                        <div class="select-box">
+                                            <select name="country" class="form-control form-control-md" @bind="newAddress.AddressType">
+                                                <option value="default" selected="selected">--------</option>
+                                                <option value="0">Nhà riêng</option>
+                                                <option value="1">Văn phòng</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label for="order-notes">Địa chỉ cụ thể *</label>
+                                <textarea class="form-control mb-0" id="order-notes" name="order-notes" cols="30"
+                                          rows="4"
+                                          placeholder="Nhập địa chỉ cụ thể" @bind="@newAddress.StreetAddress"></textarea>
+                            </div>
+                            <button class="btn btn-primary mt-3 btn-custom" @onclick="SubmitAddress"><i class="fas fa-plus mx-3"></i>Thêm địa chỉ</button>
+                            @if (!string.IsNullOrEmpty(message))
+                            {
+                                <div class="alert alert-warning">@message</div>
+                            }
+                        </div>
+                        <div class="check_box">
+                            <div class="checkout_title d-flex align-items-center">
+
+                                <h4> <i class="fas fa-map-marker-alt me-2"></i> Địa chỉ</h4>
+                            </div>
+
+                            <div class="checkout_detail" id="style-1">
+                                <div class="row g-4">
+                                    @if (addresses != null && addresses.Any())
+                                    {
+                                        @foreach (var item in addresses)
+                                        {
+
+                                            <div class="col-xxl-6 col-lg-6 col-md-6">
+                                                <div class="delivery_address_box">
+                                                    <div class="d-flex position-relative">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="jack" @onchange="() => OnAddressSelected(item.Id)">
+                                                        </div>
+                                                        <div class="label" for="@item.Id">
+                                                            @if (item.AddressType == 0)
+                                                            {
+                                                                <label>Nhà riêng</label>
+                                                            }
+                                                            else if (item.AddressType == 1)
+                                                            {
+                                                                <label>Văn phòng</label>
+                                                            }
+                                                        </div>
+                                                        <ul class="delivery_address_detail d-flex">
+                                                            <li>
+                                                                <h4 class="fw-500">
+                                                                    @item.UserName
+                                                                </h4>
+                                                            </li>
+                                                            <li>
+                                                                <p class="text_content">
+                                                                    <span class="text_title">
+                                                                        Đia chỉ
+                                                                        :
+                                                                    </span>@item.ProvinceName, @item.DistrictName, @item.WardName
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <h6 class="text_content mb-0">
+                                                                    <span class="text_title">
+                                                                        Số điện thoại
+                                                                        :
+                                                                    </span> @item.PhoneNumber
+                                                                </h6>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="check_box mt-3">
+                            <div class="checkout_title d-flex align-items-center">
+
+                                <h4> <i class="fas fa-shipping-fast me-2"></i> Phí Vận chuyển</h4>
+                            </div>
+
+                            <div class="checkout_detail" id="style-1">
+                                @if(shipCost != null)
+                                {
+                                    <div class="col-xxl-6 col-lg-6 col-md-6">
+                                        <div class="delivery_address_box">
+                                            <div class="d-flex position-relative">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="shippingCost" id="shippingCost" checked="true">
+                                                    <label class="form-check-label" for="shippingCost">
+                                                        Phí vận chuyển
+                                                    </label>
+                                                </div>
+                                                <div class="label" style="background: #ee4d2d"><label>@shipCost.Cost.ToString("N0")  <span class="currency-symbol">đ</span></label></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
+                               
+                            </div>
+                        </div>
+
+                        <div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tỉnh :</label>
+                            <div class="select-box">
+                                <select name="country" class="form-control form-control-md">
+                                    <option value="default" selected="selected">
+                                        United States
+                                        (US)
+                                    </option>
+                                    <option value="uk">United Kingdom (UK)</option>
+                                    <option value="us">United States</option>
+                                    <option value="fr">France</option>
+                                    <option value="aus">Australia</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row gutter-sm">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Thành phố *</label>
+                                    <div class="select-box">
+                                        <select name="country" class="form-control form-control-md">
+                                            <option value="default" selected="selected">California</option>
+                                            <option value="uk">United Kingdom (UK)</option>
+                                            <option value="us">United States</option>
+                                            <option value="fr">France</option>
+                                            <option value="aus">Australia</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Số điện thoại *</label>
+                                    <input type="text" class="form-control form-control-md" name="text" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Phường, xã *</label>
+                                    <div class="select-box">
+                                        <select name="country" class="form-control form-control-md">
+                                            <option value="default" selected="selected">California</option>
+                                            <option value="uk">United Kingdom (UK)</option>
+                                            <option value="us">United States</option>
+                                            <option value="fr">France</option>
+                                            <option value="aus">Australia</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email *</label>
+                                    <input type="text" class="form-control form-control-md" name="email">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-7">
+                            <label for="order-notes">Ghi chú đặt hàng</label>
+                            <textarea class="form-control mb-0" id="order-notes" name="order-notes" cols="30"
+                                      rows="4"
+                                      placeholder="Notes about your order, e.g special notes for delivery"></textarea>
+                        </div>
+                    
+                        <div class="form-group mt-3">
+                            <label for="order-notes">Order notes (optional)</label>
+                            <textarea class="form-control mb-0" id="order-notes" name="order-notes" cols="30"
+                                      rows="4"
+                                      placeholder="Notes about your order, e.g special notes for delivery"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 mb-4 sticky-sidebar-wrapper">
+                        <div class="order-summary-wrapper sticky-sidebar">
+                            <h3 class="title text-uppercase ls-10">Your Order</h3>
+                            <div class="order-summary">
+                                <table class="order-table">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2">
+                                                <b>Product</b>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="bb-no">
+                                            <td class="product-name">
+                                                Palm Print Jacket <i class="fas fa-times"></i> <span class="product-quantity">1</span>
+                                            </td>
+                                            <td class="product-total">$40.00</td>
+                                        </tr>
+                                        <tr class="bb-no">
+                                            <td class="product-name">
+                                                Brown Backpack <i class="fas fa-times"></i>
+                                                <span class="product-quantity">1</span>
+                                            </td>
+                                            <td class="product-total">$60.00</td>
+                                        </tr>
+                                        <tr class="cart-subtotal bb-no">
+                                            <td>
+                                                <b>Subtotal</b>
+                                            </td>
+                                            <td>
+                                                <b>$100.00</b>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="shipping-methods">
+                                            <td colspan="2" class="text-left">
+                                                <h4 class="title title-simple bb-no mb-1 pb-0 pt-3">
+                                                    Shipping
+                                                </h4>
+                                                <ul id="shipping-method" class="mb-4">
+                                                    <li>
+                                                        <div class="custom-radio">
+                                                            <input type="radio" id="free-shipping"
+                                                                   class="custom-control-input" name="shipping">
+                                                            <label for="free-shipping"
+                                                                   class="custom-control-label color-dark">
+                                                                Free
+                                                                Shipping
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="custom-radio">
+                                                            <input type="radio" id="local-pickup"
+                                                                   class="custom-control-input" name="shipping">
+                                                            <label for="local-pickup"
+                                                                   class="custom-control-label color-dark">
+                                                                Local
+                                                                Pickup
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                    <li>
+                                                        <div class="custom-radio">
+                                                            <input type="radio" id="flat-rate"
+                                                                   class="custom-control-input" name="shipping">
+                                                            <label for="flat-rate"
+                                                                   class="custom-control-label color-dark">
+                                                                Flat
+                                                                rate: $5.00
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                        <tr class="order-total">
+                                            <th>
+                                                <b>Total</b>
+                                            </th>
+                                            <td>
+                                                <b>$100.00</b>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                                <div class="payment-methods" id="payment_method">
+                                    <h4 class="title font-weight-bold ls-25 pb-0 mb-1">Payment Methods</h4>
+                                    <div class="accordion payment-accordion">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <a href="#cash-on-delivery" class="collapse">Direct Bank Transfor</a>
+                                            </div>
+                                            <div id="cash-on-delivery" class="card-body expanded">
+                                                <p class="mb-0">
+                                                    Make your payment directly into our bank account.
+                                                    Please use your Order ID as the payment reference.
+                                                    Your order will not be shipped until the funds have cleared in our account.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <a href="#payment" class="expand">Check Payments</a>
+                                            </div>
+                                            <div id="payment" class="card-body collapsed">
+                                                <p class="mb-0">
+                                                    Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <a href="#delivery" class="expand">Cash on delivery</a>
+                                            </div>
+                                            <div id="delivery" class="card-body collapsed">
+                                                <p class="mb-0">
+                                                    Pay with cash upon delivery.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="card p-relative">
+                                            <div class="card-header">
+                                                <a href="#paypal" class="expand">Paypal</a>
+                                            </div>
+                                            <a href="https://www.paypal.com/us/webapps/mpp/paypal-popup" class="text-primary paypal-que"
+                                               onclick="javascript:window.open('https://www.paypal.com/us/webapps/mpp/paypal-popup','WIPaypal',
+                                                        'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700');
+                                                        return false;">
+                                                What is PayPal?
+                                            </a>
+                                            <div id="paypal" class="card-body collapsed">
+                                                <p class="mb-0">
+                                                    Pay via PayPal, you can pay with your credit cart if you
+                                                    don't have a PayPal account.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group place-order pt-6">
+                                    <button type="submit" class="btn btn-dark btn-block btn-rounded">Place Order</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End of PageContent -->
+</main>
