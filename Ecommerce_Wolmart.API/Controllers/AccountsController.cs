@@ -32,36 +32,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             _jwtHandler = jwtHandler;
             _emailSender = emailSender;
         }
-
-        //[HttpPost]
-        //[Route("Register")]
-        //public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
-        //{
-        //    if (registerDto == null || !ModelState.IsValid)
-        //        return BadRequest();
-
-        //    var user = _mapper.Map<User>(registerDto);
-
-        //    var result = await _userManager.CreateAsync(user, registerDto.Password!);
-
-        //    if (!result.Succeeded)
-        //    {
-        //        var errors = result.Errors.Select(x => x.Description);
-
-        //        return BadRequest(new RegisterResponseDto { Errors = errors });
-        //    }
-        //    await _userManager.AddToRoleAsync(user, "User");
-
-        //    //Tạo Token xác thực 
-        //    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-        //    //Send the email
-        //    var message = new Message(new string[] { user.Email! }, "Confirm your email", $"Your email confirmation token is: {token}", null!);
-
-        //    await _emailSender.SendEmailAsync(message);
-
-        //    return StatusCode(201);
-        //}
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)

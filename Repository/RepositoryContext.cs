@@ -84,5 +84,6 @@ namespace Repository
         public DbSet<Checkout> Checkouts { get; set; }
         public DbSet<SocialMediaInfo> SocialMediaInfos { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
     }
 }

@@ -26,9 +26,13 @@ namespace Repository
             Delete(order);
         }
 
-        public async Task<Order> GetOrderByIdAsync(Guid id, bool trackChanges)
+        public async Task<Order> GetOrderByIdAsync(Guid orderId, bool trackChanges)
         {
-            return await FindByCondition(x => x.Id.Equals(id), trackChanges).SingleOrDefaultAsync();
+            //return await FindByCondition(x => x.Id.Equals(id), trackChanges).SingleOrDefaultAsync();
+            return await FindByCondition(order => order.Id.Equals(orderId), trackChanges)
+                .Include(order => order.OrderItems)
+                .Include(address => address.Address)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Order> GetOrderByUserIdAsync(string userId)
@@ -80,6 +84,11 @@ namespace Repository
 
                 await SaveAsync();
             }
+        }
+
+        public async Task AddOrderItemsAsync(IEnumerable<OrderItem> orderItems)
+        {
+            await _dbContext.OrderItems.AddRangeAsync(orderItems);
         }
 
         public async Task SaveAsync()

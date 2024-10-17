@@ -35,7 +35,6 @@ namespace InventrySystem.Extensions
         public static void ConfigureRepositoryManager(this IServiceCollection services) =>
         services.AddScoped<IRepositoryManager, RepositoryManager>();
 
-
         public static void ConfigureLoggerService(this IServiceCollection services) =>
         services.AddSingleton<ILoggerManager, LoggerManager>();
 
@@ -94,6 +93,7 @@ namespace InventrySystem.Extensions
                 });
             });
         }
+
 
     }
 }
