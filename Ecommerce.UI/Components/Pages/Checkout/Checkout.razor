@@ -275,6 +275,15 @@
                                                 </tr>
                                             }
                                         }
+                                        <tr class="cart-subtotal bb-no">
+                                            <td>
+                                                <i class="fas fa-dollar-sign me-2"></i>
+                                                <b>Tổng tiền sản phẩm</b>
+                                            </td>
+                                            <td>
+                                                <b class="test_price">@totalPrice.ToString("N0") <span class="currency-symbol test_price">đ</span></b>
+                                            </td>
+                                        </tr>
                                         @if (shipCost != null)
                                         {
                                             <tr class="cart-subtotal bb-no">
@@ -302,11 +311,10 @@
 
                                 <div class="form-group place-order pt-6">
                                     <button class="btn btn-dark btn-block btn-rounded" @onclick="HandleCreateOrder">Đặt hàng</button>
-                                    @* <a class="btn btn-dark btn-block btn-rounded" href="/order-sucess">Đặt hàng</a> *@
-                                    @if (errorMessage != null)
+                                    @if (message != null)
                                     {
-                                        <div class="alert alert-danger mt-4">
-                                            @errorMessage
+                                        <div class="alert alert-danger">
+                                            @message
                                         </div>
                                     }
                                 </div>
@@ -488,14 +496,22 @@
     {
         var userId = await LocalStorage.GetItemAsync<string>("userId");
 
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để đặt hàng.";
+            return;
+        }
         orderModel.UserId = userId;
 
-        var result = await OrderServices.CreateOrderAsync(orderModel);
+        var orderResult = await OrderServices.CreateOrderAsync(orderModel);
 
-        if (result)
+        if (orderResult.Success && orderResult.Data != null) 
         {
             message = "Đặt hàng thành công!";
-            NavigationManager.NavigateTo("/order-sucess", forceLoad: true);
+
+            var orderId = orderResult.Data.Id;
+
+            NavigationManager.NavigateTo($"/order-success/{orderId}", forceLoad: true);
         }
         else
         {

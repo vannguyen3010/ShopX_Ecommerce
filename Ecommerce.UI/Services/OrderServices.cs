@@ -16,31 +16,31 @@ namespace Ecommerce.UI.Services
         {
             _httpClient = httpClient;
         }
-        //public async Task<ApiResponse<OrderDto>> CreateOrderAsync(CreateOrderDto request)
-        //{
-        //    var response = await _httpClient.PostAsJsonAsync("/api/Order/CreateOrder", request);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        return await response.Content.ReadFromJsonAsync<ApiResponse<OrderDto>>();
-        //    }
-        //    else
-        //    {
-        //        var errorResponse = new ApiResponse<OrderDto>
-        //        {
-        //            Success = false,
-        //            Message = "Failed to create order. Please try again."
-        //        };
-        //        return errorResponse;
-        //    }
-        //}
-
-        public async Task<bool> CreateOrderAsync(CreateOrderDto request)
+        public async Task<ApiResponse<OrderDto>> CreateOrderAsync(CreateOrderDto request)
         {
             var response = await _httpClient.PostAsJsonAsync("/api/Order/CreateOrder", request);
 
-            return response.IsSuccessStatusCode;
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<OrderDto>>();
+            }
+            else
+            {
+                var errorResponse = new ApiResponse<OrderDto>
+                {
+                    Success = false,
+                    Message = "Failed to create order. Please try again."
+                };
+                return errorResponse;
+            }
         }
+
+        //public async Task<bool> CreateOrderAsync(CreateOrderDto request)
+        //{
+        //    var response = await _httpClient.PostAsJsonAsync("/api/Order/CreateOrder", request);
+
+        //    return response.IsSuccessStatusCode;
+        //}
 
         public async Task<ApiResponse<IEnumerable<PaymentMethodDto>>> GetAllPaymentMethodsAsync()
         {
