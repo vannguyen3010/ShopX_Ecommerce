@@ -1,0 +1,29 @@
+﻿.image-text-wrapper {
+    display: flex; /* Flexbox để các phần tử nằm ngang */
+    align-items: center; /* Căn giữa hình ảnh và text theo chiều dọc */
+}
+
+.custom-image {
+    max-width: 100px; /* Đặt kích thước cho hình ảnh */
+    height: auto;
+    margin-right: 20px; /* Khoảng cách giữa ảnh và text */
+}
+
+.text-block {
+    margin-left: 10px; /* Khoảng cách giữa các đoạn text */
+}
+
+@media (max-width: 768px) {
+    .image-text-wrapper {
+        flex-direction: column; /* Chuyển thành cột khi màn hình nhỏ */
+        align-items: flex-start;
+    }
+
+    .text-block {
+        margin-left: 0;
+        margin-top: 10px; /* Tạo khoảng cách giữa các đoạn text khi hiển thị dọc */
+    }
+}
+.text_color_item {
+    color: #369 !important;
+}

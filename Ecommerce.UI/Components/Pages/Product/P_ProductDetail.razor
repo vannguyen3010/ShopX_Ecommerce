@@ -130,10 +130,6 @@
                                                 <span>Thêm vào Giỏ hàng</span>
                                             </button>
                                         </div>
-                                        @if (!string.IsNullOrEmpty(message))
-                                        {
-                                            <div class="alert alert-warning">@message</div>
-                                        }
                                     </div>
 
                                     <div class="social-links-wrapper">
@@ -882,7 +878,7 @@
             var response = await ProductServices.GetAllCommentProductByProductId(id);
             if (response == null)
             {
-                errorMessage = "Không thể kết nối đến server. Vui lòng thử lại sau.";
+                errorMessage = "Không có bình luận nào!.";
                 commentProduct = new List<CommentProductDto>();
                 return;
             }

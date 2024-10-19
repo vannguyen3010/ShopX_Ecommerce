@@ -1,5 +1,13 @@
-﻿@page "/order-sucess"
+﻿@page "/order-success/{orderId:guid}"
+
+
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+<link rel="stylesheet" type="text/css" href="css/orderSucess.css">
+
+
+@rendermode InteractiveServer
+
+
 <main class="main order">
     <!-- Start of Breadcrumb -->
     <nav class="breadcrumb-nav">
@@ -16,26 +24,26 @@
     <div class="page-content mb-10 pb-2">
         <div class="container">
             <div class="order-success text-center font-weight-bolder text-dark">
-                <i class="fas fa-check"></i>
-                Thank you. Your order has been received.
+                <i class="fas fa-check" style="color: #4bca51;"></i>
+                Cảm ơn. Đơn đặt hàng của bạn đã được nhận.
             </div>
             <!-- End of Order Success -->
 
             <ul class="order-view list-style-none">
                 <li>
-                    <label>Order number</label>
-                    <strong>945</strong>
+                    <label>Mã đơn hàng</label>
+                    <strong> <i class="fas fa-copy" style="color: #467b9a;margin-left: 5px;"></i>945</strong>
                 </li>
                 <li>
-                    <label>Status</label>
-                    <strong>On hold</strong>
+                    <label>Trạng thái đơn hàng</label>
+                    <strong>Đang chờ</strong>
                 </li>
                 <li>
-                    <label>Date</label>
+                    <label>Ngày đặt hàng</label>
                     <strong>April 27, 2021</strong>
                 </li>
                 <li>
-                    <label>Total</label>
+                    <label>Tổng cộng</label>
                     <strong>$1,646.36</strong>
                 </li>
                 <li>
@@ -46,45 +54,37 @@
             <!-- End of Order View -->
 
             <div class="order-details-wrapper mb-5">
-                <h4 class="title text-uppercase ls-25 mb-5">Order Details</h4>
+                <h4 class="title text-uppercase ls-25 mb-5">Chi tiết đơn hàng</h4>
                 <table class="order-table">
                     <thead>
                         <tr>
-                            <th class="text-dark">Product</th>
+                            <th class="text-dark">Sản phẩm</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
-                                <a href="#">Palm Print Jacket</a>&nbsp;<strong>x 1</strong><br>
-                                Vendor : <a href="#">Vendor 1</a>
+                            <td class="product-details d-flex align-items-center">
+                                <img src="Img_Dev/Image/Product/2-5.jpg" alt="product" class="img-fluid product-image" style="width: 80px; height: auto;">
+                                <div class="product-info" style="margin-left: 10px;">
+                                    <a href="#" class="no_wra">Palm Print Jacket</a>&nbsp;<br>
+                                    Số lượng: <a href="#"> 1</a>
+                                </div>
                             </td>
                             <td>$40.00</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="#">Brown Backpack</a>&nbsp;<strong>x 1</strong><br>
-                                Vendor : <a href="#">Vendor 1</a>
-                            </td>
-                            <td>$60.00</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th>Subtotal:</th>
+                            <th>Tổng Phụ:</th>
                             <td>$100.00</td>
                         </tr>
                         <tr>
-                            <th>Shipping:</th>
+                            <th>Phí vận chuyển:</th>
                             <td>Flat rate</td>
                         </tr>
-                        <tr>
-                            <th>Payment method:</th>
-                            <td>Direct bank transfor</td>
-                        </tr>
                         <tr class="total">
-                            <th class="border-no">Total:</th>
+                            <th class="border-no">Tổng:</th>
                             <td class="border-no">$100.00</td>
                         </tr>
                     </tfoot>
@@ -93,113 +93,38 @@
             <!-- End of Order Details -->
 
             <div class="sub-orders mb-10">
-                <h4 class="title mb-5 font-weight-bold ls-25">Sub Orders</h4>
                 <div class="alert alert-icon alert-inline mb-5">
-                    <i class="w-icon-exclamation-triangle"></i>
-                    <strong>Note: </strong>This order has products from multiple vendors. So we divided this order into multiple vendor orders.
+                    <strong>  <i class="fas fa-shipping-fast me-2"></i>Đia chỉ Giao hàng: </strong>This order has products from multiple vendors. So we divided this order into multiple vendor orders.
                     Each order will be handled by their respective vendor independently.
                 </div>
-                <table class="order-subtable">
+            </div>
+            <div class="image-text-wrapper d-flex align-items-center justify-content-center">
+                <img src="Img_Dev/QR_code.jpg" alt="Sample Image" style="width: 450px; max-width: unset" class="img-fluid custom-image">
+
+                <table class="order-table">
                     <thead>
                         <tr>
-                            <th class="order">Order</th>
-                            <th class="date">Date</th>
-                            <th class="status">Status</th>
-                            <th class="total">Total</th>
-                            <th class="action"></th>
+                            <th class="text_color_item">Thông tin chuyển khoảng</th>
                         </tr>
                     </thead>
-                    <tbody>
+
+                    <tfoot>
                         <tr>
-                            <td class="order">950</td>
-                            <td class="date">April 23, 2021</td>
-                            <td class="status">On hold</td>
-                            <td class="total">$40.00 for 1 items</td>
-                            <td class="action"><a href="order-view.html" class="btn btn-rounded">View</a></td>
+                            <th class="text_color_item">Ngân hàng :</th>
+                            <td>Vietinbank</td>
                         </tr>
                         <tr>
-                            <td class="order">951</td>
-                            <td class="date">April 25, 2021</td>
-                            <td class="status">On hold</td>
-                            <td class="total">$60.00 for 1 items</td>
-                            <td class="action"><a href="order-view.html" class="btn btn-rounded">View</a></td>
+                            <th class="text_color_item">Số tài khoản :</th>
+                            <td>0707830715 <i class="fas fa-copy" style="color: #467b9a;margin-left: 5px;"></i></td>
                         </tr>
-                    </tbody>
+                        <tr class="total">
+                            <th class="border-no text_color_item"><i class="w-icon-exclamation-triangle"></i>Lưu ý</th>
+                            <th class="border-no">Khi chuyển khoảng bạn cần nhập mã đơn hàng vảo mục ghi chú.</th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-            <!-- End of Sub Orders-->
 
-            <div id="account-addresses">
-                <div class="row">
-                    <div class="col-sm-6 mb-8">
-                        <div class="ecommerce-address billing-address">
-                            <h4 class="title title-underline ls-25 font-weight-bold">Billing Address</h4>
-                            <address class="mb-4">
-                                <table class="address-table">
-                                    <tbody>
-                                        <tr>
-                                            <td>John Doe</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Conia</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Wall Street</td>
-                                        </tr>
-                                        <tr>
-                                            <td>California</td>
-                                        </tr>
-                                        <tr>
-                                            <td>United States (US)</td>
-                                        </tr>
-                                        <tr>
-                                            <td>92020</td>
-                                        </tr>
-                                        <tr>
-                                            <td>1112223334</td>
-                                        </tr>
-                                        <tr class="email">
-                                            <td>nicework125@gmail.com</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </address>
-                        </div>
-                    </div>
-                    <div class="col-sm-6 mb-8">
-                        <div class="ecommerce-address shipping-address">
-                            <h4 class="title title-underline ls-25 font-weight-bold">Shipping Address</h4>
-                            <address class="mb-4">
-                                <table class="address-table">
-                                    <tbody>
-                                        <tr>
-                                            <td>John Doe</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Conia</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Wall Street</td>
-                                        </tr>
-                                        <tr>
-                                            <td>California</td>
-                                        </tr>
-                                        <tr>
-                                            <td>United States (US)</td>
-                                        </tr>
-                                        <tr>
-                                            <td>92020</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </address>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End of Account Address -->
-
-            <a href="#" class="btn btn-dark btn-rounded btn-icon-left btn-back mt-6"><i class="w-icon-long-arrow-left"></i>Back To List</a>
         </div>
     </div>
     <!-- End of PageContent -->
