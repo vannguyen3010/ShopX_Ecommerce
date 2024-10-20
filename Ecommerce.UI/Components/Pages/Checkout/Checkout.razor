@@ -398,7 +398,11 @@
         if (addresses != null && addresses.Any())
         {
             var firstAddress = addresses.First();
+
             selectedAddressId = firstAddress.Id;
+
+            orderModel.AddressId = firstAddress.Id;
+
             await GetShippingCostForAddress(firstAddress.Id); // Lấy phí vận chuyển cho địa chỉ đầu tiên
         }
     }
@@ -406,6 +410,7 @@
     private async Task OnAddressSelected(Guid addressId)
     {
         selectedAddressId = addressId; // Cập nhật ID địa chỉ đã chọn
+        
         orderModel.AddressId = addressId;
         await GetShippingCostForAddress(addressId); // Gọi hàm lấy phí vận chuyển
     }
