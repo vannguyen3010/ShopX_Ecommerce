@@ -28,10 +28,10 @@ namespace Repository
 
         public async Task<Order> GetOrderByIdAsync(Guid orderId, bool trackChanges)
         {
-            //return await FindByCondition(x => x.Id.Equals(id), trackChanges).SingleOrDefaultAsync();
             return await FindByCondition(order => order.Id.Equals(orderId), trackChanges)
                 .Include(order => order.OrderItems)
-                .Include(address => address.Address)
+                .Include(order => order.Address)
+                .Include(order => order.PaymentMethod)
                 .FirstOrDefaultAsync();
         }
 

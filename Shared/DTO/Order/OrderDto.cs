@@ -1,5 +1,6 @@
 ﻿using Shared.DTO.Address;
 using Shared.DTO.Cart;
+using Shared.DTO.Payment;
 
 namespace Shared.DTO.Order
 {
@@ -18,7 +19,7 @@ namespace Shared.DTO.Order
         public string Email { get; set; }
         public bool OrderStatus { get; set; }
         public AddressDto Address { get; set; }
-        //public IEnumerable<CartItemDto> CartItems { get; set; }
+        public PaymentMethodDto PaymentMethod { get; set; }
         public IEnumerable<OrderItemDto> OrderItems { get; set; }
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
