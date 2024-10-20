@@ -4,7 +4,9 @@
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
 <link rel="stylesheet" type="text/css" href="css/orderSucess.css">
-<script src="controller/home.js"></script>
+
+
+<script src="controller/order.js"></script>
 
 @rendermode InteractiveServer
 
@@ -36,7 +38,7 @@
                 <ul class="order-view list-style-none">
                     <li>
                         <label>Mã đơn hàng</label>
-                        <strong>@order.OrderCode  <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;" @onclick="CopyOrderCode"></i></strong>
+                        <strong>@order.OrderCode  <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;" @onclick="() => CopyOrderCode(order.OrderCode)"></i></strong>
                     </li>
                     <li>
                         <label>Trạng thái đơn hàng</label>
@@ -138,7 +140,7 @@
                                 </tr>
                                 <tr>
                                     <th class="text_color_item">Số tài khoản :</th>
-                                    <td style="float: left;">@order.PaymentMethod.AccountNumber <i class="fas fa-copy" style="color: #467b9a;margin-left: 5px;"></i></td>
+                                    <td style="float: left;">@order.PaymentMethod.AccountNumber <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;" @onclick="() => CopyOrderCode(order.PaymentMethod.AccountNumber )"></i></td>
                                 </tr>
                                 <tr class="total">
                                     <th class="border-no text_color_item"><i class="w-icon-exclamation-triangle"></i>Lưu ý</th>
@@ -176,11 +178,8 @@
         }
     }
 
-    private async Task CopyOrderCode()
+    private async Task CopyOrderCode(string orderCode)
     {
-        if (order != null)
-        {
-            await JSRuntime.InvokeVoidAsync("copyToClipboard", order.OrderCode);
-        }
+        await JSRuntime.InvokeVoidAsync("copyToClipboard", orderCode);
     }
 }

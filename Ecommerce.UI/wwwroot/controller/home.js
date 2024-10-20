@@ -62,10 +62,3 @@ function setActiveImage(element, imagePath, mainImageId) {
         mainImage.dataset.zoomImage = imagePath.replace('600x675', '800x900'); // Cập nhật hình ảnh zoom
     }
 }
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        alert("Mã đơn hàng đã được sao chép: " + text);
-    }).catch(err => {
-        console.error("Lỗi sao chép: ", err);
-    });
-}

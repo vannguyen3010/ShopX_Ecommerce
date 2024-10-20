@@ -14,6 +14,7 @@ using Shared.DTO.Cart;
 using Shared.DTO.Contact;
 using Shared.DTO.Order;
 using Shared.DTO.Response;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -225,6 +226,61 @@ namespace Ecommerce_Wolmart.API.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("SearchOrdersByCode")]
+        public async Task<IActionResult> SearchOrdersByCode([FromQuery] string keyworkCode)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(keyworkCode))
+                {
+                    _logger.LogError("Tên tìm kiếm không được để trống.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Tên tìm kiếm không được để trống..",
+                        Data = null
+                    });
+                }
+
+                // Gọi phương thức tìm kiếm đơn hàng
+                var order = await _repository.Order.SearchOrdersByCodeAsync(keyworkCode, trackChanges: false);
+
+                if (order == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy đơn hàng với mã tìm kiếm.",
+                        Data = null
+                    });
+                }
+
+
+                var orderDto = _mapper.Map<OrderDto>(order);
+
+                return Ok(new ApiResponse<OrderDto>
+                {
+                    Success = true,
+                    Message = "Tìm kiếm đơn hàng thành công.",
+                    Data = orderDto
+                });
+
+
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Đã xảy ra lỗi khi tìm kiếm đơn hàng: {ex.Message}");
+                return StatusCode(500, new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Đã xảy ra lỗi khi xử lý yêu cầu.",
+                    Data = null
+                });
+            }
+        }
+
         [HttpPut]
         [Route("UpdateOrderStatus/{Id}")]
         public async Task<IActionResult> UpdateOrderStatus(Guid Id, [FromQuery] UpdateOrderDto updateOrderDto)
@@ -334,12 +390,15 @@ namespace Ecommerce_Wolmart.API.Controllers
         // Phương thức tạo mã đơn hàng
         private string GenerateOrderCode()
         {
-            var random = new Random();
-            var randomPart = random.Next(1000, 9999).ToString(); // Chuỗi ngẫu nhiên gồm 4 số
+            //var random = new Random();
+            //var randomPart = random.Next(1000, 9999).ToString(); // Chuỗi ngẫu nhiên gồm 4 số
             //var timePart = DateTime.Now.ToString("yyyyMMddHHmmss");
-            var timePart = DateTime.Now.ToString("yyyyMMddHHmmss"); // Chuỗi thời gian hiện tại
 
-            return $"OD{timePart}{randomPart}";
+            //return $"OD{timePart}{randomPart}";
+            var random = new Random();
+            var orderCode = random.Next(10000000, 99999999); // Tạo chuỗi ngẫu nhiên gồm 8 số
+
+            return $"OD{orderCode}";
         }
     }
 }
