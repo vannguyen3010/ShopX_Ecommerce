@@ -91,10 +91,17 @@ namespace Repository
             await _dbContext.OrderItems.AddRangeAsync(orderItems);
         }
 
+        public async Task<Order> SearchOrdersByCodeAsync(string orderCode, bool trackChanges)
+        {
+            return await FindByCondition(x => x.OrderCode.Contains(orderCode), trackChanges)
+                  .FirstOrDefaultAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
 
+       
     }
 }
