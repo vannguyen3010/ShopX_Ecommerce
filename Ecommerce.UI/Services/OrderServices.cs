@@ -35,13 +35,6 @@ namespace Ecommerce.UI.Services
             }
         }
 
-        //public async Task<bool> CreateOrderAsync(CreateOrderDto request)
-        //{
-        //    var response = await _httpClient.PostAsJsonAsync("/api/Order/CreateOrder", request);
-
-        //    return response.IsSuccessStatusCode;
-        //}
-
         public async Task<ApiResponse<IEnumerable<PaymentMethodDto>>> GetAllPaymentMethodsAsync()
         {
             var response = await _httpClient.GetAsync("/api/PaymentMethod/GetAllPaymentMethod");
