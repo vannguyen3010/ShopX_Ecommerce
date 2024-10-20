@@ -154,33 +154,31 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 await _repository.Order.CreateOrderAsync(order);
 
-                //await _repository.Order.AddOrderItemsAsync(orderItems);
-
                 await _repository.Order.SaveAsync();
 
                 var orderDto = _mapper.Map<OrderDto>(order);
 
-                var emailContent = $@"
-                            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
-                            <p>Xin chào {address.UserName},</p>
-                            <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:</p>
-                            <ul>
-                                <li><strong>Mã đơn hàng:</strong> {order.OrderCode}</li>
-                                <li><strong>Ngày đặt hàng:</strong> {order.OrderDate:dd/MM/yyyy}</li>
-                                <li><strong>Tổng tiền:</strong> {order.TotalAmount:C}</li>
-                                <li><strong>Địa chỉ giao hàng:</strong> {address.UserName}</li>
-                            </ul>
-                            <h4>Sản phẩm trong đơn hàng:</h4>
-                            <ul>
-                                {string.Join("", orderItems.Select(item => $"<li>{item.ProductName} (x{item.Quantity}) - Giá: {item.Price:C}</li>"))}
-                            </ul>
-                            <p>Phí vận chuyển: {shippingCost.Cost:C}</p>
-                            <p>Chúng tôi sẽ liên hệ với bạn khi đơn hàng được giao.</p>
-                            <p>Cảm ơn bạn!</p>";
+                //var emailContent = $@"
+                //            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
+                //            <p>Xin chào {address.UserName},</p>
+                //            <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:</p>
+                //            <ul>
+                //                <li><strong>Mã đơn hàng:</strong> {order.OrderCode}</li>
+                //                <li><strong>Ngày đặt hàng:</strong> {order.OrderDate:dd/MM/yyyy}</li>
+                //                <li><strong>Tổng tiền:</strong> {order.TotalAmount:C}</li>
+                //                <li><strong>Địa chỉ giao hàng:</strong> {address.UserName}</li>
+                //            </ul>
+                //            <h4>Sản phẩm trong đơn hàng:</h4>
+                //            <ul>
+                //                {string.Join("", orderItems.Select(item => $"<li>{item.ProductName} (x{item.Quantity}) - Giá: {item.Price:C}</li>"))}
+                //            </ul>
+                //            <p>Phí vận chuyển: {shippingCost.Cost:C}</p>
+                //            <p>Chúng tôi sẽ liên hệ với bạn khi đơn hàng được giao.</p>
+                //            <p>Cảm ơn bạn!</p>";
 
-                var message = new Message(new string[] { order.Email }, "Xác nhận đơn hàng", emailContent);
+                //var message = new Message(new string[] { order.Email }, "Xác nhận đơn hàng", emailContent);
 
-                await _emailSender.SendEmailAsync(message);
+                //await _emailSender.SendEmailAsync(message);
 
 
                 await _repository.Cart.DeleteCartItemsByUserIdAsync(order.UserId);
@@ -338,6 +336,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             var random = new Random();
             var randomPart = random.Next(1000, 9999).ToString(); // Chuỗi ngẫu nhiên gồm 4 số
+            //var timePart = DateTime.Now.ToString("yyyyMMddHHmmss");
             var timePart = DateTime.Now.ToString("yyyyMMddHHmmss"); // Chuỗi thời gian hiện tại
 
             return $"OD{timePart}{randomPart}";

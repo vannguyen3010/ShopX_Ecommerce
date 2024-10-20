@@ -34,6 +34,7 @@ namespace Ecommerce.UI.Services
             }
             return new List<BannerProductDto>();
         }
+
         public async Task<ApiResponse<ProductResponseDto>> GetAllProductsPagination(int pageNumber, int pageSize)
         {
             var response = await _httpClient.GetAsync($"/api/Product/GetAllProductsPagination?pageNumber={pageNumber}&pageSize={pageSize}");
@@ -46,6 +47,7 @@ namespace Ecommerce.UI.Services
 
             return new ApiResponse<ProductResponseDto>();
         }
+
         public async Task<ApiProductResponse<ProductDto, IEnumerable<ProductDto>>> GetProductByIdAsync(Guid productId)
         {
             var response = await _httpClient.GetAsync($"api/Product/GetProductById/{productId}");
@@ -55,6 +57,7 @@ namespace Ecommerce.UI.Services
             }
             return null; // Hoặc xử lý lỗi ở đây
         }
+
         public async Task<ApiResponse<IEnumerable<CommentProductDto>>> GetAllCommentProductByProductId(Guid productid)
         {
             var response = await _httpClient.GetAsync($"/api/CommentProduct/GetAllCommentProductByProductId/{productid}");
@@ -133,6 +136,7 @@ namespace Ecommerce.UI.Services
                 return Enumerable.Empty<ProductDto>();
             }
         }
+
         public async Task<IEnumerable<CateProductDto>> GetAllCategoryProductsHaveProduct()
         {
             var response = await _httpClient.GetAsync("/api/CateProduct/GetAllCategoryProductsHaveProduct");

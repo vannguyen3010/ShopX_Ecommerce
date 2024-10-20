@@ -52,5 +52,16 @@ namespace Ecommerce.UI.Services
                 return errorResponse;
             }
         }
+
+        public async Task<ApiResponse<OrderDto>> GetOrderByIdAsync(Guid orderId)
+        {
+            var response = await _httpClient.GetAsync($"/api/Order/GetOrderById/{orderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<OrderDto>>();
+            }
+
+            return null;
+        }
     }
 }

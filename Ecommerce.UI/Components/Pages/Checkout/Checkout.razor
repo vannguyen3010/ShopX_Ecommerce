@@ -311,6 +311,7 @@
 
                                 <div class="form-group place-order pt-6">
                                     <button class="btn btn-dark btn-block btn-rounded" @onclick="HandleCreateOrder">Đặt hàng</button>
+                                    @* <a class="btn btn-dark btn-block btn-rounded" href="/order-success">Đặt hàng</a> *@
                                     @if (message != null)
                                     {
                                         <div class="alert alert-danger">
@@ -359,6 +360,7 @@
         await GetListProvinces();
         await GetAllPaymentMethods();
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isRendered)
