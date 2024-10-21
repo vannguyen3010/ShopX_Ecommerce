@@ -127,6 +127,10 @@
                             <button type="submit" class="btn button btn-rounded btn-coupon mb-2" name="apply_coupon" value="Apply coupon" @onclick="SubmitAddress">Thêm địa chỉ</button>
                             @if (!string.IsNullOrEmpty(message))
                             {
+                                <div class="alert alert-success mt-4">@message</div>
+                            }
+                            else
+                            {
                                 <div class="alert alert-warning mt-4">@message</div>
                             }
                         </div>
@@ -331,15 +335,15 @@
 
 @code {
     private IEnumerable<CartItemDto> carts = new List<CartItemDto>();
-    private IEnumerable<AddressDto> addresses;
     private IEnumerable<PaymentMethodDto> paymentMethods;
+    private IEnumerable<AddressDto> addresses;
     private List<Province> provinces = new();
     private List<District> districts = new();
     private List<Ward> wards = new();
     private ShippingCostDto shipCost;
 
-    private CreateOrderDto orderModel = new CreateOrderDto();
     private CreateAddressDto newAddress = new CreateAddressDto();
+    private CreateOrderDto orderModel = new CreateOrderDto();
 
     private string selectedProvinceCode;
     private string selectedDistrictCode;

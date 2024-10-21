@@ -1,9 +1,13 @@
 ﻿@page "/account/thong-tin-ca-nhan"
 
 @inject AddressServices AddressServices
+@inject AddressServices AddressServices
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
 <link href="css/cart.css" rel="stylesheet" />
+<link href="css/profile.css" rel="stylesheet" />
+
+@rendermode InteractiveServer
 
 <main class="main">
     <!-- Start of Page Header -->
@@ -125,18 +129,18 @@
                                 <i class="w-icon-orders"></i>
                             </span>
                             <div class="icon-box-content">
-                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">Orders</h4>
+                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">Đơn hàng</h4>
                             </div>
                         </div>
 
                         <table class="shop-table account-orders-table mb-6">
                             <thead>
                                 <tr>
-                                    <th class="order-id">Order</th>
-                                    <th class="order-date">Date</th>
-                                    <th class="order-status">Status</th>
-                                    <th class="order-total">Total</th>
-                                    <th class="order-actions">Actions</th>
+                                    <th class="order-id">Mã đơn</th>
+                                    <th class="order-date">Ngày</th>
+                                    <th class="order-status">Trạng thái</th>
+                                    <th class="order-total">Giá</th>
+                                    <th class="order-actions">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -146,45 +150,6 @@
                                     <td class="order-status">Processing</td>
                                     <td class="order-total">
                                         <span class="order-price">$121.00</span> for
-                                        <span class="order-quantity"> 1</span> item
-                                    </td>
-                                    <td class="order-action">
-                                        <a href="#"
-                                           class="btn btn-outline btn-default btn-block btn-sm btn-rounded">View</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#2321</td>
-                                    <td class="order-date">August 20, 2021</td>
-                                    <td class="order-status">Processing</td>
-                                    <td class="order-total">
-                                        <span class="order-price">$150.00</span> for
-                                        <span class="order-quantity"> 1</span> item
-                                    </td>
-                                    <td class="order-action">
-                                        <a href="#"
-                                           class="btn btn-outline btn-default btn-block btn-sm btn-rounded">View</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#2319</td>
-                                    <td class="order-date">August 20, 2021</td>
-                                    <td class="order-status">Processing</td>
-                                    <td class="order-total">
-                                        <span class="order-price">$201.00</span> for
-                                        <span class="order-quantity"> 1</span> item
-                                    </td>
-                                    <td class="order-action">
-                                        <a href="#"
-                                           class="btn btn-outline btn-default btn-block btn-sm btn-rounded">View</a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="order-id">#2318</td>
-                                    <td class="order-date">August 20, 2021</td>
-                                    <td class="order-status">Processing</td>
-                                    <td class="order-total">
-                                        <span class="order-price">$321.00</span> for
                                         <span class="order-quantity"> 1</span> item
                                     </td>
                                     <td class="order-action">
@@ -217,8 +182,100 @@
                         </a>
                     </div>
 
-                    <div class="tab-pane" id="account-addresses">
+                    <div class="tab-pane checkout" id="account-addresses">
                         <div class="row">
+                            <div class="form-group checkbox-toggle pb-2">
+                                <input type="checkbox" class="custom-checkbox" id="shipping-toggle"
+                                       name="shipping-toggle">
+                                <label for="shipping-toggle">Thêm đia chỉ mới</label>
+                            </div>
+                            <div class="checkbox-content p-4">
+                                <div class="form-group">
+                                    <label> Tỉnh *</label>
+                                    <div class="select-box">
+                                        <select name="country" class="form-control form-control-md" @onchange="OnProvinceChanged">
+                                            <option value="default" selected="selected">
+                                                Chọn tỉnh
+                                            </option>
+                                            @if (provinces != null && provinces.Any())
+                                            {
+                                                @foreach (var item in provinces)
+                                                {
+                                                    <option value="@item.Code">@item.Name</option>
+                                                }
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row gutter-sm">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Thành phố *</label>
+                                            <div class="select-box">
+                                                <select name="country" class="form-control form-control-md" @onchange="OnDistrictChanged">
+                                                    <option value="default" selected="selected">Chọn thành phố</option>
+                                                    @if (districts != null && districts.Any())
+                                                    {
+                                                        @foreach (var item in districts)
+                                                        {
+
+                                                            <option value="@item.Code">@item.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Số điện thoại *</label>
+                                            <input type="text" @bind="newAddress.PhoneNumber" class="form-control form-control-md" name="number" maxlength="10" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Phường, xã *</label>
+                                            <div class="select-box">
+                                                <select name="country" class="form-control form-control-md" @bind="newAddress.WardCode">
+                                                <option value="default" selected="selected">Chọn phường, xã</option>
+                                                @if (wards != null && wards.Any())
+                                                {
+                                                    @foreach (var item in wards)
+                                                    {
+                                                        <option value="@item.Code">@item.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Họ và tên *</label>
+                                            <input type="text" @bind="newAddress.UserName" class="form-control form-control-md" name="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="order-notes">Địa chỉ cụ thể *</label>
+                                    <textarea class="form-control mb-0" id="order-notes" name="order-notes" cols="30"
+                                              rows="4"
+                                              placeholder="Nhập địa chỉ cụ thể" @bind="@newAddress.StreetAddress"></textarea>
+                                </div>
+
+                                <div class="row gutter-sm">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Nơi ở *</label>
+                                            <div class="select-box">
+                                                <select name="country" class="form-control form-control-md" @bind="newAddress.AddressType">
+                                                    <option value="default" selected="selected">--------</option>
+                                                    <option value="0">Nhà riêng</option>
+                                                    <option value="1">Văn phòng</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn button btn-rounded btn-coupon mb-2" name="apply_coupon" value="Apply coupon" @onclick="SubmitAddress">Thêm địa chỉ</button>
+                            </div>
                             <div class="check_box">
                                 <div class="checkout_title">
                                     <h4> <i class="fas fa-map-marker-alt me-2"></i> Địa chỉ</h4>
@@ -259,7 +316,7 @@
                                                                             :
                                                                         </span>@item.ProvinceName, @item.DistrictName, @item.WardName
                                                                     </p>
-                                                                    <p class="text_content">
+                                                                    <p class="text_content no_wrap_2">
                                                                         <span class="text_title fw-bold">
                                                                             Đia chỉ cụ thể
                                                                             :
@@ -278,12 +335,13 @@
                                                            
                                                         </div>
                                                         <div class="ms-auto mt-1" style="float: right;">
-                                                            <button class="btn btn-outline-primary btn-sm me-2 text-success" title="Sửa" style="border: unset">
+                                                       @*      <a class="btn btn-outline-primary btn-sm me-2 text-success" title="Sửa" style="border: unset; padding: 0.77em 0.4em;">
                                                                 <i class="fa fa-pencil-alt"></i>
-                                                            </button>
-                                                            <button class="btn btn-outline-danger btn-sm text-danger" title="Xóa" style="border: unset">
+                                                            </a> *@
+                                                            <a class="btn btn-outline-danger btn-sm text-danger" title="Xóa" style="border: unset;padding: 0.77em 0.4em;" @onclick="() => DeleteAddress(item.Id)">
                                                                 <i class="fa fa-trash-alt"></i>
-                                                            </button>
+                                                            </a>
+                                                          
                                                         </div>
                                                     </div>
 
@@ -296,6 +354,7 @@
 
                             </div>
                         </div>
+
                     </div>
 
                     <div class="tab-pane" id="account-details">
@@ -366,14 +425,99 @@
 
 @code{
     private IEnumerable<AddressDto> addresses;
+    private List<Province> provinces = new();
+    private List<District> districts = new();
+    private List<Ward> wards = new();
+
+    private CreateAddressDto newAddress = new CreateAddressDto();
+    private UpdateAddressDto selectedAddress = new UpdateAddressDto();
+
+    private string selectedProvinceCode;
+    private string selectedDistrictCode;
+    private string selectedWardCode;
+
+    private Guid selectedAddressId;
+
+    private string message;
+
 
     protected override async Task OnInitializedAsync()
     {
         await GetListAddress();
+        await GetListProvinces();
     }
+
+    //Address
     private async Task GetListAddress()
     {
         addresses = await AddressServices.GetListAddressAsync();
 
     }
+
+    private async Task GetListProvinces()
+    {
+        provinces = await AddressServices.GetAllProvincesAsync();
+    }
+
+    private async Task OnProvinceChanged(ChangeEventArgs e)
+    {
+        selectedProvinceCode = e.Value.ToString();
+        districts = await AddressServices.GetAllDistrictsAsync(selectedProvinceCode);
+        wards.Clear();
+    }
+
+    private async Task OnDistrictChanged(ChangeEventArgs e)
+    {
+        selectedDistrictCode = e.Value.ToString();
+        wards = await AddressServices.GetAllWardsAsync(selectedDistrictCode);
+    }
+
+    private async Task SubmitAddress()
+    {
+        newAddress.ProvinceCode = selectedProvinceCode;
+        newAddress.DistrictCode = selectedDistrictCode;
+
+        var result = await AddressServices.CreateAddressAsync(newAddress);
+
+        if (result)
+        {
+            message = "Địa chỉ đã được tạo thành công";
+            await GetListAddress();
+
+            ClearForm();
+        }
+        else
+        {
+            message = "Tạo địa chỉ thất bại";
+        }
+    }
+
+    private void ClearForm()
+    {
+        newAddress = new CreateAddressDto();
+        selectedProvinceCode = string.Empty;
+        selectedDistrictCode = string.Empty;
+        selectedWardCode = string.Empty;
+        districts.Clear();
+        wards.Clear();
+
+        StateHasChanged();
+    }
+
+    //End Address
+    private async Task DeleteAddress(Guid id)
+    {
+        bool isDeleted = await AddressServices.DeleteAddressAsync(id);
+
+        if(isDeleted)
+        {
+            message = "Xóa địa chỉ thành công";
+            await GetListAddress();
+        }
+        else
+        {
+            message = "Xóa địa chỉ thất bại";
+        }
+    }
+
 }

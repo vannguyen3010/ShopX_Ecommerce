@@ -93,13 +93,27 @@ namespace Repository
 
         public async Task<Order> SearchOrdersByCodeAsync(string orderCode, bool trackChanges)
         {
+
             return await FindByCondition(x => x.OrderCode.Contains(orderCode), trackChanges)
                   .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetAllOrdersByUserIdAsync(string userId, bool trackChanges)
+        public async Task<IEnumerable<Order>> GetAllOrdersByUserIdAsync(string userId, string keyword, int pageNumber, int pageSize, bool trackChanges)
         {
-            return await FindByCondition(order => order.UserId == userId, trackChanges)
+            // Tạo một query lọc theo UserId
+            var query = FindByCondition(order => order.UserId == userId, trackChanges);
+
+            // Nếu keyword không null, thêm điều kiện lọc theo mã đơn hàng (OrderCode)
+            if(!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(order => order.OrderCode.Contains(keyword));
+            }
+
+
+            // Thực hiện phân trang
+            return await query
+                .Skip((pageNumber - 1) * pageNumber)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
