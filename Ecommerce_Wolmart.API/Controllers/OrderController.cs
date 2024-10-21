@@ -62,18 +62,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Kiểm tra xem UserId đã có đơn hàng chưa
-                //var existingOrder = await _repository.Order.GetOrderByUserIdAsync(createOrderDto.UserId.ToString());
-                //if (existingOrder != null)
-                //{
-                //    return Conflict(new ApiResponse<Object>
-                //    {
-                //        Success = false,
-                //        Message = $"Đơn hàng đã tồn tại cho người dùng với ID {createOrderDto.UserId}.",
-                //        Data = null
-                //    });
-                //}
-
                 // Lấy thông tin địa chỉ
                 var address = await _repository.Address.GetAddressByIdAsync(createOrderDto.AddressId, trackChanges: false);
                 if (address == null)
@@ -159,27 +147,27 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var orderDto = _mapper.Map<OrderDto>(order);
 
-                //var emailContent = $@"
-                //            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
-                //            <p>Xin chào {address.UserName},</p>
-                //            <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:</p>
-                //            <ul>
-                //                <li><strong>Mã đơn hàng:</strong> {order.OrderCode}</li>
-                //                <li><strong>Ngày đặt hàng:</strong> {order.OrderDate:dd/MM/yyyy}</li>
-                //                <li><strong>Tổng tiền:</strong> {order.TotalAmount:C}</li>
-                //                <li><strong>Địa chỉ giao hàng:</strong> {address.UserName}</li>
-                //            </ul>
-                //            <h4>Sản phẩm trong đơn hàng:</h4>
-                //            <ul>
-                //                {string.Join("", orderItems.Select(item => $"<li>{item.ProductName} (x{item.Quantity}) - Giá: {item.Price:C}</li>"))}
-                //            </ul>
-                //            <p>Phí vận chuyển: {shippingCost.Cost:C}</p>
-                //            <p>Chúng tôi sẽ liên hệ với bạn khi đơn hàng được giao.</p>
-                //            <p>Cảm ơn bạn!</p>";
+                var emailContent = $@"
+                            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
+                            <p>Xin chào {address.UserName},</p>
+                            <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:</p>
+                            <ul>
+                                <li><strong>Mã đơn hàng:</strong> {order.OrderCode}</li>
+                                <li><strong>Ngày đặt hàng:</strong> {order.OrderDate:dd/MM/yyyy}</li>
+                                <li><strong>Tổng tiền:</strong> {order.TotalAmount:C}</li>
+                                <li><strong>Địa chỉ giao hàng:</strong> {address.UserName}</li>
+                            </ul>
+                            <h4>Sản phẩm trong đơn hàng:</h4>
+                            <ul>
+                                {string.Join("", orderItems.Select(item => $"<li>{item.ProductName} (x{item.Quantity}) - Giá: {item.Price:C}</li>"))}
+                            </ul>
+                            <p>Phí vận chuyển: {shippingCost.Cost:C}</p>
+                            <p>Chúng tôi sẽ liên hệ với bạn khi đơn hàng được giao.</p>
+                            <p>Cảm ơn bạn!</p>";
 
-                //var message = new Message(new string[] { order.Email }, "Xác nhận đơn hàng", emailContent);
+                var message = new Message(new string[] { order.Email }, "Xác nhận đơn hàng", emailContent);
 
-                //await _emailSender.SendEmailAsync(message);
+                await _emailSender.SendEmailAsync(message);
 
 
                 await _repository.Cart.DeleteCartItemsByUserIdAsync(order.UserId);
@@ -345,6 +333,56 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetListOrdersByUserId/{userId}")]
+        public async Task<IActionResult> GetListOrdersByUserId(string userId)
+        {
+            try
+            {
+                if(string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogError("User ID không được để trống.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "User ID không được để trống.",
+                        Data = null
+                    });
+                }
+
+                var orders = await _repository.Order.GetAllOrdersByUserIdAsync(userId, trackChanges: false);
+
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy đơn hàng nào cho người dùng này.",
+                        Data = null
+                    });
+                }
+
+                var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
+
+                return Ok(new ApiResponse<IEnumerable<OrderDto>>
+                {
+                    Success = true,
+                    Message = "Danh sách đơn hàng đã được lấy thành công.",
+                    Data = orderDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Đã xảy ra lỗi khi lấy danh sách đơn hàng: {ex.Message}");
+                return StatusCode(500, new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Đã xảy ra lỗi khi xử lý yêu cầu.",
+                    Data = null
+                });
+            }
+        }
+
         [HttpDelete]
         [Route("DeleteOrder/{Id}")]
         public async Task<IActionResult> DeleteOrder(Guid Id)
@@ -390,11 +428,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         // Phương thức tạo mã đơn hàng
         private string GenerateOrderCode()
         {
-            //var random = new Random();
-            //var randomPart = random.Next(1000, 9999).ToString(); // Chuỗi ngẫu nhiên gồm 4 số
-            //var timePart = DateTime.Now.ToString("yyyyMMddHHmmss");
-
-            //return $"OD{timePart}{randomPart}";
             var random = new Random();
             var orderCode = random.Next(10000000, 99999999); // Tạo chuỗi ngẫu nhiên gồm 8 số
 
