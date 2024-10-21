@@ -1,6 +1,9 @@
 ﻿@page "/account/thong-tin-ca-nhan"
 
-<link href="/assets/css/style.min.css" rel="stylesheet"/>
+@inject AddressServices AddressServices
+
+<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+<link href="css/cart.css" rel="stylesheet" />
 
 <main class="main">
     <!-- Start of Page Header -->
@@ -26,43 +29,41 @@
             <div class="tab tab-vertical row gutter-lg">
                 <ul class="nav nav-tabs mb-6" role="tablist">
                     <li class="nav-item">
-                        <a href="#account-dashboard" class="nav-link active">Tổng quan</a>
+                        <a href="#account-dashboard" class="nav-link active" style="border: unset;border-bottom: 1px solid #eee !important;">Tổng quan</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#account-orders" class="nav-link">Đơn hàng</a>
+                        <a href="#account-orders" class="nav-link" style="border: unset;border-bottom: 1px solid #eee !important;">Đơn hàng</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#account-addresses" class="nav-link">Địa chỉ</a>
+                        <a href="#account-addresses" class="nav-link" style="border: unset;border-bottom: 1px solid #eee !important;">Địa chỉ</a>
                     </li>
                     <li class="nav-item">
-                        <a href="#account-details" class="nav-link">Thông tin người dùng</a>
+                        <a href="#account-details" class="nav-link" style="border: unset;border-bottom: 1px solid #eee !important;">Thông tin người dùng</a>
                     </li>
                     <li class="link-item">
-                        <a href="/dang-nhap">Đăng xuất</a>
+                        <a href="/dang-nhap" style="border: unset;border-bottom: 1px solid #eee !important;">Đăng xuất</a>
                     </li>
                 </ul>
 
                 <div class="tab-content mb-6">
                     <div class="tab-pane active in" id="account-dashboard">
                         <p class="greeting">
-                            Hello
-                            <span class="text-dark font-weight-bold">John Doe</span>
-                            (not
-                            <span class="text-dark font-weight-bold">John Doe</span>?
-                            <a href="#" class="text-primary">Log out</a>)
+                            Xin chào
+                            <span class="text-dark font-weight-bold">Văn Nguyên</span>
+                            (không phải
+                            <span class="text-dark font-weight-bold">Văn Nguyên</span>?
+                            <a href="#" class="text-primary">Đăng xuất</a>)
                         </p>
 
                         <p class="mb-4">
-                            From your account dashboard you can view your <a href="#account-orders"
-                                                                             class="text-primary link-to-tab">recent orders</a>,
-                            manage your <a href="#account-addresses" class="text-primary link-to-tab">
-                                shipping
-                                and billing
-                                addresses
-                            </a>, and
+
+                            Từ bảng điều khiển tài khoản của bạn, bạn có thể xem <a href="#account-orders"
+                                                                                    class="text-primary link-to-tab">đơn đặt hàng gần đây</a>,
+                            quản lý <a href="#account-addresses" class="text-primary link-to-tab">
+                                địa chỉ giao hàng
+                            </a>, và
                             <a href="#account-details" class="text-primary link-to-tab">
-                                edit your password and
-                                account details.
+                                chỉnh sửa mật khẩu và chi tiết tài khoản của bạn.
                             </a>
                         </p>
 
@@ -217,102 +218,82 @@
                     </div>
 
                     <div class="tab-pane" id="account-addresses">
-                        <div class="icon-box icon-box-side icon-box-light">
-                            <span class="icon-box-icon icon-map-marker">
-                                <i class="w-icon-map-marker"></i>
-                            </span>
-                            <div class="icon-box-content">
-                                <h4 class="icon-box-title mb-0 ls-normal">Addresses</h4>
-                            </div>
-                        </div>
-                        <p>
-                            The following addresses will be used on the checkout page
-                            by default.
-                        </p>
                         <div class="row">
-                            <div class="col-sm-6 mb-6">
-                                <div class="ecommerce-address billing-address pr-lg-8">
-                                    <h4 class="title title-underline ls-25 font-weight-bold">Billing Address</h4>
-                                    <address class="mb-4">
-                                        <table class="address-table">
-                                            <tbody>
-                                                <tr>
-                                                    <th>Name:</th>
-                                                    <td>John Doe</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Company:</th>
-                                                    <td>Conia</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Address:</th>
-                                                    <td>Wall Street</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>City:</th>
-                                                    <td>California</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Country:</th>
-                                                    <td>United States (US)</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Postcode:</th>
-                                                    <td>92020</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Phone:</th>
-                                                    <td>1112223334</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </address>
-                                    <a href="#"
-                                       class="btn btn-link btn-underline btn-icon-right text-primary">
-                                        Edit
-                                        your billing address<i class="w-icon-long-arrow-right"></i>
-                                    </a>
+                            <div class="check_box">
+                                <div class="checkout_title">
+                                    <h4> <i class="fas fa-map-marker-alt me-2"></i> Địa chỉ</h4>
+                                    <p>
+                                        Các địa chỉ sau sẽ được sử dụng trên trang thanh toán theo mặc định.
+                                    </p>
                                 </div>
-                            </div>
-                            <div class="col-sm-6 mb-6">
-                                <div class="ecommerce-address shipping-address pr-lg-8">
-                                    <h4 class="title title-underline ls-25 font-weight-bold">Shipping Address</h4>
-                                    <address class="mb-4">
-                                        <table class="address-table">
-                                            <tbody>
-                                                <tr>
-                                                    <th>Name:</th>
-                                                    <td>John Doe</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Company:</th>
-                                                    <td>Conia</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Address:</th>
-                                                    <td>Wall Street</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>City:</th>
-                                                    <td>California</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Country:</th>
-                                                    <td>United States (US)</td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Postcode:</th>
-                                                    <td>92020</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </address>
-                                    <a href="#"
-                                       class="btn btn-link btn-underline btn-icon-right text-primary">
-                                        Edit your
-                                        shipping address<i class="w-icon-long-arrow-right"></i>
-                                    </a>
+
+                                <div class="checkout_detail" id="style-1">
+                                    <div class="row g-4">
+                                        @if (addresses != null && addresses.Any())
+                                        {
+                                            @foreach (var item in addresses)
+                                            {
+                                                <div class="col-xxl-6 col-lg-6 col-md-6">
+                                                    <div class="delivery_address_box">
+                                                        <div class="d-flex position-relative">
+                                                            <div class="label" for="@item.Id">
+                                                                @if (item.AddressType == 0)
+                                                                {
+                                                                    <label>Nhà riêng</label>
+                                                                }
+                                                                else if (item.AddressType == 1)
+                                                                {
+                                                                    <label>Văn phòng</label>
+                                                                }
+                                                            </div>
+                                                            <ul class="delivery_address_detail d-flex">
+                                                                <li>
+                                                                    <h4 class="fw-500">
+                                                                        @item.UserName
+                                                                    </h4>
+                                                                </li>
+                                                                <li>
+                                                                    <p class="text_content">
+                                                                        <span class="text_title fw-bold">
+                                                                            Đia chỉ
+                                                                            :
+                                                                        </span>@item.ProvinceName, @item.DistrictName, @item.WardName
+                                                                    </p>
+                                                                    <p class="text_content">
+                                                                        <span class="text_title fw-bold">
+                                                                            Đia chỉ cụ thể
+                                                                            :
+                                                                        </span>@item.StreetAddress
+                                                                    </p>
+                                                                </li>
+                                                                <li>
+                                                                    <h6 class="text_content mb-0">
+                                                                        <span class="text_title fw-bold">
+                                                                            Số điện thoại
+                                                                            :
+                                                                        </span> @item.PhoneNumber
+                                                                    </h6>
+                                                                </li>
+                                                            </ul>
+                                                           
+                                                        </div>
+                                                        <div class="ms-auto mt-1" style="float: right;">
+                                                            <button class="btn btn-outline-primary btn-sm me-2 text-success" title="Sửa" style="border: unset">
+                                                                <i class="fa fa-pencil-alt"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger btn-sm text-danger" title="Xóa" style="border: unset">
+                                                                <i class="fa fa-trash-alt"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        }
+                                    </div>
                                 </div>
+
+
                             </div>
                         </div>
                     </div>
@@ -382,3 +363,17 @@
     </div>
     <!-- End of PageContent -->
 </main>
+
+@code{
+    private IEnumerable<AddressDto> addresses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetListAddress();
+    }
+    private async Task GetListAddress()
+    {
+        addresses = await AddressServices.GetListAddressAsync();
+
+    }
+}

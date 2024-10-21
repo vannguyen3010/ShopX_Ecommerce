@@ -15,6 +15,7 @@ namespace Contracts
         Task DeleteOrderCheckoutAsync(Guid orderId);
         Task AddOrderItemsAsync(IEnumerable<OrderItem> orderItems);
         Task<Order> SearchOrdersByCodeAsync(string orderCode, bool trackChanges);
+        Task<IEnumerable<Order>> GetAllOrdersByUserIdAsync(string userId, bool trackChanges);
         Task SaveAsync();
     }
 }

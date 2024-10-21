@@ -2,6 +2,8 @@
 @inject ILocalStorageService LocalStorage
 
 @inject BaseServices BaseServices
+@inject CartServices CartServices
+
 <header class="header">
     <div class="header-top">
         <div class="container">
@@ -35,6 +37,7 @@
                                 <button class="cursor" @onclick="Logout">
                                     Đăng Xuất
                                 </button>
+
                             </Authorized>
                             <NotAuthorized>
                                 <a onclick="window.location.href='/account/dang-nhap';" class="cursor">
@@ -43,8 +46,15 @@
                                 <a onclick="window.location.href='/account/dang-ky';" class="cursor">
                                     Đăng Ký
                                 </a>
+                                <a onclick="window.location.href='/account/thong-tin-ca-nhan';" class="cursor">
+                                    Profile
+                                </a>
+                                <button class="cursor" @onclick="Logout">
+                                    Đăng Xuất
+                                </button>
                             </NotAuthorized>
                         </AuthorizeView>
+                      
                     </div>
                 </div>
             </div>
@@ -64,9 +74,6 @@
                 <form @onsubmit="PerformSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
                     <input @bind="keyword" type="text" class="form-control input_item" name="search" id="search"
                            placeholder="Tìm kiếm sản phẩm..." required />
-                    @*   <button class="btn btn-search" type="submit">
-                    <i class="fa-solid fa-microphone" style="color: #63E6BE;"></i>
-                    </button> *@
                     <button class="btn btn-search" type="submit">
                         <i class="w-icon-search"></i>
                     </button>
@@ -318,6 +325,7 @@
         cateProducts = await BaseServices.GetAllCategoryProducts();
         cateIntroduces = await BaseServices.GetAllCategoryIntroduces();
     }
+
     private async Task Logout()
     {
         await LocalStorage.RemoveItemAsync("authToken");

@@ -97,11 +97,16 @@ namespace Repository
                   .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<Order>> GetAllOrdersByUserIdAsync(string userId, bool trackChanges)
+        {
+            return await FindByCondition(order => order.UserId == userId, trackChanges)
+                .ToListAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
 
-       
     }
 }
