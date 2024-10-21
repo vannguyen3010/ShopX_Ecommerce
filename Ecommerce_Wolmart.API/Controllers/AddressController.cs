@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Shared.DTO.Address;
 using Shared.DTO.Banner;
+using Shared.DTO.BannerProduct;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Response;
 
@@ -282,6 +283,40 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
 
                 _logger.LogError($"Something went wrong inside GetAllAddress action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAddressById/{id}")]
+        public async Task<IActionResult> GetAddressById(Guid id)
+        {
+            try
+            {
+                var address = await _repository.Address.GetAddressByIdAsync(id, trackChanges: false);
+                if (address == null)
+                {
+                    _logger.LogError($"Không tìm thấy banner id này {id}");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy địa chỉ {id} này!",
+                        Data = null
+                    });
+                }
+
+                var addressResult = _mapper.Map<AddressDto>(address);
+                return Ok(new ApiResponse<AddressDto>
+                {
+                    Success = true,
+                    Message = "Banner Products retrieved successfully.",
+                    Data = addressResult
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside UpdateAddress action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

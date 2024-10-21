@@ -147,27 +147,27 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var orderDto = _mapper.Map<OrderDto>(order);
 
-                var emailContent = $@"
-                            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
-                            <p>Xin chào {address.UserName},</p>
-                            <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:</p>
-                            <ul>
-                                <li><strong>Mã đơn hàng:</strong> {order.OrderCode}</li>
-                                <li><strong>Ngày đặt hàng:</strong> {order.OrderDate:dd/MM/yyyy}</li>
-                                <li><strong>Tổng tiền:</strong> {order.TotalAmount:C}</li>
-                                <li><strong>Địa chỉ giao hàng:</strong> {address.UserName}</li>
-                            </ul>
-                            <h4>Sản phẩm trong đơn hàng:</h4>
-                            <ul>
-                                {string.Join("", orderItems.Select(item => $"<li>{item.ProductName} (x{item.Quantity}) - Giá: {item.Price:C}</li>"))}
-                            </ul>
-                            <p>Phí vận chuyển: {shippingCost.Cost:C}</p>
-                            <p>Chúng tôi sẽ liên hệ với bạn khi đơn hàng được giao.</p>
-                            <p>Cảm ơn bạn!</p>";
+                //var emailContent = $@"
+                //            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
+                //            <p>Xin chào {address.UserName},</p>
+                //            <p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi. Dưới đây là thông tin chi tiết về đơn hàng của bạn:</p>
+                //            <ul>
+                //                <li><strong>Mã đơn hàng:</strong> {order.OrderCode}</li>
+                //                <li><strong>Ngày đặt hàng:</strong> {order.OrderDate:dd/MM/yyyy}</li>
+                //                <li><strong>Tổng tiền:</strong> {order.TotalAmount:C}</li>
+                //                <li><strong>Địa chỉ giao hàng:</strong> {address.UserName}</li>
+                //            </ul>
+                //            <h4>Sản phẩm trong đơn hàng:</h4>
+                //            <ul>
+                //                {string.Join("", orderItems.Select(item => $"<li>{item.ProductName} (x{item.Quantity}) - Giá: {item.Price:C}</li>"))}
+                //            </ul>
+                //            <p>Phí vận chuyển: {shippingCost.Cost:C}</p>
+                //            <p>Chúng tôi sẽ liên hệ với bạn khi đơn hàng được giao.</p>
+                //            <p>Cảm ơn bạn!</p>";
 
-                var message = new Message(new string[] { order.Email }, "Xác nhận đơn hàng", emailContent);
+                //var message = new Message(new string[] { order.Email }, "Xác nhận đơn hàng", emailContent);
 
-                await _emailSender.SendEmailAsync(message);
+                //await _emailSender.SendEmailAsync(message);
 
 
                 await _repository.Cart.DeleteCartItemsByUserIdAsync(order.UserId);
@@ -335,7 +335,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetListOrdersByUserId/{userId}")]
-        public async Task<IActionResult> GetListOrdersByUserId(string userId)
+        public async Task<IActionResult> GetListOrdersByUserId(string userId, [FromQuery] string keyword = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
@@ -350,7 +350,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var orders = await _repository.Order.GetAllOrdersByUserIdAsync(userId, trackChanges: false);
+                var orders = await _repository.Order.GetAllOrdersByUserIdAsync(userId, keyword, pageNumber, pageSize, trackChanges: false);
 
                 if (orders == null || !orders.Any())
                 {
@@ -429,7 +429,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         private string GenerateOrderCode()
         {
             var random = new Random();
-            var orderCode = random.Next(10000000, 99999999); // Tạo chuỗi ngẫu nhiên gồm 8 số
+            var orderCode = random.Next(1000, 9999); // Tạo chuỗi ngẫu nhiên gồm 8 số
 
             return $"OD{orderCode}";
         }

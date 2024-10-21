@@ -51,5 +51,32 @@ namespace Ecommerce.UI.Services
 
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<AddressDto> GetAddressByIdAsync(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"/api/Address/GetAddressById/{id}");
+
+            if(response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<AddressDto>();
+            }
+
+            return null;
+        }
+
+        public async Task<bool> UpdateAddressAsync(Guid id, UpdateAddressDto request)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/Address/UpdateAdress/{id}", request);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteAddressAsync(Guid id)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/Address/DeleteAddress/{id}");
+
+            return response.IsSuccessStatusCode;
+
+        }
     }
 }
