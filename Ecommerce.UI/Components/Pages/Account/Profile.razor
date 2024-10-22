@@ -1,11 +1,15 @@
 ﻿@page "/account/thong-tin-ca-nhan"
 
-@inject AddressServices AddressServices
-@inject AddressServices AddressServices
+@inject ILocalStorageService LocalStorage
 
-<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+@inject AddressServices AddressServices
+@inject AddressServices AddressServices
+@inject OrderServices OrderServices
+
 <link href="css/cart.css" rel="stylesheet" />
 <link href="css/profile.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+<script src="controller/order.js"></script>
 
 @rendermode InteractiveServer
 
@@ -139,30 +143,74 @@
                                     <th class="order-id">Mã đơn</th>
                                     <th class="order-date">Ngày</th>
                                     <th class="order-status">Trạng thái</th>
-                                    <th class="order-total">Giá</th>
+                                    <th class="order-total">Giá Tổng</th>
                                     <th class="order-actions">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="order-id">#2321</td>
-                                    <td class="order-date">August 20, 2021</td>
-                                    <td class="order-status">Processing</td>
-                                    <td class="order-total">
-                                        <span class="order-price">$121.00</span> for
-                                        <span class="order-quantity"> 1</span> item
-                                    </td>
-                                    <td class="order-action">
-                                        <a href="#"
-                                           class="btn btn-outline btn-default btn-block btn-sm btn-rounded">View</a>
-                                    </td>
-                                </tr>
+                                @if (orders != null && orders.Any())
+                                {
+                                    @foreach (var item in orders)
+                                    {
+                                        <tr>
+                                            <td class="order-id">#@item.OrderCode</td>
+                                            <td class="order-date">@item.OrderDate.ToString("dd-MM-yyyy")</td>
+                                            @if(item.OrderStatus == false)
+                                            {
+                                                <td class="order-status">Chờ xử lý <i class="fas fa-circle text-warning fs-6"></i></td>
+                                            }
+                                            else
+                                            {
+                                                <td class="order-status">Đang vận chuyển <i class="fas fa-circle text-success fs-6"></i></td>
+                                            }
+                                            <td class="order-total">
+                                                <span class="order-price">@item.TotalAmount.ToString("N0")  <span class="currency-symbol text-danger">đ</span></span>
+                                            </td>
+                                            <td class="order-action">
+                                                <a onclick="window.location.href='/order-view/@item.Id'"
+                                                   class="btn btn-outline btn-default btn-block btn-sm btn-rounded cursor">Xem</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                              
+                              
                             </tbody>
                         </table>
+                        @if(orders == null)
+                        {
+                        <div class="container">
+                            <div class="d-flex justify-content-center">
+                                <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
+                            </div>
+                        </div>
+                        }
+                        @if (totalPages > 1)
+                        {
+                            <ul class="pagination justify-content-center">
+                                <li class="prev @(currentPage == 1 ? "disabled" : "")">
+                                    <a href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                        <i class="w-icon-long-arrow-left"></i> Prev
+                                    </a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    var pageNumber = i;  // Tạo biến tạm để lưu giá trị của trang hiện tại
 
-                        <a href="shop-banner-sidebar.html" class="btn btn-dark btn-rounded btn-icon-right">
-                            Go
-                            Shop<i class="w-icon-long-arrow-right"></i>
+                                    <li class="page-item @(pageNumber == currentPage ? "active" : "")">
+                                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                    </li>
+                                }
+
+                                <li class="next @(currentPage == totalPages ? "disabled" : "")">
+                                    <a href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                        Next <i class="w-icon-long-arrow-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        }
+                        <a onclick="window.location.href='/san-pham'" class="btn btn-dark btn-rounded btn-icon-right">
+                           Đi tới mua hàng<i class="w-icon-long-arrow-right"></i>
                         </a>
                     </div>
 
@@ -424,6 +472,7 @@
 </main>
 
 @code{
+    private IEnumerable<OrderDto> orders;
     private IEnumerable<AddressDto> addresses;
     private List<Province> provinces = new();
     private List<District> districts = new();
@@ -436,8 +485,14 @@
     private string selectedDistrictCode;
     private string selectedWardCode;
 
-    private Guid selectedAddressId;
+    private string? keyword = null;
+    private int currentPage = 1;
+    private int pageSize = 5;
+    private int totalPages;
+    private int totalCount;
 
+    private bool isRendered = false;
+    private Guid selectedAddressId;
     private string message;
 
 
@@ -520,4 +575,90 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRendered)
+        {
+            isRendered = false; // Đảm bảo LoadListCarts chỉ gọi một lần khi render
+            await LoadListOrderUserId();
+        }
+    }
+
+    private async Task LoadListOrderUserId()
+    {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để mua hàng.";
+            return;
+        }
+
+
+        var response = await OrderServices.GetListOrderByUserId(userId, keyword, currentPage, pageSize);
+
+        if (response != null && response.Success)
+        {
+            orders = response.Data.Orders;
+            totalCount = response.Data.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        }
+        else
+        {
+            orders = new List<OrderDto>();
+            message = response?.Message ?? "Lỗi khi lấy giỏ hàng.";
+        }
+        StateHasChanged();
+    }
+
+    private async Task ChangePage(int page)
+    {
+        // Chỉ cập nhật nếu page khác currentPage
+        if (page != currentPage)
+        {
+            currentPage = page;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
+    private async Task UpdateUrlAndLoadProducts()
+    {
+        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
+        var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = currentPage.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            queryParameters["keyword"] = keyword;
+        }
+
+        // Tạo URL query string
+        var newUrl = QueryHelpers.AddQueryString("account/thong-tin-ca-nhan", queryParameters!);
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+
+        // Tải lại danh sách sản phẩm
+        await LoadListOrderUserId();
+    }
+
+  
 }

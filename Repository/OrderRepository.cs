@@ -98,7 +98,7 @@ namespace Repository
                   .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetAllOrdersByUserIdAsync(string userId, string keyword, int pageNumber, int pageSize, bool trackChanges)
+        public async Task<(IEnumerable<Order> Orders, int Total)> GetAllOrdersByUserIdAsync(string userId, string keyword, int pageNumber, int pageSize, bool trackChanges)
         {
             // Tạo một query lọc theo UserId
             var query = FindByCondition(order => order.UserId == userId, trackChanges);
@@ -109,12 +109,16 @@ namespace Repository
                 query = query.Where(order => order.OrderCode.Contains(keyword));
             }
 
+            // Đếm tổng số đơn hàng trước khi phân trang
+            var totalOrders = await query.CountAsync();
 
             // Thực hiện phân trang
-            return await query
+            var orders = await query
                 .Skip((pageNumber - 1) * pageNumber)
                 .Take(pageSize)
                 .ToListAsync();
+
+            return (orders, totalOrders);
         }
 
         public async Task SaveAsync()

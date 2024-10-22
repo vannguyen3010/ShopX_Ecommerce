@@ -1,0 +1,167 @@
+﻿@page "/order-view/{orderId:guid}"
+
+@inject OrderServices orderServices
+
+<link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
+
+@if (order != null)
+{
+
+    <main class="main order">
+        <!-- Start of PageContent -->
+        <div class="page-content mb-10 pb-2">
+            <div class="container">
+                <div class="order-success text-center font-weight-bolder text-dark">
+                    <i class="fas fa-check" style="color: #4bca51;"></i>
+                    Cảm ơn. Đơn đặt hàng của bạn đã được nhận.
+                </div>
+                <!-- End of Order Success -->
+
+                <ul class="order-view list-style-none">
+                    <li>
+                        <label>Mã đơn hàng</label>
+                        <strong>@order.OrderCode  <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;" @onclick="() => CopyOrderCode(order.OrderCode)"></i></strong>
+                    </li>
+                    <li>
+                        <label>Trạng thái đơn hàng</label>
+                        @if (order.OrderStatus == false)
+                        {
+                            <strong>Đang chờ xử lý <i class="fas fa-circle text-warning fs-6"></i></strong>
+                        }
+                        else
+                        {
+                            <strong>Đã xử lý  <i class="fas fa-circle text-success fs-6"></i></strong>
+                        }
+                    </li>
+                    <li>
+                        <label>Ngày đặt hàng</label>
+                        <strong>@order.OrderDate.ToString("dd-MM-yyyy")</strong>
+                    </li>
+                    <li>
+                        <label>Tổng cộng</label>
+                        <strong>@order.TotalAmount.ToString("N0") <span class="currency-symbol test_price text-danger">đ</span></strong>
+                    </li>
+                    <li>
+                        <label>Phương thức vận chuyển</label>
+                        <strong>Chuyển khoảng</strong>
+                    </li>
+                </ul>
+                <!-- End of Order View -->
+
+                <div class="order-details-wrapper mb-5">
+                    <h4 class="title text-uppercase ls-25 mb-5">Chi tiết đơn hàng</h4>
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th class="text-dark">Sản phẩm</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (order.OrderItems != null && order.OrderItems.Any())
+                            {
+                                @foreach (var item in order.OrderItems)
+                                {
+                                    <tr>
+                                        <td class="product-details d-flex align-items-center">
+                                            <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="product" class="img-fluid product-image" style="width: 80px; height: auto;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                            <div class="product-info" style="margin-left: 10px;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                <a href="#" class="no_wra">@item.ProductName</a>&nbsp;<br>
+                                                Số lượng: <a href="#"> x @item.Quantity</a>
+                                            </div>
+                                        </td>
+                                        <td>@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol test_price">đ</span></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Tổng Phụ:</th>
+                                <td>@((order.Price - order.Discount).ToString("N0")) <span class="currency-symbol test_price">đ</span></td>
+                            </tr>
+                            <tr>
+                                <th>Phí vận chuyển:</th>
+                                <td>@order.ShippingCost.ToString("N0") <span class="currency-symbol test_price">đ</span></td>
+                            </tr>
+                            <tr class="total">
+                                <th class="border-no">Tổng tiền:</th>
+                                <td class="border-no">@order.TotalAmount.ToString("N0") <span class="currency-symbol test_price">đ</span></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- End of Order Details -->
+
+                <div class="sub-orders mb-10">
+                    <div class="alert alert-icon alert-inline mb-5">
+                        @if (order.Address != null)
+                        {
+                            <strong><i class="fas fa-shipping-fast me-2"></i>Địa chỉ giao hàng:</strong>
+                            <span>@($"{order.Address.StreetAddress}, {order.Address.WardName}, {order.Address.DistrictName}, {order.Address.ProvinceName}")</span>
+                        }
+
+                    </div>
+                </div>
+                <div class="image-text-wrapper d-flex align-items-center justify-content-center">
+                    @if (order.PaymentMethod != null)
+                    {
+                        <img src="@(string.IsNullOrEmpty(order.PaymentMethod.FilePath) ? "/Img_Dev/banner.png" : order.PaymentMethod.FilePath)" alt="Sample Image" style="width: 450px; max-width: unset" class="img-fluid custom-image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+
+                        <table class="order-table">
+                            <thead>
+                                <tr>
+                                    <th class="text_color_item">Thông tin chuyển khoảng</th>
+                                </tr>
+                            </thead>
+
+                            <tfoot>
+                                <tr>
+                                    <th class="text_color_item">Ngân hàng :</th>
+                                    <td style="float: left;">@order.PaymentMethod.BankName</td>
+                                </tr>
+                                <tr>
+                                    <th class="text_color_item">Số tài khoản :</th>
+                                    <td style="float: left;">@order.PaymentMethod.AccountNumber <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;" @onclick="() => CopyOrderCode(order.PaymentMethod.AccountNumber )"></i></td>
+                                </tr>
+                                <tr class="total">
+                                    <th class="border-no text_color_item"><i class="w-icon-exclamation-triangle"></i>Lưu ý</th>
+                                    <th style="float: left;" class="border-no">@order.PaymentMethod.Note</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    }
+
+                </div>
+
+            </div>
+        </div>
+        <!-- End of PageContent -->
+    </main>
+
+}
+
+@code{
+    [Parameter]
+    public Guid orderId { get; set; }
+
+    private OrderDto order;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrderSuccess();
+    }
+
+    private async Task LoadOrderSuccess()
+    {
+        var response = await orderServices.GetOrderByIdAsync(orderId);
+        if (response.Success && response.Data != null)
+        {
+            order = response.Data;
+        }
+    }
+    private async Task CopyOrderCode(string orderCode)
+    {
+        await JSRuntime.InvokeVoidAsync("copyToClipboard", orderCode);
+    }
+}

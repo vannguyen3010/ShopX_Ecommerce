@@ -1,4 +1,6 @@
 ﻿using Entities.Models.Address;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Shared.DTO.Address;
 using Shared.DTO.Order;
 using Shared.DTO.Payment;
@@ -61,6 +63,30 @@ namespace Ecommerce.UI.Services
                 return await response.Content.ReadFromJsonAsync<ApiResponse<OrderDto>>();
             }
 
+            return null;
+        }
+
+        public async Task<ApiResponse<OrderResponse>> GetListOrderByUserId(string userId, string keyword = null, int pageNumber = 1, int pageSize = 10)
+        {
+            var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = pageNumber.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                queryParameters["keyword"] = keyword;
+            }
+
+            var query = QueryHelpers.AddQueryString($"/api/Order/GetListOrdersByUserId/{userId}", queryParameters);
+
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<OrderResponse>>();
+                return result;
+            }
             return null;
         }
     }
