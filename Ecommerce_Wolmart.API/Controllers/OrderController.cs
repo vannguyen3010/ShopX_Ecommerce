@@ -1,20 +1,10 @@
 ﻿using AutoMapper;
-using Azure.Core;
 using Contracts;
 using EmailService;
-using Entities.Identity;
 using Entities.Models;
-using MailKit.Search;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Repository;
-using Shared.DTO.Address;
-using Shared.DTO.Cart;
-using Shared.DTO.Contact;
 using Shared.DTO.Order;
 using Shared.DTO.Response;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -104,7 +94,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var totalDiscount = cartItems.Sum(item => item.Discount * item.Quantity);
                 var totalPrice = cartItems.Sum(item => item.Price * item.Quantity);
 
-                    
+
                 // Tạo đợn hàng mới
                 var order = _mapper.Map<Order>(createOrderDto);
 
@@ -120,7 +110,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 order.OrderStatus = false;
                 order.TotalAmount = totalPrice - totalDiscount + shippingCost.Cost;
                 order.OrderDate = DateTime.UtcNow;
-                
+
 
                 var orderItems = cartItems.Select(item => new OrderItemDto
                 {
@@ -292,7 +282,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 _repository.Order.UpdateOrderAsync(order);
                 await _repository.Order.SaveAsync();
 
-               return NoContent();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -339,7 +329,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                if(string.IsNullOrEmpty(userId))
+                if (string.IsNullOrEmpty(userId))
                 {
                     _logger.LogError("User ID không được để trống.");
                     return BadRequest(new ApiResponse<Object>
@@ -350,7 +340,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var orders = await _repository.Order.GetAllOrdersByUserIdAsync(userId, keyword, pageNumber, pageSize, trackChanges: false);
+                var (orders, totalCount) = await _repository.Order.GetAllOrdersByUserIdAsync(userId, keyword, pageNumber, pageSize, trackChanges: false);
 
                 if (orders == null || !orders.Any())
                 {
@@ -364,11 +354,15 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
 
-                return Ok(new ApiResponse<IEnumerable<OrderDto>>
+                return Ok(new
                 {
-                    Success = true,
-                    Message = "Danh sách đơn hàng đã được lấy thành công.",
-                    Data = orderDtos
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        orders = orderDtos
+                    }
                 });
             }
             catch (Exception ex)
