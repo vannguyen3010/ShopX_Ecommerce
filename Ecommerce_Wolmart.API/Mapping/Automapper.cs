@@ -46,18 +46,15 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<CreateCateProductDto, CateProduct>()
               .ForMember(dest => dest.File, opt => opt.Ignore());
 
-            //CreateMap<CateProduct, CateProductDto>();
             CreateMap<CateProduct, CateProductDto>()
               .ForMember(dest => dest.ParentCategory, opt => opt.MapFrom(src => src.ParentCategory))
               .ForMember(dest => dest.CategoriesObjs, opt => opt.MapFrom(src => src.CategoriesObjs));
 
             CreateMap<CreateProductDto, Product>();
 
-            //CreateMap<Product, ProductDto>();
             CreateMap<Product, ProductDto>()
                 .ForMember(dest => dest.ProductImages, opt => opt.MapFrom(src => src.ProductImages));
 
-            //CreateMap<UpdateProductDto, Product>();
             CreateMap<UpdateProductDto, Product>()
                 .ForMember(dest => dest.RowVersion, opt => opt.Ignore());
 
@@ -94,11 +91,12 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<UpdateAddressDto, Address>();
 
-            CreateMap<CreateImagePrifileDto, Image>();
+            CreateMap<CreateProfileUserDto, ProfileUser>();
 
-            CreateMap<Image, ImageProfileDto>();
+            CreateMap<ProfileUser, ProfileUserDto>();
 
-            CreateMap<UpdateImageProFileDto, Image>();
+            CreateMap<UpdateProFileDto, ProfileUser>();
+
 
             CreateMap<Product, CartItemDto>();
 
@@ -106,13 +104,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<AddToCartDto, CartItem>();
 
-            //CreateMap<CartItem, CartItemDto>();
-
             CreateMap<CartItem, CartItemDto>()
                 .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => (src.Price * src.Quantity) - (src.Discount * src.Quantity)));
-
-            //CreateMap<CartItem, CartItemDto>()
-            //    .ForMember(dest => dest.FinalPrice, opt => opt.MapFrom(src => src.Price - src.Discount));
 
             CreateMap<UpdateCartItemDto, CartItem>();
 

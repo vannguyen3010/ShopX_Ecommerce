@@ -296,7 +296,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var address = await _repository.Address.GetAddressByIdAsync(id, trackChanges: false);
                 if (address == null)
                 {
-                    _logger.LogError($"Không tìm thấy banner id này {id}");
+                    _logger.LogError($"Không tìm thấy địa chỉ id này {id}");
                     return NotFound(new ApiResponse<object>
                     {
                         Success = false,
@@ -309,7 +309,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return Ok(new ApiResponse<AddressDto>
                 {
                     Success = true,
-                    Message = "Banner Products retrieved successfully.",
+                    Message = "Kết quả thành công.",
                     Data = addressResult
                 });
             }

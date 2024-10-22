@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
-    public class ProfileRepository : RepositoryBase<Image>, IProfileRepository
+    public class ProfileRepository : RepositoryBase<ProfileUser>, IProfileRepository
     {
         private readonly RepositoryContext _dbContext;
 
@@ -14,25 +14,32 @@ namespace Repository
             _dbContext = dbContext;
         }
 
-        public async Task CreateImageProfileAsync(Image image)
+        public async Task CreateProfileUserAsync(ProfileUser profile)
         {
-            await _dbContext.Images.AddAsync(image);
+            await _dbContext.ProfileUsers.AddAsync(profile);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Image> GetImageByIdAsync(Guid id, bool trackChanges)
+
+        public async Task<ProfileUser> GetProfileByIdAsync(Guid id, bool trackChanges)
         {
-            return await _dbContext.Images.FindAsync(id);
+            return await _dbContext.ProfileUsers.FindAsync(id);
         }
 
-        //public async Task<User> GetUserByIdAsync(string userId)
-        //{
-        //    return await _dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
-        //}
-
-        public void UpdateImageProfile(Image image)
+        public async Task DeleteProfileAsync(ProfileUser profileUser)
         {
-            Update(image);
+            Delete(profileUser);
+        }
+
+        public async Task<ProfileUser> GetProfileByUserIdAsync(string userId, bool trackChanges)
+        {
+            return await _dbContext.ProfileUsers.FirstOrDefaultAsync(x => x.UserId == userId);
+        }
+
+        public async Task UpdateProfileUserAsync(ProfileUser profileUser)
+        {
+            _dbContext.ProfileUsers.Update(profileUser);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }
