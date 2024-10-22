@@ -128,13 +128,16 @@
                     </div>
 
                     <div class="tab-pane mb-4" id="account-orders">
-                        <div class="icon-box icon-box-side icon-box-light">
-                            <span class="icon-box-icon icon-orders">
-                                <i class="w-icon-orders"></i>
-                            </span>
+                        <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between">
                             <div class="icon-box-content">
-                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">Đơn hàng</h4>
+                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">  <i class="w-icon-orders"></i> Đơn hàng</h4>
                             </div>
+                            <form @onsubmit="HandleSearch" class="search_box">
+                                <input type="text" class="search_input" placeholder="Tìm kiếm đơn hàng..." @bind="keyword">
+                                <button type="submit" class="search_button">
+                                    <i class="w-icon-search fs-3"></i>
+                                </button>
+                            </form>
                         </div>
 
                         <table class="shop-table account-orders-table mb-6">
@@ -637,6 +640,14 @@
             await UpdateUrlAndLoadProducts();
         }
     }
+
+    private async Task HandleSearch()
+    {
+        currentPage = 1;
+        await UpdateUrlAndLoadProducts();
+
+    }
+
     // Cập nhật URL và gọi API để lấy danh sách sản phẩm
     private async Task UpdateUrlAndLoadProducts()
     {

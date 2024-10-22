@@ -98,10 +98,10 @@ namespace Repository
                   .FirstOrDefaultAsync();
         }
 
-        public async Task<(IEnumerable<Order> Orders, int Total)> GetAllOrdersByUserIdAsync(string userId, string keyword, int pageNumber, int pageSize, bool trackChanges)
+        public async Task<(IEnumerable<Order> Orders, int Total)> GetAllOrdersByUserIdAsync(string userId, string keyword, int pageNumber, int pageSize)
         {
             // Tạo một query lọc theo UserId
-            var query = FindByCondition(order => order.UserId == userId, trackChanges);
+            var query = _dbContext.Orders.Where(order => order.UserId == userId);
 
             // Nếu keyword không null, thêm điều kiện lọc theo mã đơn hàng (OrderCode)
             if(!string.IsNullOrEmpty(keyword))
@@ -114,7 +114,7 @@ namespace Repository
 
             // Thực hiện phân trang
             var orders = await query
-                .Skip((pageNumber - 1) * pageNumber)
+                .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
