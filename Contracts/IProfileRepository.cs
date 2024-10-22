@@ -1,14 +1,16 @@
 ﻿using Entities.Identity;
 using Entities.Models;
+using Entities.Models.Address;
 
 namespace Contracts
 {
     public interface IProfileRepository
     {
-        //Task<User> GetUserByIdAsync(string userId);
-        Task CreateImageProfileAsync(Image image);
-        Task<Image> GetImageByIdAsync(Guid id, bool trackChanges);
-        void UpdateImageProfile(Image image);
+        Task CreateProfileUserAsync(ProfileUser profile);
+        Task<ProfileUser> GetProfileByUserIdAsync(string userId, bool trackChanges);
+        Task<ProfileUser> GetProfileByIdAsync(Guid id, bool trackChanges);
+        Task DeleteProfileAsync(ProfileUser profileUser);
+        Task UpdateProfileUserAsync(ProfileUser profileUser);
 
     }
 }

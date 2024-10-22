@@ -23,7 +23,6 @@
         ISocialMediaInfoRepository SocialMediaInfo { get; }
         IAccountRepository AccountRepository { get; }
         
-
         void SaveAsync();
     }
 }

@@ -2,9 +2,11 @@
 using Contracts;
 using Entities.Identity;
 using Entities.Models;
+using Entities.Models.Address;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Shared.DTO.Address;
 using Shared.DTO.Banner;
 using Shared.DTO.CateProduct;
 using Shared.DTO.ImageProfile;
@@ -20,7 +22,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
-        private readonly IMapper _mapper; 
+        private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -35,14 +37,14 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
-        [Route("CreateImage")]
-        public async Task<IActionResult> CreateImage([FromForm] CreateImagePrifileDto createImageDto)
+        [Route("CreateProfileUser")]
+        public async Task<IActionResult> CreateProfileUser([FromForm] CreateProfileUserDto request)
         {
             try
             {
-                ValidateFileUpload(createImageDto);
+                ValidateFileUpload(request);
 
-                if (createImageDto == null)
+                if (request == null)
                 {
                     _logger.LogError("No file uploaded");
                     return NotFound(new ApiResponse<Object>
@@ -64,46 +66,91 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 //Kiểm tra người dùng có tồn tại không
-                var userExits = await _repository.CommentProduct.GetUserByIdAsync(createImageDto.UserId);
+                var userExits = await _repository.CommentProduct.GetUserByIdAsync(request.UserId);
 
                 if (userExits == null)
                 {
-                    _logger.LogError($"User with id {createImageDto.UserId} not found.");
+                    _logger.LogError($"User with id {request.UserId} not found.");
                     return NotFound(new ApiResponse<object>
                     {
                         Success = false,
-                        Message = $"User with id {createImageDto.UserId} not found.",
+                        Message = $"User with id {request.UserId} not found.",
+                        Data = null
+                    });
+                }
+
+                var existingProfile = await _repository.Profile.GetProfileByUserIdAsync(request.UserId, trackChanges: false);
+                if (existingProfile != null)
+                {
+                    _logger.LogError($"User with id {request.UserId} already has a profile.");
+                    return BadRequest(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"User with id {request.UserId} already has a profile.",
                         Data = null
                     });
                 }
 
                 // Ánh xạ Dto thành entity
-                var imageEntity = _mapper.Map<Image>(createImageDto);
+                var profileEntity = _mapper.Map<ProfileUser>(request);
 
                 // Xử lý tập tin hình ảnh
-                if (createImageDto.File != null)
+                if (request.LogoUrl != null)
                 {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createImageDto.File.FileName)}";
-                    var fileExtension = Path.GetExtension(createImageDto.File.FileName);
-                    imageEntity.FilePath = await SaveFileAndGetUrl(createImageDto.File, fileName, fileExtension);
-                    imageEntity.FileName = fileName;
-                    imageEntity.FileExtension = fileExtension;
-                    imageEntity.FileSizeInBytes = createImageDto.File.Length;
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(request.LogoUrl.FileName)}";
+                    var fileExtension = Path.GetExtension(request.LogoUrl.FileName);
+                    profileEntity.FilePath = await SaveFileAndGetUrl(request.LogoUrl, fileName, fileExtension);
+                    profileEntity.FileName = fileName;
+                    profileEntity.FileExtension = fileExtension;
+                    profileEntity.FileSizeInBytes = request.LogoUrl.Length; 
                 }
 
                 // tạo danh mục vào cơ sở dữ liệu
-                await _repository.Profile.CreateImageProfileAsync(imageEntity);
+                await _repository.Profile.CreateProfileUserAsync(profileEntity);
 
-                var imageProfileDto = _mapper.Map<ImageProfileDto>(imageEntity);
+                var profileUserDto = _mapper.Map<ProfileUserDto>(profileEntity);
 
-                imageProfileDto.UserId = Guid.Parse(createImageDto.UserId);
-
-                return Ok(new ApiResponse<ImageProfileDto>
+                return Ok(new ApiResponse<ProfileUserDto>
                 {
                     Success = true,
-                    Message = "Category retrieved successfully.",
-                    Data = imageProfileDto
+                    Message = "profile retrieved successfully.",
+                    Data = profileUserDto
                 });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ProfileImage action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetProfileByUserId/{userId}")]
+        public async Task<IActionResult> GetProfileByUserId(string userId)
+        {
+            try
+            {
+                var profile = await _repository.Profile.GetProfileByUserIdAsync(userId, trackChanges: false);
+                if (profile == null)
+                {
+                    _logger.LogError($"Không tìm thấy người dùng id này {userId}");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy người dùng {userId} này!",
+                        Data = null
+                    });
+                }
+
+                var profileDto = _mapper.Map<ProfileUserDto>(profile);
+
+                return Ok(new ApiResponse<ProfileUserDto>
+                {
+                    Success = true,
+                    Message = "Kết quả thành công.",
+                    Data = profileDto
+                });
+
             }
             catch (Exception ex)
             {
@@ -113,15 +160,40 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpPut]
-        [Route("UpdateImage/{id}")]
-        public async Task<IActionResult> UpdateImage(Guid id, [FromForm] UpdateImageProFileDto updateImageProFileDto)
+        [HttpDelete]
+        [Route("DeleteProfile/{id}")]
+        public async Task<IActionResult> DeleteProfile(Guid id)
         {
             try
             {
-                UpdateFileUpload(updateImageProFileDto);
+                var profile = await _repository.Profile.GetProfileByIdAsync(id, trackChanges: false);
+                if (profile == null)
+                {
+                    _logger.LogError($"Address with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
 
-                if (updateImageProFileDto == null)
+                _repository.Profile.DeleteProfileAsync(profile);
+                _repository.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Profile action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateProfile/{id}")]
+        public async Task<IActionResult> UpdateProfile(Guid id, [FromForm] UpdateProFileDto request)
+        {
+            try
+            {
+                UpdateFileUpload(request);
+
+                if (request == null)
                 {
                     _logger.LogError("ImageProfile object sent from client is null.");
                     return NotFound(new ApiResponse<object>
@@ -143,7 +215,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var profileEntity = await _repository.Profile.GetImageByIdAsync(id, trackChanges: true);
+                var profileEntity = await _repository.Profile.GetProfileByIdAsync(id, trackChanges: true);
                 if (profileEntity == null)
                 {
                     _logger.LogError($"ImageProfile with id: {id}, hasn't been found in db.");
@@ -155,21 +227,25 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                if (updateImageProFileDto.File != null)
+                // Ánh xạ từ request sang profileEntity (các trường khác ngoài ảnh)
+                _mapper.Map(request, profileEntity);
+
+                if (request.LogoUrl != null)
                 {
-                    profileEntity.File = updateImageProFileDto.File;
-                    profileEntity.FileExtension = Path.GetExtension(updateImageProFileDto.File.FileName);
-                    profileEntity.FileSizeInBytes = updateImageProFileDto.File.Length;
-                    profileEntity.FileName = updateImageProFileDto.File.FileName;
-                    profileEntity.FileDescription = updateImageProFileDto.FileDescription;
-                    profileEntity.FilePath = await SaveFileAndGetUrl(updateImageProFileDto.File, profileEntity.FileName, profileEntity.FileExtension);
+                    profileEntity.FileExtension = Path.GetExtension(request.LogoUrl.FileName);
+                    profileEntity.FileSizeInBytes = request.LogoUrl.Length;
+                    profileEntity.FileName = request.LogoUrl.FileName;
+                    profileEntity.FilePath = await SaveFileAndGetUrl(request.LogoUrl, profileEntity.FileName, profileEntity.FileExtension);
                 }
 
+                await _repository.Profile.UpdateProfileUserAsync(profileEntity);
 
-                _repository.Profile.UpdateImageProfile(profileEntity); 
-                _repository.SaveAsync();
-
-                return NoContent();
+                return Ok(new ApiResponse<ProfileUserDto>
+                {
+                    Success = true,
+                    Message = "Profile updated successfully.",
+                    Data = _mapper.Map<ProfileUserDto>(profileEntity)
+                });
             }
             catch (Exception ex)
             {
@@ -179,40 +255,40 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        private void UpdateFileUpload(UpdateImageProFileDto request)
+        private void UpdateFileUpload(UpdateProFileDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-            if (request.File != null)
+            if (request.LogoUrl != null)
             {
                 //// Kiểm tra phần mở rộng tệp
-                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
+                if (allowedExtensions.Contains(Path.GetExtension(request.LogoUrl.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");
                 }
 
                 //// Kiểm tra kích thước tệp
-                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
+                if (request.LogoUrl.Length > 10485760)// Tệp lớn hơn 10MB
                 {
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }
             }
 
         }
-        private void ValidateFileUpload(CreateImagePrifileDto request)
+        private void ValidateFileUpload(CreateProfileUserDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-            if (request.File != null)
+            if (request.LogoUrl != null)
             {
                 //// Kiểm tra phần mở rộng tệp
-                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
+                if (allowedExtensions.Contains(Path.GetExtension(request.LogoUrl.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");
                 }
 
                 //// Kiểm tra kích thước tệp
-                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
+                if (request.LogoUrl.Length > 10485760)// Tệp lớn hơn 10MB
                 {
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }
