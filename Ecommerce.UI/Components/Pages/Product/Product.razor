@@ -21,7 +21,7 @@
                 <aside class="sidebar shop-sidebar sticky-sidebar-wrapper sidebar-fixed">
                     <!-- Start of Sidebar Overlay -->
                     <div class="sidebar-overlay"></div>
-                    <a class="sidebar-close" href="#"><i class="close-icon"></i></a>
+                    <a class="sidebar-close"><i class="close-icon"></i></a>
 
                     <!-- Start of Sidebar Content -->
                     <div class="sidebar-content scrollable">
@@ -255,6 +255,7 @@
     private decimal? maxPrice = null;
     private string? keyword = null;
 
+
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -334,6 +335,7 @@
         {
             bannerProducts = new List<BannerProductDto>();
         }
+      
     }
 
     private async Task LoadListCategoryProduct()
@@ -439,7 +441,7 @@
 
         // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("san-pham", queryParameters!);
-        NavigationManager.NavigateTo(newUrl, forceLoad: true);
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
 
         // Tải lại danh sách sản phẩm
         await LoadListProducts();
