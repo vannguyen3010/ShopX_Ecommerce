@@ -13,7 +13,10 @@
 
     private async Task LoadListNewProduct()
     {
-        var response = await HomeServices.GetAllNewProductsAsync();
+
+        DateTime specificDate = new DateTime(2024, 10, 1);
+
+        var response = await HomeServices.GetAllNewProductsAsync(specificDate);
         if (response.Success)
         {
             newProducts = response.Data;
@@ -154,6 +157,15 @@
                         }
                        
                     }
+                }
+                else
+                {
+                    <div class="container">
+                        <div class="d-flex justify-content-center">
+                            <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
+                        </div>
+
+                    </div>
                 }
 
                 <!-- End of Product Single -->
