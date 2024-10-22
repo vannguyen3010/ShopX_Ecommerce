@@ -340,7 +340,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var (orders, totalCount) = await _repository.Order.GetAllOrdersByUserIdAsync(userId, keyword, pageNumber, pageSize, trackChanges: false);
+                var (orders, totalCount) = await _repository.Order.GetAllOrdersByUserIdAsync(userId, keyword, pageNumber, pageSize);
 
                 if (orders == null || !orders.Any())
                 {
