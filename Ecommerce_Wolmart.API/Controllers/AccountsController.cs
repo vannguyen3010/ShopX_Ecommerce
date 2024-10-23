@@ -8,6 +8,7 @@ using Entities.Models.Address;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared.DTO.Address;
 using Shared.DTO.Response;
 using Shared.DTO.User;
 using System.Security.Cryptography;
@@ -23,14 +24,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
         private readonly IEmailSender _emailSender;
+        private readonly ILoggerManager _logger;
 
-        public AccountsController(UserManager<User> userManager, IRepositoryManager repository, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender)
+        public AccountsController(UserManager<User> userManager, IRepositoryManager repository, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender, ILoggerManager logger)
         {
             _userManager = userManager;
             _repository = repository;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
             _emailSender = emailSender;
+            _logger = logger;
         }
         [HttpPost]
         [Route("Register")]
@@ -251,8 +254,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         }
 
-        private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-
         [HttpPost]
         [Route("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
@@ -299,6 +300,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return Ok();
         }
+
         [HttpPost]
         [Route("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
@@ -370,6 +372,48 @@ namespace Ecommerce_Wolmart.API.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [Route("ChangePassWord")]
+        public async Task<IActionResult> ChangePassWord([FromBody] ChangePasswordDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid password change request.");
+                return BadRequest(ModelState);
+            }
+
+            // Tìm người dùng dựa trên UserId
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user == null)
+            {
+                _logger.LogError($"Không tìm thấy người dùng này {request.UserId}");
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = $"Không tìm thấy người dùng {request.UserId} này!",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra mật khẩu hiện tại
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, request.CurrentPassword);
+            if (!passwordCheck)
+            {
+                return BadRequest("Mật khẩu hiện tại không chính xác.");
+            }
+
+            // Đổi mật khẩu mới
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                var errors = changePasswordResult.Errors.Select(e => e.Description);
+                return BadRequest(new { Errors = errors });
+            }
+
+            return Ok("Mật khẩu đã được thay đổi thành công.");
+        }
+
+
         [HttpGet]
         [Route("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
@@ -410,7 +454,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
                 userDto.Roles = roles;
 
-                return Ok(userDto);
+                return Ok(new ApiResponse<UserDto>
+                {
+                    Success = true,
+                    Message = "Kết quả thành công.",
+                    Data = userDto
+                });
             }
             catch (Exception)
             {
@@ -478,5 +527,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        private string GenerateRefreshToken() => Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
     }
 }
