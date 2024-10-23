@@ -234,7 +234,7 @@
                     </div>
 
                     <div class="tab-pane checkout" id="account-addresses">
-                        <div class="row">
+                        <div class="">
                             <div class="form-group checkbox-toggle pb-2">
                                 <input type="checkbox" class="custom-checkbox" id="shipping-toggle"
                                        name="shipping-toggle">
@@ -409,15 +409,19 @@
                     </div>
 
                     <div class="tab-pane" id="account-details">
+                     
                         <div class="icon-box icon-box-side icon-box-light">
                             <span class="icon-box-icon icon-account mr-2">
                                 <i class="w-icon-user"></i>
                             </span>
                             <div class="icon-box-content">
-                                <h4 class="icon-box-title mb-0 ls-normal">Account Details</h4>
+                                <h4 class="icon-box-title mb-0 ls-normal">Chi tiết tài khoản</h4>
                             </div>
                         </div>
-                        <form class="form account-details-form" action="#" method="post">
+                        <div class="text-center">
+                            <img class="profile_image" src="/Img_Dev/avatar.png" alt="image" />
+                        </div>
+                        <form class="form account-details-form mt-5" action="#" method="post">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -435,36 +439,29 @@
                                 </div>
                             </div>
 
-                            <div class="form-group mb-3">
-                                <label for="display-name">Display name *</label>
-                                <input type="text" id="display-name" name="display_name" placeholder="John Doe"
-                                       class="form-control form-control-md mb-0">
-                                <p>This will be how your name will be displayed in the account section and in reviews</p>
-                            </div>
-
                             <div class="form-group mb-6">
-                                <label for="email_1">Email address *</label>
+                                <label for="email_1">Địa chỉ Email *</label>
                                 <input type="email" id="email_1" name="email_1"
                                        class="form-control form-control-md">
                             </div>
 
-                            <h4 class="title title-password ls-25 font-weight-bold">Password change</h4>
+                            <h4 class="title title-password ls-25 font-weight-bold">Đổi mật khẩu</h4>
                             <div class="form-group">
-                                <label class="text-dark" for="cur-password">Current Password leave blank to leave unchanged</label>
+                                <label class="text-dark" for="cur-password">Mật khẩu hiện tại để trống để không thay đổi</label>
                                 <input type="password" class="form-control form-control-md"
                                        id="cur-password" name="cur_password">
                             </div>
                             <div class="form-group">
-                                <label class="text-dark" for="new-password">New Password leave blank to leave unchanged</label>
+                                <label class="text-dark" for="new-password">Mật khẩu mới để trống để không thay đổi</label>
                                 <input type="password" class="form-control form-control-md"
                                        id="new-password" name="new_password">
                             </div>
                             <div class="form-group mb-10">
-                                <label class="text-dark" for="conf-password">Confirm Password</label>
+                                <label class="text-dark" for="conf-password">Xác nhận mật khẩu</label>
                                 <input type="password" class="form-control form-control-md"
                                        id="conf-password" name="conf_password">
                             </div>
-                            <button type="submit" class="btn btn-dark btn-rounded btn-sm mb-4">Save Changes</button>
+                            <button type="submit" class="btn btn-dark btn-rounded btn-sm mb-4">Cập nhật</button>
                         </form>
                     </div>
                 </div>
