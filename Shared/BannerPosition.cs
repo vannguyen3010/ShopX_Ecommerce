@@ -4,7 +4,8 @@
     {
         Top,
         Right,
-        Left
+        Left,
+        Bottom
     }
     public enum BannerProductWithPopupPosition
     {

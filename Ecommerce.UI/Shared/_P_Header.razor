@@ -68,13 +68,14 @@
                 <a onclick="window.location.href='/';" class="logo ml-lg-0 cursor">
                     <img src="img_dev/image/logo/logo.svg" alt="logo" width="144" height="45" />
                 </a>
-                <form @onsubmit="PerformSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
-                    <input @bind="keyword" type="text" class="form-control input_item" name="search" id="search"
-                           placeholder="Tìm kiếm sản phẩm..." required />
+                <form @onsubmit="HandleSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
+                    <input @bind="keyword" type="text" class="form-control input_item" placeholder="Tìm kiếm sản phẩm..." required />
                     <button class="btn btn-search" type="submit">
                         <i class="w-icon-search"></i>
                     </button>
                 </form>
+
+
             </div>
             <div class="header-right ml-4">
                 <div class="header-call d-xs-show d-lg-flex align-items-center">
@@ -330,11 +331,11 @@
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("/account/dang-nhap", forceLoad: true);
     }
-    private void PerformSearch()
+    private void HandleSearch()
     {
         if (!string.IsNullOrEmpty(keyword))
         {
-            NavigationManager.NavigateTo($"/san-pham?keyword={keyword}&pageNumber={currentPage}&pageSize={pageSize}", forceLoad: true);
+            NavigationManager.NavigateTo($"/san-pham?keyword={Uri.EscapeDataString(keyword)}&pageNumber={currentPage}&pageSize={pageSize}", forceLoad: true);
         }
     }
 }
