@@ -467,26 +467,29 @@
 
                         }
 
-                        <form class="form account-details-form mt-5" action="#" method="post">
+                        <EditForm Model="passwordModel" OnValidSubmit="HandleValidSubmit" class="form account-details-form mt-5" action="#" method="post">
+                            <DataAnnotationsValidator />
+                             <ValidationSummary />
+
                             <h4 class="title title-password ls-25 font-weight-bold">Đổi mật khẩu</h4>
                             <div class="form-group">
                                 <label class="text-dark" for="cur-password">Mật khẩu hiện tại để trống để không thay đổi</label>
-                                <input type="password" class="form-control form-control-md"
-                                       id="cur-password" name="cur_password">
+                                <InputText @bind-Value="passwordModel.CurrentPassword" type="password" class="form-control form-control-md"/>
                             </div>
                             <div class="form-group">
                                 <label class="text-dark" for="new-password">Mật khẩu mới để trống để không thay đổi</label>
-                                <input type="password" class="form-control form-control-md"
-                                       id="new-password" name="new_password">
+                                <InputText @bind-Value="passwordModel.NewPassword" type="password" class="form-control form-control-md" />
                             </div>
                             <div class="form-group mb-10">
                                 <label class="text-dark" for="conf-password">Xác nhận mật khẩu</label>
-                                <input type="password" class="form-control form-control-md"
-                                       id="conf-password" name="conf_password">
+                                <InputText @bind-Value="passwordModel.ConfirmPassword" type="password" class="form-control form-control-md" />
                             </div>
                             <button type="submit" class="btn btn-dark btn-rounded btn-sm mb-4">Cập nhật</button>
-                        </form>
-
+                        </EditForm>
+                        @if (!string.IsNullOrEmpty(message))
+                        {
+                            <div class="alert alert-info mt-4">@message</div>
+                        }
                     </div>
                 </div>
             </div>
@@ -504,6 +507,7 @@
 
     private UserDto user;
 
+    private ChangePasswordDto passwordModel = new ChangePasswordDto();
     private CreateAddressDto newAddress = new CreateAddressDto();
     private UpdateAddressDto selectedAddress = new UpdateAddressDto();
 
@@ -633,7 +637,6 @@
         else
         {
             orders = new List<OrderDto>();
-            message = response?.Message ?? "Lỗi khi lấy giỏ hàng.";
         }
         StateHasChanged();
     }
@@ -715,6 +718,31 @@
             message = "Không thể lấy thông tin người dùng. Vui lòng thử lại sau.";
         }
         StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để bình luận.";
+            return;
+        }
+        // Tạo đối tượng bình luận
+        passwordModel.UserId = userId;
+
+        var response  = await AccountServices.ChangePasswordAsync(passwordModel);
+        if (response)
+        {
+            message = "Thay đổi mật khẩu thành công";
+            passwordModel.CurrentPassword = "";
+            passwordModel.NewPassword = "";
+            passwordModel.ConfirmPassword = "";
+        }
+        else
+        {
+            message = "Thay đổi mật khẩu thất bại";
+        }
     }
 
 }

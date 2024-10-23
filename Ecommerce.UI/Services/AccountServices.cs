@@ -102,5 +102,12 @@ namespace Ecommerce.UI.Services
 
             return null;
         }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto request)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/Accounts/ChangePassWord", request);
+
+            return response.IsSuccessStatusCode;
+        }
     }
 }
