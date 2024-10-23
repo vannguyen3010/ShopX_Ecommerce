@@ -5,6 +5,7 @@
 @inject AddressServices AddressServices
 @inject AddressServices AddressServices
 @inject OrderServices OrderServices
+@inject AccountServices AccountServices
 
 <link href="css/cart.css" rel="stylesheet" />
 <link href="css/profile.css" rel="stylesheet" />
@@ -158,7 +159,7 @@
                                         <tr>
                                             <td class="order-id">#@item.OrderCode</td>
                                             <td class="order-date">@item.OrderDate.ToString("dd-MM-yyyy")</td>
-                                            @if(item.OrderStatus == false)
+                                            @if (item.OrderStatus == false)
                                             {
                                                 <td class="order-status">Chờ xử lý <i class="fas fa-circle text-warning fs-6"></i></td>
                                             }
@@ -176,17 +177,17 @@
                                         </tr>
                                     }
                                 }
-                              
-                              
+
+
                             </tbody>
                         </table>
-                        @if(orders == null)
+                        @if (orders == null)
                         {
-                        <div class="container">
-                            <div class="d-flex justify-content-center">
-                                <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
+                            <div class="container">
+                                <div class="d-flex justify-content-center">
+                                    <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
+                                </div>
                             </div>
-                        </div>
                         }
                         @if (totalPages > 1)
                         {
@@ -213,7 +214,7 @@
                             </ul>
                         }
                         <a onclick="window.location.href='/san-pham'" class="btn btn-dark btn-rounded btn-icon-right">
-                           Đi tới mua hàng<i class="w-icon-long-arrow-right"></i>
+                            Đi tới mua hàng<i class="w-icon-long-arrow-right"></i>
                         </a>
                     </div>
 
@@ -287,15 +288,15 @@
                                             <label>Phường, xã *</label>
                                             <div class="select-box">
                                                 <select name="country" class="form-control form-control-md" @bind="newAddress.WardCode">
-                                                <option value="default" selected="selected">Chọn phường, xã</option>
-                                                @if (wards != null && wards.Any())
-                                                {
-                                                    @foreach (var item in wards)
+                                                    <option value="default" selected="selected">Chọn phường, xã</option>
+                                                    @if (wards != null && wards.Any())
                                                     {
-                                                        <option value="@item.Code">@item.Name</option>
+                                                        @foreach (var item in wards)
+                                                        {
+                                                            <option value="@item.Code">@item.Name</option>
+                                                        }
                                                     }
-                                                }
-                                            </select>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -383,16 +384,16 @@
                                                                     </h6>
                                                                 </li>
                                                             </ul>
-                                                           
+
                                                         </div>
                                                         <div class="ms-auto mt-1" style="float: right;">
-                                                       @*      <a class="btn btn-outline-primary btn-sm me-2 text-success" title="Sửa" style="border: unset; padding: 0.77em 0.4em;">
-                                                                <i class="fa fa-pencil-alt"></i>
-                                                            </a> *@
+                                                            @*      <a class="btn btn-outline-primary btn-sm me-2 text-success" title="Sửa" style="border: unset; padding: 0.77em 0.4em;">
+                                                    <i class="fa fa-pencil-alt"></i>
+                                                    </a> *@
                                                             <a class="btn btn-outline-danger btn-sm text-danger" title="Xóa" style="border: unset;padding: 0.77em 0.4em;" @onclick="() => DeleteAddress(item.Id)">
                                                                 <i class="fa fa-trash-alt"></i>
                                                             </a>
-                                                          
+
                                                         </div>
                                                     </div>
 
@@ -409,7 +410,7 @@
                     </div>
 
                     <div class="tab-pane" id="account-details">
-                     
+
                         <div class="icon-box icon-box-side icon-box-light">
                             <span class="icon-box-icon icon-account mr-2">
                                 <i class="w-icon-user"></i>
@@ -419,14 +420,20 @@
                             </div>
                         </div>
                         <div class="text-center">
-                            <img class="profile_image" src="/Img_Dev/avatar.png" alt="image" />
+                            <div class="profile_container">
+                                <img class="profile_image" src="/Img_Dev/avatar.png" alt="image" />
+                                <span class="edit_icon">
+                                    <i class="fas fa-edit"></i>
+                                </span>
+                            </div>
                         </div>
-                        <form class="form account-details-form mt-5" action="#" method="post">
-                            <div class="row">
+                        @if (user != null)
+                        {
+                            <div class="row account-details-form mt-5">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="firstname">First name *</label>
-                                        <input type="text" id="firstname" name="firstname" placeholder="John"
+                                        <input @bind="user.FirstName" type="text" id="firstname" name="firstname" disabled
                                                class="form-control form-control-md">
                                     </div>
 
@@ -434,18 +441,33 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="lastname">Last name *</label>
-                                        <input type="text" id="lastname" name="lastname" placeholder="Doe"
+                                        <input @bind="user.LastName" type="text" id="lastname" name="lastname" disabled
+                                               class="form-control form-control-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="firstname">UserName *</label>
+                                        <input @bind="user.UserName" type="text" id="lastname" name="lastname" disabled
+                                               class="form-control form-control-md">
+                                    </div>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lastname">Địa chỉ Email *</label>
+                                        <input @bind="user.Email" type="email" id="email_1" name="email_1" disabled
                                                class="form-control form-control-md">
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group mb-6">
-                                <label for="email_1">Địa chỉ Email *</label>
-                                <input type="email" id="email_1" name="email_1"
-                                       class="form-control form-control-md">
-                            </div>
 
+                        }
+
+                        <form class="form account-details-form mt-5" action="#" method="post">
                             <h4 class="title title-password ls-25 font-weight-bold">Đổi mật khẩu</h4>
                             <div class="form-group">
                                 <label class="text-dark" for="cur-password">Mật khẩu hiện tại để trống để không thay đổi</label>
@@ -464,6 +486,7 @@
                             </div>
                             <button type="submit" class="btn btn-dark btn-rounded btn-sm mb-4">Cập nhật</button>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -472,12 +495,14 @@
     <!-- End of PageContent -->
 </main>
 
-@code{
+@code {
     private IEnumerable<OrderDto> orders;
     private IEnumerable<AddressDto> addresses;
     private List<Province> provinces = new();
     private List<District> districts = new();
     private List<Ward> wards = new();
+
+    private UserDto user;
 
     private CreateAddressDto newAddress = new CreateAddressDto();
     private UpdateAddressDto selectedAddress = new UpdateAddressDto();
@@ -565,7 +590,7 @@
     {
         bool isDeleted = await AddressServices.DeleteAddressAsync(id);
 
-        if(isDeleted)
+        if (isDeleted)
         {
             message = "Xóa địa chỉ thành công";
             await GetListAddress();
@@ -582,6 +607,8 @@
         {
             isRendered = false; // Đảm bảo LoadListCarts chỉ gọi một lần khi render
             await LoadListOrderUserId();
+
+            await GetUserId();
         }
     }
 
@@ -646,7 +673,6 @@
 
     }
 
-    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
     private async Task UpdateUrlAndLoadProducts()
     {
         // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
@@ -669,5 +695,26 @@
         await LoadListOrderUserId();
     }
 
-  
+    private async Task GetUserId()
+    {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để mua hàng.";
+            return;
+        }
+
+        var response = await AccountServices.GetUserByIdAsync(userId);
+
+        if (response.Success)
+        {
+            user = response.Data;
+        }
+        else
+        {
+            message = "Không thể lấy thông tin người dùng. Vui lòng thử lại sau.";
+        }
+        StateHasChanged();
+    }
+
 }

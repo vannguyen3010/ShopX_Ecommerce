@@ -28,4 +28,22 @@
     width: 200px;
     height: 200px;
     border-radius: 50%;
+    border: 6px solid #f6eded;
+}
+.profile_container {
+    position: relative;
+    display: inline-block;
+}
+.edit_icon {
+    position: absolute;
+    bottom: -5px;
+    right: 16px;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    color: #624848;
+}
+.edit_icon:hover {
+    background-color: #f0f0f0;
 }

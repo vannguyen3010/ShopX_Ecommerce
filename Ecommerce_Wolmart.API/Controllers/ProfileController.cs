@@ -95,14 +95,14 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var profileEntity = _mapper.Map<ProfileUser>(request);
 
                 // Xử lý tập tin hình ảnh
-                if (request.LogoUrl != null)
+                if (request.File != null)
                 {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(request.LogoUrl.FileName)}";
-                    var fileExtension = Path.GetExtension(request.LogoUrl.FileName);
-                    profileEntity.FilePath = await SaveFileAndGetUrl(request.LogoUrl, fileName, fileExtension);
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(request.File.FileName)}";
+                    var fileExtension = Path.GetExtension(request.File.FileName);
+                    profileEntity.FilePath = await SaveFileAndGetUrl(request.File, fileName, fileExtension);
                     profileEntity.FileName = fileName;
                     profileEntity.FileExtension = fileExtension;
-                    profileEntity.FileSizeInBytes = request.LogoUrl.Length; 
+                    profileEntity.FileSizeInBytes = request.File.Length; 
                 }
 
                 // tạo danh mục vào cơ sở dữ liệu
@@ -230,12 +230,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ từ request sang profileEntity (các trường khác ngoài ảnh)
                 _mapper.Map(request, profileEntity);
 
-                if (request.LogoUrl != null)
+                if (request.File != null)
                 {
-                    profileEntity.FileExtension = Path.GetExtension(request.LogoUrl.FileName);
-                    profileEntity.FileSizeInBytes = request.LogoUrl.Length;
-                    profileEntity.FileName = request.LogoUrl.FileName;
-                    profileEntity.FilePath = await SaveFileAndGetUrl(request.LogoUrl, profileEntity.FileName, profileEntity.FileExtension);
+                    profileEntity.FileExtension = Path.GetExtension(request.File.FileName);
+                    profileEntity.FileSizeInBytes = request.File.Length;
+                    profileEntity.FileName = request.File.FileName;
+                    profileEntity.FilePath = await SaveFileAndGetUrl(request.File, profileEntity.FileName, profileEntity.FileExtension);
                 }
 
                 await _repository.Profile.UpdateProfileUserAsync(profileEntity);
@@ -259,16 +259,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-            if (request.LogoUrl != null)
+            if (request.File != null)
             {
                 //// Kiểm tra phần mở rộng tệp
-                if (allowedExtensions.Contains(Path.GetExtension(request.LogoUrl.FileName)) == false)
+                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");
                 }
 
                 //// Kiểm tra kích thước tệp
-                if (request.LogoUrl.Length > 10485760)// Tệp lớn hơn 10MB
+                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
                 {
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }
@@ -279,16 +279,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-            if (request.LogoUrl != null)
+            if (request.File != null)
             {
                 //// Kiểm tra phần mở rộng tệp
-                if (allowedExtensions.Contains(Path.GetExtension(request.LogoUrl.FileName)) == false)
+                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");
                 }
 
                 //// Kiểm tra kích thước tệp
-                if (request.LogoUrl.Length > 10485760)// Tệp lớn hơn 10MB
+                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
                 {
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }

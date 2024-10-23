@@ -90,5 +90,17 @@ namespace Ecommerce.UI.Services
             var errorMessage = await response.Content.ReadAsStringAsync();
             return new ApiResponse<object> { Success = false, Message = errorMessage };
         }
+
+        public async Task<ApiResponse<UserDto>> GetUserByIdAsync(string userId)
+        {
+            var response = await _httpClient.GetAsync($"/api/Accounts/GetUserById/{userId}");
+
+            if(response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<UserDto>>();
+            }
+
+            return null;
+        }
     }
 }
