@@ -24,3 +24,8 @@
 .search_box:hover {
     border-color: #000; /* Thay đổi màu viền khi hover */
 }
+.profile_image {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
