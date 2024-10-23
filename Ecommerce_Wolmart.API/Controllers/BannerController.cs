@@ -111,6 +111,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             // Top,0
             // Right,1
             // Left, 2
+            // Bottom, 3
             IEnumerable<Banner> banners;
             if(position.HasValue)
             {
@@ -179,7 +180,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         existingBanner.FileExtension = Path.GetExtension(updateDto.File.FileName);
                         existingBanner.FileSizeInBytes = updateDto.File.Length;
                         existingBanner.FileName = updateDto.File.FileName;
-                        existingBanner.FileDescription = updateDto.FileDescription;
+                        //existingBanner.FileDescription = updateDto.FileDescription;
                         existingBanner.FilePath = await SaveFileAndGetUrl(updateDto.File, existingBanner.FileName, existingBanner.FileExtension);
                     }
 
@@ -281,6 +282,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 BannerPosition.Top => BannerPosition.Top,
                 BannerPosition.Right => BannerPosition.Right,
                 BannerPosition.Left => BannerPosition.Left,
+                BannerPosition.Bottom => BannerPosition.Bottom,
                 _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
             };
         }

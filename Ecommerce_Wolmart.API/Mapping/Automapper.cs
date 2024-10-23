@@ -35,6 +35,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CreateBannerDto, Banner>();
 
+            CreateMap<BannerUpdateDto, Banner>();
+
             CreateMap<Banner, BannerDto>();
 
             CreateMap<CreateContactDto, Contact>();
