@@ -314,12 +314,12 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetPendingOrders")]
-        public async Task<IActionResult> GetPendingOrders()
+        [Route("GetListOrders")]
+        public async Task<IActionResult> GetListOrders([FromQuery] int type = 0) // 0 tất cả, 1 là đơn hàng true, 2 là false
         {
             try
             {
-                var orders = await _repository.Order.GetPendingOrdersAsync(trackChanges: false);
+                var orders = await _repository.Order.GetAllOrdersAsync(type, trackChanges: false);
                 if (orders == null || !orders.Any())
                 {
                     return NotFound(new ApiResponse<Object>

@@ -30,8 +30,6 @@ namespace Repository
         {
             return await FindByCondition(order => order.Id.Equals(orderId), trackChanges)
                 .Include(order => order.OrderItems)
-                //.Include(order => order.Address)
-                //.Include(order => order.PaymentMethod)
                 .FirstOrDefaultAsync();
         }
 
@@ -45,8 +43,6 @@ namespace Repository
         {
             return await _dbContext.Orders
              .Include(o => o.CartItems)
-             //.Include(o => o.Address)
-             //.Include(o => o.PaymentMethod)
              .SingleOrDefaultAsync(o => o.Id == orderId);
         }
         public async Task UpdateOrderAsync(Order order)
@@ -54,22 +50,30 @@ namespace Repository
             _dbContext.Orders.Update(order);
         }
 
-        public async Task<IEnumerable<Order>> GetPendingOrdersAsync(bool trackChanges)
+        public async Task<IEnumerable<Order>> GetAllOrdersAsync(int type, bool trackChanges)
         {
-            return await _dbContext.Orders
-                   .AsNoTracking() // Không theo dõi thay đổi của thực thể
-                   .Where(x => !x.OrderStatus)
-                   .Include(o => o.CartItems) // Nếu cần, bao gồm các thuộc tính liên quan
-                   .ThenInclude(ci => ci.Product) // Nếu cần, bao gồm các thuộc tính liên quan của CartItems
-                   .ToListAsync();
+            IQueryable<Order> ordersQuery = _dbContext.Orders
+                .AsNoTracking()
+                .Include(o => o.CartItems)
+                .ThenInclude(x => x.Product);
+
+            // Lọc theo type
+            if(type == 1)
+            {
+                ordersQuery = ordersQuery.Where(x => x.OrderStatus);
+            }
+            else if(type == 2)
+            {
+                ordersQuery = ordersQuery.Where(x => !x.OrderStatus);
+            }
+
+            return await ordersQuery.ToListAsync();
         }
 
         public async Task<Order> GetOrderPaymentByIdAsync(Guid orderId)
         {
             return await _dbContext.Orders
                      .Include(o => o.CartItems)
-                     //.Include(o => o.Address)
-                     //.Include(o => o.PaymentMethodId)
                      .FirstOrDefaultAsync(o => o.Id == orderId);
 
         }
