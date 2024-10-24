@@ -34,9 +34,11 @@ namespace Repository
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Address>> GetAllAddressAsync(bool trackChanges)
+        public async Task<IEnumerable<Address>> GetAllAddressAsync(string userId, bool trackChanges)
         {
-            return await _dbContext.Addresses.ToListAsync();
+            return await _dbContext.Addresses
+                .Where(address => address.UserId == userId)
+                .ToListAsync();
         }
 
         public async Task SaveAsync()

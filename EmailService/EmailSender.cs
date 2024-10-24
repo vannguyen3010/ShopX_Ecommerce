@@ -46,7 +46,7 @@ namespace EmailService
                   <p>Giá Giảm: {order.Discount}</p>
                   <p>Tổng Giá: {order.TotalAmount}</p>
 
-                  <p>Shipping Address: {order.Address.ProvinceName}{order.Address.DistrictName}{order.Address.WardName}{order.Address.StreetAddress}</p>        
+                  <p>Shipping Address: {order.AddressLine}</p>        
             ";
         }
 

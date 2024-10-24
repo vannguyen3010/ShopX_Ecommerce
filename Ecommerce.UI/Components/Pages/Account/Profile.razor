@@ -177,6 +177,15 @@
                                         </tr>
                                     }
                                 }
+                                else
+                                {
+                                    <div class="container">
+                                        <div class="d-flex justify-content-center">
+                                            <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
+                                        </div>
+
+                                    </div>
+                                }
 
 
                             </tbody>
@@ -528,15 +537,34 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await GetListAddress();
         await GetListProvinces();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isRendered)
+        {
+            isRendered = false; // Đảm bảo LoadListCarts chỉ gọi một lần khi render
+            await LoadListOrderUserId();
+
+            await GetUserId();
+
+            await GetListAddress();
+        }
     }
 
     //Address
     private async Task GetListAddress()
     {
-        addresses = await AddressServices.GetListAddressAsync();
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để bình luận.";
+            return;
+        }
 
+        addresses = await AddressServices.GetListAddressAsync(userId);
+        StateHasChanged();
     }
 
     private async Task GetListProvinces()
@@ -559,6 +587,13 @@
 
     private async Task SubmitAddress()
     {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để bình luận.";
+            return;
+        }
+        newAddress.UserId = userId;
         newAddress.ProvinceCode = selectedProvinceCode;
         newAddress.DistrictCode = selectedDistrictCode;
 
@@ -602,17 +637,6 @@
         else
         {
             message = "Xóa địa chỉ thất bại";
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !isRendered)
-        {
-            isRendered = false; // Đảm bảo LoadListCarts chỉ gọi một lần khi render
-            await LoadListOrderUserId();
-
-            await GetUserId();
         }
     }
 
@@ -725,10 +749,10 @@
         var userId = await LocalStorage.GetItemAsync<string>("userId");
         if (string.IsNullOrEmpty(userId))
         {
-            message = "Vui lòng đăng nhập để bình luận.";
+            message = "Vui lòng đăng nhập để thay đổi mật khẩu";
             return;
         }
-        // Tạo đối tượng bình luận
+        // Tạo đối tượng thay đổi mật khẩu
         passwordModel.UserId = userId;
 
         var response  = await AccountServices.ChangePasswordAsync(passwordModel);

@@ -129,10 +129,6 @@
                             {
                                 <div class="alert alert-success mt-4">@message</div>
                             }
-                            else
-                            {
-                                <div class="alert alert-warning mt-4">@message</div>
-                            }
                         </div>
                         <div class="check_box">
                             <div class="checkout_title d-flex align-items-center">
@@ -176,6 +172,14 @@
                                                                         Đia chỉ
                                                                         :
                                                                     </span>@item.ProvinceName, @item.DistrictName, @item.WardName
+                                                                </p>
+                                                            </li>
+                                                            <li>
+                                                                <p class="text_content">
+                                                                    <span class="text_title">
+                                                                        Đia chỉ cụ thể
+                                                                        :
+                                                                    </span>@item.StreetAddress
                                                                 </p>
                                                             </li>
                                                             <li>
@@ -315,7 +319,6 @@
 
                                 <div class="form-group place-order pt-6">
                                     <button class="btn btn-dark btn-block btn-rounded" @onclick="HandleCreateOrder">Đặt hàng</button>
-                                    @* <a class="btn btn-dark btn-block btn-rounded" href="/order-success">Đặt hàng</a> *@
                                     @if (message != null)
                                     {
                                         <div class="alert alert-danger">
@@ -360,7 +363,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await GetListAddress();
         await GetListProvinces();
         await GetAllPaymentMethods();
     }
@@ -371,6 +373,7 @@
         {
             isRendered = false; // Đảm bảo LoadListCarts chỉ gọi một lần khi render
             await LoadListCarts();
+            await GetListAddress();
         }
     }
 
@@ -399,7 +402,13 @@
 
     private async Task GetListAddress()
     {
-        addresses = await AddressServices.GetListAddressAsync();
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để bình luận.";
+            return;
+        }
+        addresses = await AddressServices.GetListAddressAsync(userId);
 
         if (addresses != null && addresses.Any())
         {
@@ -411,12 +420,13 @@
 
             await GetShippingCostForAddress(firstAddress.Id); // Lấy phí vận chuyển cho địa chỉ đầu tiên
         }
+        StateHasChanged();
     }
 
     private async Task OnAddressSelected(Guid addressId)
     {
         selectedAddressId = addressId; // Cập nhật ID địa chỉ đã chọn
-        
+
         orderModel.AddressId = addressId;
         await GetShippingCostForAddress(addressId); // Gọi hàm lấy phí vận chuyển
     }
@@ -470,6 +480,14 @@
 
     private async Task SubmitAddress()
     {
+        var userId = await LocalStorage.GetItemAsync<string>("userId");
+        if (string.IsNullOrEmpty(userId))
+        {
+            message = "Vui lòng đăng nhập để bình luận.";
+            return;
+        }
+
+        newAddress.UserId = userId;
         newAddress.ProvinceCode = selectedProvinceCode;
         newAddress.DistrictCode = selectedDistrictCode;
 
@@ -479,11 +497,23 @@
         {
             message = "Địa chỉ đã được tạo thành công";
             await GetListAddress();
+            ClearForm();
         }
         else
         {
             message = "Tạo địa chỉ thất bại";
         }
+    }
+    private void ClearForm()
+    {
+        newAddress = new CreateAddressDto();
+        selectedProvinceCode = string.Empty;
+        selectedDistrictCode = string.Empty;
+        selectedWardCode = string.Empty;
+        districts.Clear();
+        wards.Clear();
+
+        StateHasChanged();
     }
 
     private async Task GetAllPaymentMethods()

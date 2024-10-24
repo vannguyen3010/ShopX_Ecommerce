@@ -128,8 +128,7 @@ namespace Ecommerce_Wolmart.API.Mapping
             // Ánh xạ từ Order -> OrderDto
             CreateMap<Order, OrderDto>();
 
-            CreateMap<OrderDto, Order>()
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address));
+            CreateMap<OrderDto, Order>();
 
             CreateMap<OrderItem, OrderItemDto>();
 

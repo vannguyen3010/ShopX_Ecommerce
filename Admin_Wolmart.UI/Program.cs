@@ -1,11 +1,31 @@
-using Admin_Wolmart.UI;
-using Admin_Wolmart.UI.Components;
+﻿using Admin_Wolmart.UI;
+using Admin_Wolmart.UI.Services;
+using Blazored.LocalStorage;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Đăng ký cấu hình
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
+// Khởi tạo HttpClient với URL từ appsettings.json
+builder.Services.AddScoped(sp =>
+{
+    var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
+});
+
+
+builder.Services.AddScoped<ProductServices>();
+builder.Services.AddScoped<AccountServices>();
+
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+
+builder.Services.AddBlazoredLocalStorage();
 
 var app = builder.Build();
 

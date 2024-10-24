@@ -63,18 +63,18 @@
                                                 Danh mục:
                                                 <span class="product-category"><a class="category_product" href="/san-pham/?c2=@product.CategoryId">@product.CategoryName</a></span>
                                             </div>
-                                            @if(product.StockQuantity == 0)
+                                            @if (product.StockQuantity == 0)
                                             {
                                                 <div class="fs-3 mt-1 out_of_stock d-flex align-items-center">
                                                     <i class="fas fa-exclamation-circle text-danger lightning-icon me-2 fs-4"></i>
                                                     <span>Hết hàng</span>
                                                 </div>
                                             }
-                                           
+
 
                                         </div>
                                     </div>
-                                    @if(product.Discount > 0)
+                                    @if (product.Discount > 0)
                                     {
                                         <div class="product-price">
                                             <del class="old-price">@product.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
@@ -792,7 +792,7 @@
         if (quantity > product.StockQuantity)
         {
             message = $"Vì cửa hàng chỉ còn {product.StockQuantity} sản phẩm, bạn không được đặt quá số lượng.";
-            return; 
+            return;
         }
 
         var userId = await LocalStorage.GetItemAsync<string>("userId");

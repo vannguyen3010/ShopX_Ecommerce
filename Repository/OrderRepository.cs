@@ -30,8 +30,8 @@ namespace Repository
         {
             return await FindByCondition(order => order.Id.Equals(orderId), trackChanges)
                 .Include(order => order.OrderItems)
-                .Include(order => order.Address)
-                .Include(order => order.PaymentMethod)
+                //.Include(order => order.Address)
+                //.Include(order => order.PaymentMethod)
                 .FirstOrDefaultAsync();
         }
 
@@ -45,8 +45,8 @@ namespace Repository
         {
             return await _dbContext.Orders
              .Include(o => o.CartItems)
-             .Include(o => o.Address)
-             .Include(o => o.PaymentMethod)
+             //.Include(o => o.Address)
+             //.Include(o => o.PaymentMethod)
              .SingleOrDefaultAsync(o => o.Id == orderId);
         }
         public async Task UpdateOrderAsync(Order order)
@@ -68,8 +68,8 @@ namespace Repository
         {
             return await _dbContext.Orders
                      .Include(o => o.CartItems)
-                     .Include(o => o.Address)
-                     .Include(o => o.PaymentMethodId)
+                     //.Include(o => o.Address)
+                     //.Include(o => o.PaymentMethodId)
                      .FirstOrDefaultAsync(o => o.Id == orderId);
 
         }
