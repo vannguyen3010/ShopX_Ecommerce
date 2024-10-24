@@ -321,7 +321,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 var orders = await _repository.Order.GetAllOrdersAsync(type, trackChanges: false);
                 if (orders == null || !orders.Any())
-                {
+                { 
                     return NotFound(new ApiResponse<Object>
                     {
                         Success = false,
