@@ -104,6 +104,90 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("CreateBannerTest")]
+        public async Task<IActionResult> CreateBannerTest([FromForm] CreateBannerDto createbannerDto)
+        {
+            try
+            {
+                ValidateFileUpload(createbannerDto);
+
+                // Kiểm tra object được gửi từ client
+                if (createbannerDto == null)
+                {
+                    _logger.LogError("Banner object sent from client is null.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Banner object is null",
+                        Data = null
+                    });
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Banner object sent from client.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Invalid model object",
+                        Data = null
+                    });
+                }
+
+                // Ánh xạ Dto thành entity
+                var bannerEntity = _mapper.Map<Banner>(createbannerDto);
+
+                // Xử lý tập tin hình ảnh
+                if (createbannerDto.File != null)
+                {
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.File.FileName)}";
+                    var fileExtension = Path.GetExtension(createbannerDto.File.FileName);
+                    bannerEntity.FilePath = await SaveFileAndGetRelativePath(createbannerDto.File, fileName, fileExtension);
+                    bannerEntity.FileName = fileName;
+                    bannerEntity.FileExtension = fileExtension;
+                    bannerEntity.FileSizeInBytes = createbannerDto.File.Length;
+                }
+
+                // Xử lý tập tin hình ảnh thứ hai
+                if (createbannerDto.SecondFile != null)
+                {
+                    string secondFileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.SecondFile.FileName)}";
+                    var secondFileExtension = Path.GetExtension(createbannerDto.SecondFile.FileName);
+                    bannerEntity.SecondFilePath = await SaveFileAndGetRelativePath(createbannerDto.SecondFile, secondFileName, secondFileExtension);
+                    bannerEntity.SecondFileName = secondFileName;
+                    bannerEntity.SecondFileExtension = secondFileExtension;
+                    bannerEntity.SecondFileSizeInBytes = createbannerDto.SecondFile.Length;
+                }
+
+                // Lưu vào cơ sở dữ liệu
+                await _repository.Banner.CreateBanner(bannerEntity);
+
+                return Ok(new ApiResponse<BannerDto>
+                {
+                    Success = true,
+                    Message = "Banner created successfully.",
+                    Data = _mapper.Map<BannerDto>(bannerEntity)
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Banner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        private async Task<string> SaveFileAndGetRelativePath(IFormFile file, string fileName, string fileExtension)
+        {
+            var relativeFilePath = Path.Combine("Img_Repository/Banner", $"{fileName}{fileExtension}");
+            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+
+            using var stream = new FileStream(localFilePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
+        }
+
+
         [HttpGet]
         [Route("GetAllBannerPosition")]
         public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition? position)

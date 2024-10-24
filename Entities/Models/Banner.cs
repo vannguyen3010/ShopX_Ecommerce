@@ -11,7 +11,7 @@ namespace Entities.Models
         public string Title { get; set; }
         public string Desc { get; set; }
 
-        [NotMapped] // Sẽ ko lưu ảnh vào Db
+        [NotMapped]
         public IFormFile File { get; set; }
         public string FileName { get; set; }
         public string? FileDescription { get; set; }
@@ -19,7 +19,6 @@ namespace Entities.Models
         public long FileSizeInBytes { get; set; }
         public string FilePath { get; set; }
 
-        // Thêm thông tin cho ảnh thứ hai
         [NotMapped] // Sẽ không lưu ảnh vào Db
         public IFormFile? SecondFile { get; set; } // Trường ảnh thứ hai
         public string? SecondFileName { get; set; }
