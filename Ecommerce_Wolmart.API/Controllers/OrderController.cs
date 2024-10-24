@@ -76,6 +76,18 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+                //Lấy thông tin paymentMethod
+                var paymentMethod = await _repository.PaymentMethod.GetPaymentMethodByIdAsync(createOrderDto.PaymentMethodId, trackChanges: false);
+                if (paymentMethod == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy thanh toán của {createOrderDto.PaymentMethodId}!",
+                        Data = null
+                    });
+                }
+
                 // Tạo mã đơn hàng dựa trên thời gian và chuỗi ngẫu nhiên
                 var orderCode = GenerateOrderCode();
 
@@ -109,6 +121,16 @@ namespace Ecommerce_Wolmart.API.Controllers
                 order.ShippingCost = shippingCost.Cost;
                 order.OrderStatus = false;
                 order.TotalAmount = totalPrice - totalDiscount + shippingCost.Cost;
+
+                order.PaymentType = paymentMethod.PaymentType;
+                order.BankName = paymentMethod.BankName;
+                order.AccountNumber = paymentMethod.AccountNumber;
+                order.NotePayment = paymentMethod.Note;
+                order.FilePath = paymentMethod.FilePath;
+
+                order.AddressLine = $"{address.ProvinceName}, {address.DistrictName}, {address.WardName}, {address.StreetAddress}";
+                order.AddressType = address.AddressType;
+
                 order.OrderDate = DateTime.UtcNow;
 
 

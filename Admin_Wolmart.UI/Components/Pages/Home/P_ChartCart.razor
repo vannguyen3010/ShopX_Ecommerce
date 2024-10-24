@@ -1,4 +1,43 @@
-﻿<div class="col-sm-6 col-xxl-3 col-lg-6">
+﻿@inject ProductServices _productServices
+@inject AccountServices _accountServices
+@code{
+    private IEnumerable<ProductDto> products;
+    private IEnumerable<UserDto> users;
+
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    private int totalCount;
+    private int totalUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListProduct();
+        await LoadListUsers();
+    }
+
+    private async Task LoadListProduct()
+    {
+        var response = await _productServices.GetAllProductsPagination(currentPage, pageSize);
+        if (response != null && response.Success)
+        {
+            products = response.Data.Products;
+            totalCount = response.Data.TotalCount;
+        }
+    }
+
+    private async Task LoadListUsers()
+    {
+        var response = await _accountServices.GetAllUsers();
+        if (response != null && response.Success && response.Data != null)
+        {
+            users = response.Data;
+            totalUser = response.Data.Count(u => u.Roles.Contains("User"));
+        }
+    }
+}
+
+<div class="col-sm-6 col-xxl-3 col-lg-6">
     <div class="main-tiles border-5 border-0  card-hover card o-hidden">
         <div class="custome-1-bg b-r-4 card-body">
             <div class="media align-items-center static-top-widget">
@@ -53,7 +92,7 @@
                         Tổng số sản phẩm
                     </span>
                     <h4 class="mb-0 counter">
-                        893
+                        @totalCount
                         <a href="add-new-product.html" class="badge badge-light-secondary grow">
                             Thêm sản phẩm
                         </a>
@@ -75,7 +114,7 @@
                 <div class="media-body p-0">
                     <span class="m-0">Tổng số khách hàng</span>
                     <h4 class="mb-0 counter">
-                        4.6k
+                        @totalUser
                         <span class="badge badge-light-success grow">
                             <i data-feather="trending-down"></i>8.5%
                         </span>

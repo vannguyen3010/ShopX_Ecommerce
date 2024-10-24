@@ -1,16 +1,10 @@
-﻿using Shared.DTO.Banner;
+﻿using Microsoft.AspNetCore.WebUtilities;
 using Shared;
+using Shared.DTO.BannerProduct;
+using Shared.DTO.CateProduct;
+using Shared.DTO.CommentProduct;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
-using Shared.DTO.BannerProduct;
-using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Shared.DTO.CommentProduct;
-using System.Text;
-using System;
-using Shared.DTO.Introduce;
-using Shared.DTO.CateProduct;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Ecommerce.UI.Services
 {
@@ -33,19 +27,6 @@ namespace Ecommerce.UI.Services
                 return apiResponse.Data;
             }
             return new List<BannerProductDto>();
-        }
-
-        public async Task<ApiResponse<ProductResponseDto>> GetAllProductsPagination(int pageNumber, int pageSize)
-        {
-            var response = await _httpClient.GetAsync($"/api/Product/GetAllProductsPagination?pageNumber={pageNumber}&pageSize={pageSize}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadFromJsonAsync<ApiResponse<ProductResponseDto>>();
-                return data!;
-            }
-
-            return new ApiResponse<ProductResponseDto>();
         }
 
         public async Task<ApiProductResponse<ProductDto, IEnumerable<ProductDto>>> GetProductByIdAsync(Guid productId)

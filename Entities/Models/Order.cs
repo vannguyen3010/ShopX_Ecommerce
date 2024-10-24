@@ -9,7 +9,6 @@ namespace Entities.Models
         public Guid Id { get; set; }
         public string UserId { get; set; }
         public Guid AddressId { get; set; }
-        public Guid PaymentMethodId { get; set; }
         public Guid ShippingCostId { get; set; }
         public string OrderCode { get; set; }
         public string UserName { get; set; }
@@ -20,13 +19,22 @@ namespace Entities.Models
         public decimal Price { get; set; }
         public decimal Discount { get; set; }
         public decimal ShippingCost { get; set; }
-        public decimal TotalAmount { get; set; } 
+        public decimal TotalAmount { get; set; }
+
+        // Thông tin chi tiết của địa chỉ
+        public string AddressLine { get; set; }
+        public int AddressType { get; set; }
+
+        // Thông tin phí ship
+        public Guid PaymentMethodId { get; set; }
+        public string PaymentType { get; set; }
+        public string BankName { get; set; }
+        public string AccountNumber { get; set; }
+        public string NotePayment { get; set; }
+        public string FilePath { get; set; }
+
         public DateTime OrderDate { get; set; } = DateTime.Now;
 
-
-        [JsonIgnore]
-        public AddressEntity Address { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
 
         [JsonIgnore]
         public IEnumerable<CartItem> CartItems { get; set; }

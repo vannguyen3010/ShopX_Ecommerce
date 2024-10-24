@@ -15,9 +15,9 @@ namespace Ecommerce.UI.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<AddressDto>> GetListAddressAsync()
+        public async Task<IEnumerable<AddressDto>> GetListAddressAsync(string userId)
         {
-            var response = await _httpClient.GetAsync("/api/Address/GetAllAddress");
+            var response = await _httpClient.GetAsync($"/api/Address/GetAllAddress/{userId}");
 
             if(response.IsSuccessStatusCode)
             {

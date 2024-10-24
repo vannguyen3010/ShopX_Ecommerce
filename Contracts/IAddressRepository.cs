@@ -9,7 +9,7 @@ namespace Contracts
         Task<Address> GetAddressByNameAsync(string name);
         Task UpdateAddressAsync(Address address);
         Task<Address> GetAddressByIdAsync(Guid addressId, bool trackChanges);
-        Task<IEnumerable<Address>> GetAllAddressAsync(bool trackChanges);
+        Task<IEnumerable<Address>> GetAllAddressAsync(string userId, bool trackChanges);
         Task DeleteAddress(Address address);
         Task SaveAsync();
     }

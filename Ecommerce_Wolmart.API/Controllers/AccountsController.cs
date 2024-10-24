@@ -429,7 +429,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                     var roles = await _userManager.GetRolesAsync(user!);
                     userDto.Roles = roles;
                 }
-                return Ok(userDtos);
+                return Ok(new ApiResponse<IEnumerable<UserDto>>
+                {
+                    Success = true,
+                    Message = "Category retrieved successfully.",
+                    Data = userDtos
+                });
             }
             catch (Exception)
             {

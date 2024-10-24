@@ -3,8 +3,7 @@
 @inject OrderServices orderServices
 
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
-@* 
-<script src="controller/order.js"></script> *@
+
 
 @if (order != null)
 {
@@ -97,18 +96,18 @@
 
                 <div class="sub-orders mb-10">
                     <div class="alert alert-icon alert-inline mb-5">
-                        @if (order.Address != null)
+                        @if (order != null)
                         {
                             <strong><i class="fas fa-shipping-fast me-2"></i>Địa chỉ giao hàng:</strong>
-                            <span>@($"{order.Address.StreetAddress}, {order.Address.WardName}, {order.Address.DistrictName}, {order.Address.ProvinceName}")</span>
+                            <span>@($"{order.AddressLine}")</span>
                         }
 
                     </div>
                 </div>
                 <div class="image-text-wrapper d-flex align-items-center justify-content-center">
-                    @if (order.PaymentMethod != null)
+                    @if (order != null)
                     {
-                        <img src="@(string.IsNullOrEmpty(order.PaymentMethod.FilePath) ? "/Img_Dev/banner.png" : order.PaymentMethod.FilePath)" alt="Sample Image" style="width: 450px; max-width: unset" class="img-fluid custom-image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                        <img src="@(string.IsNullOrEmpty(order.FilePath) ? "/Img_Dev/banner.png" : order.FilePath)" alt="Sample Image" style="width: 450px; max-width: unset" class="img-fluid custom-image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
 
                         <table class="order-table">
                             <thead>
@@ -120,15 +119,15 @@
                             <tfoot>
                                 <tr>
                                     <th class="text_color_item">Ngân hàng :</th>
-                                    <td style="float: left;">@order.PaymentMethod.BankName</td>
+                                    <td style="float: left;">@order.BankName</td>
                                 </tr>
                                 <tr>
                                     <th class="text_color_item">Số tài khoản :</th>
-                                    <td style="float: left;">@order.PaymentMethod.AccountNumber <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;"></i></td>
+                                    <td style="float: left;">@order.AccountNumber <i class="fas fa-copy cursor" style="color: #467b9a;margin-left: 5px;"></i></td>
                                 </tr>
                                 <tr class="total">
                                     <th class="border-no text_color_item"><i class="w-icon-exclamation-triangle"></i>Lưu ý</th>
-                                    <th style="float: left;" class="border-no">@order.PaymentMethod.Note</th>
+                                    <th style="float: left;" class="border-no">@order.NotePayment</th>
                                 </tr>
                             </tfoot>
                         </table>

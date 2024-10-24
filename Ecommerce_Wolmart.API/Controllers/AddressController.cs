@@ -2,13 +2,16 @@
 using Azure;
 using Contracts;
 using Ecommerce_Wolmart.API.Migrations;
+using Entities.Identity;
 using Entities.Models;
 using Entities.Models.Address;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Shared.DTO.Address;
 using Shared.DTO.Banner;
 using Shared.DTO.BannerProduct;
+using Shared.DTO.Cart;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Response;
 
@@ -18,12 +21,14 @@ namespace Ecommerce_Wolmart.API.Controllers
     [ApiController]
     public class AddressController : ControllerBase
     {
+        private readonly UserManager<User> _userManager;
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
 
-        public AddressController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper)
+        public AddressController(UserManager<User> userManager, ILoggerManager logger, IRepositoryManager repository, IMapper mapper)
         {
+            _userManager = userManager;
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
@@ -84,9 +89,24 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+
+                // Kiểm tra người dùng có tồn tại không
+                var user = await _userManager.FindByIdAsync(createAddressDto.UserId);
+                if (user == null)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Người dùng này không tồn tại.",
+                        Data = null
+                    });
+                }
+
+
                 // Ánh xạ Dto sang Enity
                 var addressEntities = _mapper.Map<Address>(createAddressDto);
 
+                addressEntities.UserId = user.Id;
                 addressEntities.ProvinceName = province.Name;
                 addressEntities.DistrictName = district.Name;
                 addressEntities.WardName = ward.Name;
@@ -254,12 +274,12 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllAddress")]
-        public async Task<IActionResult> GetAllAddress()
+        [Route("GetAllAddress/{userId}")]
+        public async Task<IActionResult> GetAllAddress(string userId)
         {
             try
             {
-                var address = await _repository.Address.GetAllAddressAsync(trackChanges: false);
+                var address = await _repository.Address.GetAllAddressAsync(userId, trackChanges: false);
                 if (address == null)
                 {
                     _logger.LogError("Address List sent from client is null.");
