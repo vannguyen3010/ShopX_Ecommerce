@@ -1,19 +1,25 @@
-﻿@inject ProductServices _productServices
+﻿
+@inject ProductServices _productServices
 @inject AccountServices _accountServices
+@inject OrderServices _orderService
 @code{
     private IEnumerable<ProductDto> products;
     private IEnumerable<UserDto> users;
+    private IEnumerable<OrderDto> orders;
 
     private int currentPage = 1;
     private int pageSize = 10;
 
     private int totalCount;
     private int totalUser;
+    private decimal totalAmount = 0;
+    private decimal totalOrders = 0;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadListProduct();
         await LoadListUsers();
+        await LoadListOrder();
     }
 
     private async Task LoadListProduct()
@@ -35,6 +41,20 @@
             totalUser = response.Data.Count(u => u.Roles.Contains("User"));
         }
     }
+
+    private async Task LoadListOrder()
+    {
+        var response = await _orderService.GetListOrderTypeAsync(0); // 0 để lấy tất cả đơn hàng
+        if (response.Success)
+        {
+            orders = response.Data;
+
+            totalOrders = response.Data.Count();
+
+            totalAmount = orders.Sum(order => order.TotalAmount);
+        }
+    }
+
 }
 
 <div class="col-sm-6 col-xxl-3 col-lg-6">
@@ -46,10 +66,8 @@
                         Tổng doanh thu
                     </span>
                     <h4 class="mb-0 counter">
-                        $6659
-                        <span class="badge badge-light-primary grow">
-                            <i data-feather="trending-up"></i>8.5%
-                        </span>
+                        @totalAmount.ToString("N0")
+                        <span class="currency-symbol text-danger">đ</span>
                     </h4>
                 </div>
                 <div class="align-self-center text-center">
@@ -69,10 +87,7 @@
                         Tổng số đơn đặt hàng
                     </span>
                     <h4 class="mb-0 counter">
-                        9856
-                        <span class="badge badge-light-danger grow">
-                            <i data-feather="trending-down"></i>8.5%
-                        </span>
+                        @totalOrders
                     </h4>
                 </div>
                 <div class="align-self-center text-center">
@@ -115,9 +130,6 @@
                     <span class="m-0">Tổng số khách hàng</span>
                     <h4 class="mb-0 counter">
                         @totalUser
-                        <span class="badge badge-light-success grow">
-                            <i data-feather="trending-down"></i>8.5%
-                        </span>
                     </h4>
                 </div>
 

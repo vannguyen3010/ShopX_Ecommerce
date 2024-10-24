@@ -314,8 +314,8 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetListOrders")]
-        public async Task<IActionResult> GetListOrders([FromQuery] int type = 0) // 0 tất cả, 1 là đơn hàng true, 2 là false
+        [Route("GetListOrdersType")]
+        public async Task<IActionResult> GetListOrdersType([FromQuery] int type = 0) // 0 tất cả, 1 là đơn hàng true, 2 là false
         {
             try
             {
