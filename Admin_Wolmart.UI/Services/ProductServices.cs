@@ -22,5 +22,7 @@ namespace Admin_Wolmart.UI.Services
 
             return new ApiResponse<ProductResponseDto>();
         }
+
+
     }
 }
