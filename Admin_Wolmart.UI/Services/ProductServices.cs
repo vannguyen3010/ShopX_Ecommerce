@@ -1,4 +1,5 @@
-﻿using Shared.DTO.Response;
+﻿using Shared.DTO.Product;
+using Shared.DTO.Response;
 
 namespace Admin_Wolmart.UI.Services
 {
@@ -23,6 +24,14 @@ namespace Admin_Wolmart.UI.Services
             return new ApiResponse<ProductResponseDto>();
         }
 
-
+        public async Task<ApiResponse<IEnumerable<ProductDto>>> GetAllProductBestSeller(int bestSeller)
+        {
+            var response = await _httpClient.GetAsync($"/api/Product/GetAllBestSellingProducts?bestSeller={bestSeller}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<ProductDto>>>();
+            }
+            return null;
+        }
     }
 }
