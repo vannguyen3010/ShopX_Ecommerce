@@ -19,7 +19,9 @@ namespace Contracts
         Task<IEnumerable<Product>> GetAllProductOnByStockStatusAsync(int stockQuantity, bool trackChanges);
         Task<IEnumerable<Product>> GetAllNewProductsAsync(DateTime startDate, bool trackChanges);
         Task<IEnumerable<Product>> GetRelatedProductsAsync(Guid productId, Guid categoryId, bool trackChanges);
-        Task UpdateProductAsync(Product product, byte[] rowVersion);
+        Task<IEnumerable<Product>> GetBestSellingProductsAsync(int bestSeller, bool trackChanges);
+        //Task UpdateProductAsync(Product product, byte[] rowVersion);
+        Task UpdateProductAsync(Product product);
         Task<(IEnumerable<Product>, int totalCount)> GetListProducAsync(int pageNumber, int pageSize, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null, int? type = null);
         Task SaveAsync();
 

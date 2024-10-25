@@ -27,6 +27,7 @@ namespace Entities.Models
         public bool IsHot { get; set; }
         public int Rating { get; set; }
         public int StockQuantity { get; set; } // Thêm thuộc tính tồn kho
+        public int BestSeller { get; set; } // Sản phẩm bestSeller
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
         // Thêm RowVersion cho đồng thời
