@@ -131,13 +131,17 @@ namespace Repository
                 .ToListAsync();
         }
 
-        public async Task UpdateProductAsync(Product product, byte[] rowVersion)
+        //public async Task UpdateProductAsync(Product product, byte[] rowVersion)
+        //{
+        //    _dbContext.Entry(product).OriginalValues["RowVersion"] = rowVersion;
+        //    _dbContext.Products.Update(product);
+        //    await SaveAsync();
+        //}
+        public async Task UpdateProductAsync(Product product)
         {
-            _dbContext.Entry(product).OriginalValues["RowVersion"] = rowVersion;
             _dbContext.Products.Update(product);
             await SaveAsync();
         }
-
         public async Task UpdateProductOrderItemAsync(Product product)
         {
             _dbContext.Products.Update(product);
@@ -228,10 +232,16 @@ namespace Repository
             return (products, totalCount);
         }
 
+        public async Task<IEnumerable<Product>> GetBestSellingProductsAsync(int bestSeller, bool trackChanges)
+        {
+            return await FindByCondition(x => x.BestSeller == bestSeller, trackChanges).ToListAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
 
+      
     }
 }

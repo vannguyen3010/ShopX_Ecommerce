@@ -147,6 +147,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                     ImageFilePath = item.ImageFilePath
                 }).ToList();
 
+                // Cập nhật trường BestSeller cho từng sản phẩm trong đơn hàng
+                foreach (var item in cartItems)
+                {
+                    var product = await _repository.Product.GetProductByIdAsync(item.ProductId, trackChanges: false);
+                    if(product != null)
+                    {
+                        product.BestSeller += 1; // Tăng BestSeller lên 1 cho mỗi lượt đặt hàng thành công
+                        _repository.Product.UpdateProductAsync(product);
+                    }
+                }
+
                 //Map giỏ hàng vào orderItem
                 var orderItemEntities = _mapper.Map<IEnumerable<OrderItem>>(orderItems);
 

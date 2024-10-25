@@ -18,6 +18,7 @@ namespace Shared.DTO.Product
         public bool IsHot { get; set; }
         public int Rating { get; set; }
         public int StockQuantity { get; set; }
+        public int BestSeller { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public List<ProductImageDto> ProductImages { get; set; } = new List<ProductImageDto>();

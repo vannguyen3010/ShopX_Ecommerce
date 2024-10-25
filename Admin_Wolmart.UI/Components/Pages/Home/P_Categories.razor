@@ -1,5 +1,7 @@
 ﻿@inject CateProductServices _cateProductServices
 
+<link href="css/home.css" rel="stylesheet" />
+
 @code {
     private IEnumerable<CateProductDto> cateProducts;
 
@@ -22,34 +24,19 @@
                 {
                     @foreach (var item in cateProducts)
                     {
-
-
-                       @*  <div class="category category-classic category-absolute overlay-zoom br-xs">
-                            <a onclick="window.location.href='/san-pham/?c2=@item.Id';" class="category-media cursor">
-                                <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" alt="Category" width="130"
-                                     height="130" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                            </a>
-                            <div class="category-content">
-                                <h4 class="category-name"></h4>
-                                <a onclick="window.location.href='/san-pham/?c2=@item.Id';" class="btn btn-primary btn-link btn-underline mt-1 cursor">
-                                    Xem thêm
-                                </a>
-                            </div>
-                        </div> *@
                         <div>
-                            <div class="dashboard-category">
-                                <a href="" class="">
+                            <div class="dashboard-category dashboard_category_item">
+                                <a href="" class="" data-bs-toggle="tooltip" data-bs-placement="bottom" title="@item.Name">
                                     <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" class="img-fluid" alt="Category" width="130"
                                          height="130">
                                 </a>
-                                <a href="javascript:void(0)" class="category-name">
+                              @*   <a href="javascript:void(0)" class="category-name">
                                     <h6>@item.Name</h6>
-                                </a>
+                                </a> *@
                             </div>
                         </div>
                     }
                 }
-
             </div>
         </div>
     </div>

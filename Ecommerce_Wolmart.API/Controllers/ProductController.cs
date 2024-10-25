@@ -10,6 +10,7 @@ using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -435,6 +436,40 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllBestSellingProducts")]
+        public async Task<IActionResult> GetAllBestSellingProducts(int bestSeller)
+        {
+            try
+            {
+                var bestSellingProducts = await _repository.Product.GetBestSellingProductsAsync(bestSeller, trackChanges: false);
+                if (bestSellingProducts == null || !bestSellingProducts.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy sản phẩm bán chạy.",
+                        Data = null
+                    });
+                }
+
+                var bestSellingProductsDto = _mapper.Map<IEnumerable<ProductDto>>(bestSellingProducts);
+
+                return Ok(new ApiResponse<IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Best-selling products retrieved successfully.",
+                    Data = bestSellingProductsDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetBestSellingProducts action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
         [Route("GetProductById/{id}")]
         public async Task<IActionResult> GetProductById(Guid id)
         {
@@ -684,7 +719,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Chuyển đổi RowVersion từ chuỗi hexadecimal sang byte[]
-                byte[] rowVersionBytes = ConvertHexStringToByteArray(updateProductDto.RowVersion);
+                //byte[] rowVersionBytes = ConvertHexStringToByteArray(updateProductDto.RowVersion);
 
                 //Cập nhật các thông tin sản phẩm
                 _mapper.Map(updateProductDto, productEntity);
@@ -724,7 +759,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 // Cập nhật sản phẩm trong DB
-                await _repository.Product.UpdateProductAsync(productEntity, rowVersionBytes);
+                //await _repository.Product.UpdateProductAsync(productEntity, rowVersionBytes);
+                await _repository.Product.UpdateProductAsync(productEntity);
 
                 return Ok(new ApiResponse<ProductDto>
                 {
