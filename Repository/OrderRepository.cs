@@ -125,10 +125,19 @@ namespace Repository
             return (orders, totalOrders);
         }
 
+        public async Task<IEnumerable<Order>> GetOrdersByDateAsync(DateTime fromDate, bool trackChanges)
+        {
+            return await _dbContext.Orders
+                .Where(order => order.OrderDate >= fromDate)
+                .OrderByDescending(order => order.OrderDate)
+                .ToListAsync();
+        }
+
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
 
+      
     }
 }

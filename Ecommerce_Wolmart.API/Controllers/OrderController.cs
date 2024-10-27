@@ -426,6 +426,48 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetListOrdersNew")]
+        public async Task<IActionResult> GetListOrdersNew([FromQuery] int days)
+        {
+            try
+            {
+                // Lấy ngày hiện tại và tính toán khoảng thời gian cho đơn hàng gần đây
+                var recentDate = DateTime.UtcNow.AddDays(-days);
+
+                var recentOrders = await _repository.Order.GetOrdersByDateAsync(recentDate, trackChanges: false);
+
+                if (recentOrders == null || !recentOrders.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy đơn hàng gần đây.",
+                        Data = null
+                    });
+                }
+
+                var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(recentOrders);
+
+                return Ok(new ApiResponse<IEnumerable<OrderDto>>
+                {
+                    Success = true,
+                    Message = "Lấy danh sách đơn hàng gần đây thành công.",
+                    Data = orderDtos
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Đã xảy ra lỗi trong GetRecentOrders: {ex.Message}");
+                return StatusCode(500, new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Đã xảy ra lỗi nội bộ.",
+                    Data = null
+                });
+            }
+        }
+
         [HttpDelete]
         [Route("DeleteOrder/{Id}")]
         public async Task<IActionResult> DeleteOrder(Guid Id)
