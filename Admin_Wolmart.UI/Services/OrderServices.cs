@@ -28,5 +28,15 @@ namespace Admin_Wolmart.UI.Services
                 Message = "Failed to retrieve orders."
             };
         }
+
+        public async Task<ApiResponse<IEnumerable<OrderDto>>> GetListOrdersNewAsync(int days)
+        {
+            var response = await _httpClient.GetAsync($"/api/Order/GetListOrdersNew?days={days}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<OrderDto>>>();
+            }
+            return null;
+        }
     }
 }

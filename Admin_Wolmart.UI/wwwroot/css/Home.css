@@ -15,3 +15,10 @@
     max-height: 325px;
     overflow-y: auto;
 }
+.scroll_recent_order {
+    overflow-y: auto;
+    max-height: 305px;
+}
+.text_10 {
+    font-size: 10px;
+}
