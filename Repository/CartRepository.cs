@@ -47,6 +47,7 @@ namespace Repository
         {
             var cartItems = await _dbContext.CartItems.Where(ci => ci.UserId == userId).ToListAsync();
             _dbContext.CartItems.RemoveRange(cartItems);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> SaveAsync()

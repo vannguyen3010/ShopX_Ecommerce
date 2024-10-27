@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using EmailService;
+using Entities.Identity;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Order;
@@ -147,17 +148,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                     ImageFilePath = item.ImageFilePath
                 }).ToList();
 
-                // Cập nhật trường BestSeller cho từng sản phẩm trong đơn hàng
-                foreach (var item in cartItems)
-                {
-                    var product = await _repository.Product.GetProductByIdAsync(item.ProductId, trackChanges: false);
-                    if(product != null)
-                    {
-                        product.BestSeller += 1; // Tăng BestSeller lên 1 cho mỗi lượt đặt hàng thành công
-                        _repository.Product.UpdateProductAsync(product);
-                    }
-                }
-
                 //Map giỏ hàng vào orderItem
                 var orderItemEntities = _mapper.Map<IEnumerable<OrderItem>>(orderItems);
 
@@ -165,10 +155,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
 
                 await _repository.Order.CreateOrderAsync(order);
-
                 await _repository.Order.SaveAsync();
-
-                var orderDto = _mapper.Map<OrderDto>(order);
 
                 //var emailContent = $@"
                 //            <h3>Đơn hàng {order.OrderCode} của bạn đã được đặt thành công!</h3>
@@ -193,6 +180,30 @@ namespace Ecommerce_Wolmart.API.Controllers
                 //await _emailSender.SendEmailAsync(message);
 
 
+                // Cập nhật trường BestSeller cho từng sản phẩm trong đơn hàng
+                foreach (var item in cartItems)
+                {
+                    var product = await _repository.Product.GetProductByIdAsync(item.ProductId, trackChanges: true);
+                    if (product != null)
+                    {
+                        if (product.StockQuantity < item.Quantity)
+                        {
+                            return BadRequest(new ApiResponse<Object>
+                            {
+                                Success = false,
+                                Message = $"Sản phẩm {product.Name} không đủ hàng tồn kho.",
+                                Data = null
+                            });
+                        }
+                        product.BestSeller += 1; // Tăng BestSeller cho sản phẩm
+
+                        product.StockQuantity -= item.Quantity;// giảm số lượng trong kho
+
+                        await _repository.Product.UpdateProductAsync(product);
+                    }
+                }
+
+                // Xoá giỏ hàng và lưu
                 await _repository.Cart.DeleteCartItemsByUserIdAsync(order.UserId);
                 await _repository.Cart.SaveAsync();
 
@@ -200,13 +211,18 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     Success = true,
                     Message = "Order created successfully.",
-                    Data = orderDto
+                    Data = _mapper.Map<OrderDto>(order)
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside BannerProduct action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
+                _logger.LogError($"Đã xảy ra lỗi trong CreateOrder: {ex.Message}");
+                return StatusCode(500, new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Đã xảy ra lỗi nội bộ.",
+                    Data = null
+                });
             }
         }
 

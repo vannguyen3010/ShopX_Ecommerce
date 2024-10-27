@@ -412,5 +412,34 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpDelete]
+        [Route("DeleteCartItemsByUserId/{userId}")]
+        public async Task<IActionResult> DeleteCartItemsByUserId(string userId)
+        {
+            try
+            {
+                await _repository.Cart.DeleteCartItemsByUserIdAsync(userId);
+                await _repository.Cart.SaveAsync();
+
+                return Ok(new ApiResponse<object>
+                {
+                    Success = true,
+                    Message = "Cart items deleted successfully.",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in DeleteCartItemsByUserId: {ex.Message}");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Internal server error.",
+                    Data = null
+                });
+            }
+        }
+
     }
 }
