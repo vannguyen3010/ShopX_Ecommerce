@@ -61,12 +61,23 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 //Kiểm id Danh muc có hợp lệ ko 
                 var category = await _repository.CategoryIntroduce.GetCategoryIntroduceByIdAsync(createIntroduceDto.CategoryId, trackChanges: false);
-                if (category == null)
+                if (category == null && category.Status == false)
                 {
                     return NotFound(new ApiResponse<Object>
                     {
                         Success = false,
                         Message = $"Không tìm thấy id này",
+                        Data = null
+                    });
+                }
+
+                //Kiểm id Danh muc có hợp lệ ko
+                if (category.Status == false)
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Danh mục này đang trạng thái khóa",
                         Data = null
                     });
                 }
