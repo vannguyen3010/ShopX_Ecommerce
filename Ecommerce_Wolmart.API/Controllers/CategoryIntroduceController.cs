@@ -30,11 +30,11 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateCategory")]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryIntroDto introduce)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryIntroDto request)
         {
             try
             {
-                if(introduce == null)
+                if(request == null)
                 {
                     _logger.LogError("CategoryIntroduce object sent from client is null.");
                     return NotFound(new ApiResponse<Object>
@@ -44,6 +44,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid CategoryIntroduce object sent from client.");
@@ -56,7 +57,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 //Kiểm tra tên danh muc đã có chưa
-                var existingCategory = await _repository.CategoryIntroduce.GetCategoryIntroduceByNameAsync(introduce.Name!);
+                var existingCategory = await _repository.CategoryIntroduce.GetCategoryIntroduceByNameAsync(request.Name!);
                 if (existingCategory != null)
                 {
                     _logger.LogError($"Name with name '{existingCategory.Name}' already exists.");
@@ -68,12 +69,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                var categoryEntity = _mapper.Map<CategoryIntroduce>(introduce);
+                var categoryEntity = _mapper.Map<CategoryIntroduce>(request);
 
                 categoryEntity.Status = true;
 
                 // Tạo NameSlug từ Title
-                categoryEntity.NameSlug = SlugGenerator.GenerateSlug(introduce.Name);
+                categoryEntity.NameSlug = SlugGenerator.GenerateSlug(request.Name);
 
                 // Lưu danh mục vào cơ sở dữ liệu
                 await _repository.CategoryIntroduce.CreateCategoryIntroduceAsync(categoryEntity, trackChanges: false);
