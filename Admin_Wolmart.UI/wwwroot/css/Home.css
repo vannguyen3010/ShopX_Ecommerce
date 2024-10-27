@@ -11,3 +11,7 @@
     -webkit-box-orient: vertical;
     white-space: normal;
 }
+.card_body_scroll {
+    max-height: 325px;
+    overflow-y: auto;
+}

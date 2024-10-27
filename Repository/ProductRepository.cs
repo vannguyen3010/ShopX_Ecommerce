@@ -234,7 +234,7 @@ namespace Repository
 
         public async Task<IEnumerable<Product>> GetBestSellingProductsAsync(int bestSeller, bool trackChanges)
         {
-            return await FindByCondition(x => x.BestSeller == bestSeller, trackChanges).ToListAsync();
+            return await FindByCondition(x => x.BestSeller >= bestSeller, trackChanges).ToListAsync();
         }
 
         public async Task SaveAsync()
