@@ -187,7 +187,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
         }
 
-
         [HttpGet]
         [Route("GetAllBannerPosition")]
         public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition? position)
@@ -370,5 +369,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
             };
         }
+
     }
 }

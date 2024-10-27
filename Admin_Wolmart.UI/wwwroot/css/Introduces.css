@@ -1,0 +1,10 @@
+﻿.dataTables_filter {
+    color: #333;
+    margin-bottom: 25px;
+    text-align: right;
+}
+.dataTables_filter label input{
+    border: 1px solid #ced4da;
+    padding: 8px 38px 8px 10px;
+    margin-left: 13px;
+}
