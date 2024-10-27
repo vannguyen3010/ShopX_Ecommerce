@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using Contracts;
 using EmailService;
-using Entities.Identity;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using QRCoder;
 using Shared.DTO.Order;
 using Shared.DTO.Response;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -348,7 +351,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 var orders = await _repository.Order.GetAllOrdersAsync(type, trackChanges: false);
                 if (orders == null || !orders.Any())
-                { 
+                {
                     return NotFound(new ApiResponse<Object>
                     {
                         Success = false,
@@ -510,6 +513,29 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
 
+        //private string GeneratePaymentQR(string bankName, string accountNumber, int totalAmount, string orderCode)
+        //{
+        //    // Nội dung của mã QR chứa thông tin thanh toán
+        //    string qrContent = $"Bank: {bankName}\nAccount: {accountNumber}\nAmount: {totalAmount}\nOrderCode: {orderCode}";
+
+        //    using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+        //    {
+        //        // Tạo mã QR từ nội dung
+        //        QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
+        //        var qrCode = new QRCode(qrCodeData);
+        //        using (Bitmap qrCodeImage = qrCode.GetGraphic(20))
+        //        {
+        //            // Chuyển mã QR thành chuỗi Base64 để có thể trả về cho client
+        //            using (MemoryStream ms = new MemoryStream())
+        //            {
+        //                qrCodeImage.Save(ms, ImageFormat.Png);
+        //                byte[] byteImage = ms.ToArray();
+        //                return Convert.ToBase64String(byteImage);
+        //            }
+        //        }
+        //    }
+        //}
+
         // Phương thức tạo mã đơn hàng
         private string GenerateOrderCode()
         {
@@ -518,5 +544,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return $"OD{orderCode}";
         }
+
+      
     }
 }

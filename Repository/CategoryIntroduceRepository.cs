@@ -20,15 +20,16 @@ namespace Repository
             return categoryIntroduce;
         }
 
-
         public async Task<IEnumerable<CategoryIntroduce>> GetAllCategoryIntroduceAsync(bool trackChanges)
         {
             return await _dbContext.CategoryIntroduces
+                    .Where(x => x.Status == true)
                     .Include(x => x.Introduces)
                     .OrderBy(x => x.Id)
                     .ToListAsync();
 
         }
+
 
         public async Task<CategoryIntroduce> GetCategoryIntroduceByIdAsync(Guid categoryId, bool trackChanges)
         {
@@ -40,6 +41,7 @@ namespace Repository
         {
             Delete(categoryIntroduce);
         }
+
         public void UpdateCategory(CategoryIntroduce categoryIntroduce)
         {
             Update(categoryIntroduce);
@@ -53,15 +55,37 @@ namespace Repository
               .Where(x => x.Name.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
               .FirstOrDefaultAsync();
         }
+
         public async Task<bool> HasIntroducesInCategoryAsync(Guid categoryId)
         {
             return await _dbContext.Introduces.AnyAsync(x => x.CategoryId == categoryId);
+        }
+
+        public async Task<(IEnumerable<CategoryIntroduce> CategoryIntroduce, int Total)> GetAllCategoryIntroducePagitionAsync(int pageNumber, int pageSize, string? keyword = null)
+        {
+            var categoryQuery = _dbContext.CategoryIntroduces.AsQueryable();
+
+            //Lọc theo keyword nếu có
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                string lowerCaseName = keyword.ToLower();
+
+                categoryQuery = categoryQuery.Where(x => x.Name.ToLower().Contains(lowerCaseName));
+            }
+
+            int totalCount = await categoryQuery.CountAsync();
+
+            //Phân trang
+            var categories = await categoryQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (categories, totalCount);
         }
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
         }
-
-    
     }
 }
