@@ -107,10 +107,14 @@
                                     {
                                         @foreach (var item in cateIntroduces)
                                         {
-                                            <a onclick="window.location.href='/gioi-thieu?c=@item.Id';" class="tag position-relative cursor">
-                                                @item.Name
-                                                <span class="category_introduce_item position-absolute">@item.TotalCount</span>
-                                            </a>
+                                            @if(item.Status == true)
+                                            {
+                                                <a onclick="window.location.href='/gioi-thieu?c=@item.Id';" class="tag position-relative cursor">
+                                                    @item.Name
+                                                    <span class="category_introduce_item position-absolute">@item.TotalCount</span>
+                                                </a>
+                                            }
+                                          
                                         }
                                     }
                                 </div>
@@ -188,7 +192,7 @@
     private string? keyword = null;
 
     private int currentPage = 1;
-    private int pageSize = 1;
+    private int pageSize = 5;
     private int totalPages;
     private int totalCount;
     private int? type;
@@ -239,6 +243,7 @@
     private async Task LoadListCategoryIntroduces()
     {
         cateIntroduces = await BaseServices.GetAllCategoryIntroduces();
+
     }
     private async Task LoadListIntroducesIshot()
     {

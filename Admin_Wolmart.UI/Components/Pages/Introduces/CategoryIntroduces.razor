@@ -14,15 +14,21 @@
                 <div class="card card-table">
                     <div class="card-body">
                         <div class="title-header option-title">
-                            <h5>All Category</h5>
+                            <h5>Tất cả Danh mục bài viết</h5>
                             <form class="d-inline-flex">
                                 <a href="add-new-category.html"
                                    class="align-items-center btn btn-theme d-flex">
-                                    <i data-feather="plus-square"></i>Add New
+                                    <i data-feather="plus-square"></i>Thêm mới Danh mục
                                 </a>
                             </form>
                         </div>
-                        <div class="dataTables_filter"><label>Search:<input type="search" class="" placeholder="" aria-controls="table_id"></label></div>
+                        <form @onsubmit="HandleSearch" class="dataTables_filter">
+                            <label>
+                                <button class="btn_search" type="submit"> <i class="fa-solid fa-magnifying-glass"></i></button>
+                                <input type="search" class="" placeholder="Nhập tìm kiếm" aria-controls="table_id" @bind="keyword" required>
+                            </label>
+                        </form>
+
                         <div class="table-responsive category-table">
                             <div>
                                 <table class="table all-package theme-table" id="table_id">
@@ -37,50 +43,56 @@
                                     </thead>
 
                                     <tbody>
-                                        @if(cateIntroduces != null && cateIntroduces.Any())
+                                        @if (cateIntroduces != null && cateIntroduces.Any())
                                         {
                                             @foreach (var item in cateIntroduces)
                                             {
-                                                <tr>
-                                                    <td>@item.Name</td>
+                                                <tr >
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.Name</td>
 
-                                                    <td>@item.CreatedAt.ToString("dd-MM-yyyy")</td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.CreatedAt.ToString("dd-MM-yyyy")</td>
 
-                                                    @if(item.Status == true)
+                                                    @if (item.Status)
                                                     {
-                                                        <td>Mở <i class="fas fa-circle text-success" style="font-size: 10px"></i></td>
+                                                       <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" checked @onchange="@(e => UpdateStatus(item.Id, false))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                       </td>
                                                     }
                                                     else
                                                     {
-                                                        <td>Khóa <i class="fas fa-circle text-danger" style="font-size: 10px"></i></td>
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" @onchange="@(e => UpdateStatus(item.Id, true))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+                                                       
                                                     }
 
-                                                    <td>@item.TotalCount</td>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.TotalCount</td>
 
                                                     <td>
                                                         <ul>
                                                             <li>
-                                                                <a href="order-detail.html">
-                                                                    <i class="ri-eye-line"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="javascript:void(0)">
+                                                                <a class="@(item.Status ? "" : "table_row_disabled")" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal" @onclick="() => OpenModal(item.Id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>
 
-                                                            <li>
+                                                            <li class="@(item.Status ? "" : "table_row_disabled")">
                                                                 <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle">
+                                                                   data-bs-target="#exampleModalToggle" @onclick="() => DeleteCategory(item.Id)">
                                                                     <i class="ri-delete-bin-line"></i>
                                                                 </a>
                                                             </li>
                                                         </ul>
                                                     </td>
                                                 </tr>
-                                                
+
                                             }
                                         }
 
@@ -112,9 +124,9 @@
                                             </li>
                                         </ul>
                                     </nav>
-                                
+
                                 }
-                              
+
                             </div>
                         </div>
                     </div>
@@ -122,17 +134,50 @@
             </div>
         </div>
     </div>
+
+    @if (isModalOpen && category != null)
+    {
+        <div class="modal fade show d-block" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top: 30%;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Thông tin danh mục</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-4 row align-items-center">
+                            <label class="form-label-title col-sm-3 mb-0">Tên Danh mục</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" type="text" @bind="category.Name" placeholder="Tên Danh mục">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @onclick="UpdateCategory">Cập nhật</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
 
 
 @code {
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
+    private CategoryIntroduceDto category;
 
     private string? keyword = null;
     private int currentPage = 1;
     private int pageSize = 10;
     private int totalPages;
     private int totalCount;
+
+    private bool isModalOpen = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -145,6 +190,50 @@
         }
 
         await LoadListCategoriesIntroduces();
+    }
+
+    private void OpenModals()
+    {
+        isModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+    }
+    private async Task OpenModal(Guid categoryId)
+    {
+        var response = await _cateIntroduceServices.GetCategoryIntroduceByIdAsync(categoryId);
+
+        if(response != null && response.Success)
+        {
+            category = response.Data;
+        }
+        isModalOpen = true;
+    }
+
+    private async Task UpdateCategory()
+    {
+        if(category != null)
+        {
+            var updateDto = new UpdateCateIntroDto { Name = category.Name };
+            bool isSuccess = await _cateIntroduceServices.UpdateCategoryIntroduceAsync(category.Id, updateDto);
+            if (isSuccess)
+            {
+                await LoadListCategoriesIntroduces();
+                CloseModal();
+            }
+        }
+    }
+
+    private async Task DeleteCategory(Guid id)
+    {
+        bool isDeleted = await _cateIntroduceServices.DeleteCategoryIntroduceAsync(id);
+
+        if (isDeleted)
+        {
+            await LoadListCategoriesIntroduces();
+        }
     }
 
     private async Task LoadListCategoriesIntroduces()
@@ -200,16 +289,37 @@
         await UpdateUrlAndLoadCategories();
     }
 
+    private async Task HandleSearch()
+    {
+        currentPage = 1;
+        await UpdateUrlAndLoadCategories();
+
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _cateIntroduceServices.UpdateCategoryIntroduceStatusAsync(id, status);
+
+        if (isSuccess)
+        {
+            await LoadListCategoriesIntroduces();
+        }
+    }
 
     // Cập nhật URL và gọi API để lấy danh sách sản phẩm
     private async Task UpdateUrlAndLoadCategories()
     {
         // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
         var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = currentPage.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+        if (!string.IsNullOrEmpty(keyword))
         {
-            ["pageNumber"] = currentPage.ToString(),
-            ["pageSize"] = pageSize.ToString()
-        };
+            queryParameters["keyword"] = keyword;
+        }
 
         // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("danh-muc-gioi-thieu", queryParameters!);

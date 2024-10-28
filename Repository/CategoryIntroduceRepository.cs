@@ -23,11 +23,9 @@ namespace Repository
         public async Task<IEnumerable<CategoryIntroduce>> GetAllCategoryIntroduceAsync(bool trackChanges)
         {
             return await _dbContext.CategoryIntroduces
-                    .Where(x => x.Status == true)
                     .Include(x => x.Introduces)
                     .OrderBy(x => x.Id)
                     .ToListAsync();
-
         }
 
 
@@ -77,6 +75,7 @@ namespace Repository
 
             //Phân trang
             var categories = await categoryQuery
+                .Include(x => x.Introduces)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
