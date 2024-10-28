@@ -6,7 +6,7 @@ namespace Contracts
     {
         Task<Introduce> CreateIntroduceAsync(Introduce introduce);
         Task<(IEnumerable<Introduce> Introduces, int Total)> GetListIntroduceAsync(int pageNumber, int pageSize, Guid? categoryId = null, string ? keyword = null, int? type = null);
-        Task<(IEnumerable<Introduce> Introducdes, int Total)> GetAllIntroducePaginationAsync(int pageNumber, int pageSize);
+        Task<(IEnumerable<Introduce> Introducdes, int Total)> GetAllIntroducePaginationAsync(int pageNumber, int pageSize, string? keyword = null);
         Task<IEnumerable<Introduce>> GetAllIntroduceIsHotAsync();
         Task<Introduce> GetIntroduceByIdAsync(Guid introduceId, bool trackChanges);
         Task<Introduce> GetIntroduceByNameAsync(string name);

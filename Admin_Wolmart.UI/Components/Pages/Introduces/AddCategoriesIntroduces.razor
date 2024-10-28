@@ -1,8 +1,11 @@
 ﻿@page "/add-categories-introduces"
+@inject IToastService toastService
+
 
 @inject CateIntroduceServices _cateIntroduceServices
 
 @rendermode InteractiveServer
+
 
 <div class="page-body">
 
@@ -43,7 +46,9 @@
             </div>
         </div>
     </div>
+
 </div>
+
 
 @code{
     private CreateCategoryIntroDto newCategories = new CreateCategoryIntroDto();
@@ -53,12 +58,8 @@
         var result = await _cateIntroduceServices.CreateCategoriesAsync(newCategories);
         if (result)
         {
+            toastService.ShowSuccess("Tạo thành công!");
             newCategories.Name = "";
         }
     }
-    // private void ClearForm()
-    // {
-    //     newCategories = new CreateCategoryIntroDto();
-    //     newCategories.Name = string.Empty;
-    // }
 }

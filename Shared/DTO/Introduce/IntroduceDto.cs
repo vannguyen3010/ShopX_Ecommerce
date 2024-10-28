@@ -13,6 +13,7 @@ namespace Shared.DTO.Introduce
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
         public bool IsHot { get; set; }
+        public bool Status { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }

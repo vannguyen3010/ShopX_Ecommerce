@@ -100,6 +100,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 // Gán CategoryName cho Introduce entity
                 introduceEntity.CategoryName = category.Name;
+                introduceEntity.Status = true;
 
                 // Tạo NameSlug từ Title
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(createIntroduceDto.Name);
@@ -173,12 +174,12 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllIntroducesPagination")]
-        public async Task<IActionResult> GetAllIntroducesPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAllIntroducesPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? keyword = null)
         {
             try
             {
                 // Gọi repository để lấy sản phẩm với phân trang
-                var (introduces, totalCount) = await _repository.Introduce.GetAllIntroducePaginationAsync(pageNumber, pageSize);
+                var (introduces, totalCount) = await _repository.Introduce.GetAllIntroducePaginationAsync(pageNumber, pageSize, keyword);
 
                 if (!introduces.Any())
                 {
@@ -375,6 +376,53 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(updateIntroduceDto.Name);
                 introduceEntity.UpdatedAt = DateTime.UtcNow;
+
+                _repository.Introduce.UpdateIntroduce(introduceEntity);
+                _repository.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside UpdateIntroduce action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateIntroduceStatus/{id}")]
+        public async Task<IActionResult> UpdateIntroduceStatus(Guid id, [FromQuery] UpdateIntroduceStatusDto updateIntroduceDto)
+        {
+            try
+            {
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Introduce object sent from client.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Invalid Introduce object sent from client!",
+                        Data = null
+                    });
+                }
+
+                var introduceEntity = await _repository.Introduce.GetIntroduceByIdAsync(id, trackChanges: true);
+                if (introduceEntity == null)
+                {
+                    _logger.LogError($"Introduce with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Introduce with id: {id}, hasn't been found in db!",
+                        Data = null
+                    });
+                }
+
+                _mapper.Map(updateIntroduceDto, introduceEntity);
+
+                introduceEntity.Status = updateIntroduceDto.Status;
 
                 _repository.Introduce.UpdateIntroduce(introduceEntity);
                 _repository.SaveAsync();
