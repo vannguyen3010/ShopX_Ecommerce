@@ -1,4 +1,8 @@
-﻿.custom_pagination_ul {
+﻿.cursor{
+    cursor: pointer;
+}
+
+.custom_pagination_ul {
     gap: 10px;
 }
 .custom_left {
