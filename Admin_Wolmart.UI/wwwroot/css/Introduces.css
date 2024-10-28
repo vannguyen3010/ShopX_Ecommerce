@@ -12,4 +12,24 @@
     border: none;
     background: #fff;
 }
-
+.search_box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+}
+.search_input {
+    font-family: 'Public Sans' !important;
+    border: none;
+    outline: none;
+    padding: 5px;
+    width: 200px;
+}
+.search_button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    padding: 0 10px;
+}
