@@ -1,0 +1,19 @@
+﻿.custom_pagination_ul {
+    gap: 10px;
+}
+.custom_left {
+    border-radius: 5px;
+    overflow: hidden;
+}
+.custom_left a{
+    border: unset;
+}
+.custom_left_item {
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.custom_left_item:hover a{
+    border-color: #0da487;
+    color: #fff;
+}
