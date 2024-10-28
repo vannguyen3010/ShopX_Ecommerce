@@ -213,7 +213,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateCategoryIntroduce/{Id}")]
-        public async Task<IActionResult> UpdateCategoryIntroduce(Guid Id, [FromQuery] UpdateCateIntroDto introduce)
+        public async Task<IActionResult> UpdateCategoryIntroduce(Guid Id, [FromBody] UpdateCateIntroDto introduce)
         {
             try
             {

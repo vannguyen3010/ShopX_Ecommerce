@@ -51,7 +51,7 @@
                                 </a>
                             </NotAuthorized>
                         </AuthorizeView>
-                      
+
                     </div>
                 </div>
             </div>
@@ -147,9 +147,12 @@
                                     {
                                         @foreach (var item in cateIntroduces)
                                         {
-                                            <li>
-                                                <a class="cursor" onclick="window.location.href='/gioi-thieu?c=@item.Id';">@item.Name</a>
-                                            </li>
+                                            @if (item.Status == true)
+                                            {
+                                                <li>
+                                                    <a class="cursor" onclick="window.location.href='/gioi-thieu?c=@item.Id';">@item.Name</a>
+                                                </li>
+                                            }
                                         }
                                     }
 
