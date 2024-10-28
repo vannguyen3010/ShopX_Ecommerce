@@ -188,7 +188,7 @@
     private string? keyword = null;
 
     private int currentPage = 1;
-    private int pageSize = 5;
+    private int pageSize = 1;
     private int totalPages;
     private int totalCount;
     private int? type;
@@ -201,7 +201,6 @@
         if (query.TryGetValue("c", out var cId))
         {
             categoryId = new Guid(cId!);
-            // await LoadListIntroduces();
 
             var categoryResponse = await IntroduceServices.GetIntroduceByCategoryId(categoryId.Value);
 

@@ -20,6 +20,7 @@ builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<AccountServices>();
 builder.Services.AddScoped<OrderServices>();
 builder.Services.AddScoped<CateProductServices>();
+builder.Services.AddScoped<CateIntroduceServices>();
 
 
 // Add services to the container.
