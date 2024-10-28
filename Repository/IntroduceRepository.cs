@@ -21,9 +21,17 @@ namespace Repository
             return introduce;
         }
 
-        public async Task<(IEnumerable<Introduce> Introducdes, int Total)> GetAllIntroducePaginationAsync(int pageNumber, int pageSize)
+        public async Task<(IEnumerable<Introduce> Introducdes, int Total)> GetAllIntroducePaginationAsync(int pageNumber, int pageSize, string? keyword = null)
         {
             var introducesQuery = _dbContext.Introduces.AsQueryable();
+
+            //Lọc theo keyword nếu có
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                string lowerCaseName = keyword.ToLower();
+
+                introducesQuery = introducesQuery.Where(x => x.Name.ToLower().Contains(lowerCaseName));
+            }
 
             // Đếm tổng số lượng sản phẩm
             int totalCount = await introducesQuery.CountAsync();

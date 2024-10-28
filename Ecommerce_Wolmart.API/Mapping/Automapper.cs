@@ -78,6 +78,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<UpdateIntroduceDto, Introduce>();
 
+            CreateMap<UpdateIntroduceStatusDto, Introduce>();
+
             CreateMap<CreateCategoryIntroDto, CategoryIntroduce>();
 
             CreateMap<CategoryIntroduce, CategoryIntroduceDto>()

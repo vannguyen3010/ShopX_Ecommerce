@@ -1,6 +1,7 @@
 ﻿using Admin_Wolmart.UI;
 using Admin_Wolmart.UI.Services;
 using Blazored.LocalStorage;
+using Blazored.Toast;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,7 @@ builder.Services.AddScoped<AccountServices>();
 builder.Services.AddScoped<OrderServices>();
 builder.Services.AddScoped<CateProductServices>();
 builder.Services.AddScoped<CateIntroduceServices>();
+builder.Services.AddScoped<IntroduceServices>();
 
 
 // Add services to the container.
@@ -29,6 +31,7 @@ builder.Services.AddRazorComponents()
 
 
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazoredToast();
 
 var app = builder.Build();
 

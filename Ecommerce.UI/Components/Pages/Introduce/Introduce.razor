@@ -18,30 +18,34 @@
                     {
                         @foreach (var item in introduces)
                         {
-                            <article class="post post-list post-listing mb-md-10 mb-6 pb-2 overlay-zoom mb-4">
-                                <figure class="post-media br-sm">
-                                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">
-                                        <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" width="930"
-                                             height="500" alt="blog" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                                    </a>
-                                </figure>
-                                <div class="post-details">
-                                    <div class="post-cats text-primary">
-                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.CategoryName</a>
+                            @if(item.Status == true)
+                            {
+                                <article class="post post-list post-listing mb-md-10 mb-6 pb-2 overlay-zoom mb-4">
+                                    <figure class="post-media br-sm">
+                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">
+                                            <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" width="930"
+                                                 height="500" alt="blog" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                        </a>
+                                    </figure>
+                                    <div class="post-details">
+                                        <div class="post-cats text-primary">
+                                            <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.CategoryName</a>
+                                        </div>
+                                        <h4 class="post-title">
+                                            <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
+                                        </h4>
+                                        <div class="post-content no_wrap_3">
+                                            <p>
+                                                @item.Description
+                                            </p>
+                                        </div>
+                                        <div class="post-meta">
+                                            <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                        </div>
                                     </div>
-                                    <h4 class="post-title">
-                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
-                                    </h4>
-                                    <div class="post-content no_wrap_3">
-                                        <p>
-                                            @item.Description
-                                        </p>
-                                    </div>
-                                    <div class="post-meta">
-                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
-                                    </div>
-                                </div>
-                            </article>
+                                </article>
+                            }
+                          
                         }
                     }
                     else

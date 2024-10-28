@@ -14,6 +14,8 @@ namespace Entities.Models
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
         public string Description { get; set; }
+        public bool Status { get; set; }
+
         [NotMapped] // Sẽ ko lưu ảnh vào Db
         public IFormFile File { get; set; }
         public string FileName { get; set; }
