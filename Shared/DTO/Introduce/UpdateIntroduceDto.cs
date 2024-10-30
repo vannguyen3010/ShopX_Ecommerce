@@ -7,6 +7,7 @@ namespace Shared.DTO.Introduce
     {
         [Required]
         public string Name { get; set; }
+        public Guid CategoryId { get; set; }
         public string Description { get; set; }
         [Required]
         public IFormFile File { get; set; }
