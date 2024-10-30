@@ -142,14 +142,15 @@ namespace Ecommerce.UI.Services
             return null;
         }
 
-        public async Task<ApiResponse<ProductDto>> GetAllProductBestSeller(int bestSeller = 1)
+        public async Task<ApiResponse<IEnumerable<ProductDto>>> GetAllProductBestSeller(int bestSeller)
         {
-            var response = await _httpClient.GetAsync($"/api/Product/GetAllBestSellingProducts?=bestSeller{bestSeller}");
-            if(response.IsSuccessStatusCode)
+            var response = await _httpClient.GetAsync($"/api/Product/GetAllBestSellingProducts?bestSeller={bestSeller}");
+            if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<ApiResponse<ProductDto>>();
+                return await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<ProductDto>>>();
             }
             return null;
         }
+
     }
 }

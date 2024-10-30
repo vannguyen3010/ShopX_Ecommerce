@@ -53,19 +53,19 @@
                                         {
                                             @foreach (var item in cateIntroduces)
                                             {
-                                                <tr >
+                                                <tr>
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.Name</td>
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.CreatedAt.ToString("dd-MM-yyyy")</td>
 
                                                     @if (item.Status)
                                                     {
-                                                       <td>
+                                                        <td>
                                                             <label class="switch">
                                                                 <input type="checkbox" checked @onchange="@(e => UpdateStatus(item.Id, false))">
                                                                 <span class="slider round"></span>
                                                             </label>
-                                                       </td>
+                                                        </td>
                                                     }
                                                     else
                                                     {
@@ -75,7 +75,7 @@
                                                                 <span class="slider round"></span>
                                                             </label>
                                                         </td>
-                                                       
+
                                                     }
 
 
@@ -118,7 +118,7 @@
                                             {
                                                 var pageNumber = i;
 
-                                                <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")">
+                                                <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
                                                     <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
                                                 </li>
                                             }
@@ -143,8 +143,8 @@
 
     @if (isModalOpen && category != null)
     {
-        <div class="modal fade show d-block" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="top: 30%;">
-            <div class="modal-dialog">
+        <div class="modal fade show d-block" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Thông tin danh mục</h5>
@@ -166,11 +166,6 @@
         </div>
     }
 </div>
-
-<!-- Button trigger modal -->
-
-
-<!-- Modal -->
 
 
 @code {
@@ -211,7 +206,7 @@
     {
         var response = await _cateIntroduceServices.GetCategoryIntroduceByIdAsync(categoryId);
 
-        if(response != null && response.Success)
+        if (response != null && response.Success)
         {
             category = response.Data;
         }
@@ -220,7 +215,7 @@
 
     private async Task UpdateCategory()
     {
-        if(category != null)
+        if (category != null)
         {
             var updateDto = new UpdateCateIntroDto { Name = category.Name };
             bool isSuccess = await _cateIntroduceServices.UpdateCategoryIntroduceAsync(category.Id, updateDto);

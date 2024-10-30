@@ -372,6 +372,18 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+                var category = await _repository.CategoryIntroduce.GetCategoryIntroduceByIdAsync(updateIntroduceDto.CategoryId, trackChanges: false);
+                if (category == null)
+                {
+                    _logger.LogError($"Introduce category with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Introduce category with id: {id}, hasn't been found in db!",
+                        Data = null
+                    });
+                }
+
                 _mapper.Map(updateIntroduceDto, introduceEntity);
 
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(updateIntroduceDto.Name);

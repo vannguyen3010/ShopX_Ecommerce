@@ -1,0 +1,75 @@
+﻿@inject ProductServices _productServices
+
+@code {
+    private IEnumerable<ProductDto> productBestSeller;
+    private int bestSeller = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListProductBestSellers();
+    }
+    private async Task LoadListProductBestSellers()
+    {
+        var response = await _productServices.GetAllProductBestSeller(bestSeller);
+        if (response != null && response.Success)
+        {
+            productBestSeller = response.Data;
+        }
+        else
+        {
+            productBestSeller = new List<ProductDto>();
+        }
+    }
+}
+
+<h2 class="title justify-content-center ls-normal mb-4 mt-10 pt-1 appear-animate">
+    Sản Phẩm Bán chạy
+</h2>
+
+<div class="tab-content product-wrapper appear-animate">
+    <div class="tab-pane active pt-4" id="tab1-1">
+        <div class="row cols-xl-5 cols-md-4 cols-sm-3 cols-2">
+            @if (productBestSeller != null && productBestSeller.Any())
+            {
+                @foreach (var item in productBestSeller.Take(10))
+                {
+                    <div class="product-wrap">
+                        <div class="product text-center">
+                            <figure class="product-media spotlight">
+                                <a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="cursor">
+                                    <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product"
+                                         width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                </a>
+                            </figure>
+                            <div class="product-label-group">
+                                <label class="product-label label-new">Đã bán @item.BestSeller</label>
+                                @* <label class="product-label label-discount">SL @item.StockQuantity</label> *@
+                            </div>
+                            <div class="product-details">
+                                <h4 class="product-name"><a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="cursor">@item.Name</a></h4>
+                                <div class="ratings-container">
+                                    <div class="star-rating">
+                                        @for (int i = 0; i < item.Rating; i++)
+                                        {
+                                            <span class="fa fa-star checked"></span>
+                                        }
+                                        @for (int i = 0; i < (5 - item.Rating); i++)
+                                        {
+                                            <span class="fa fa-star"></span>
+                                        }
+
+                                    </div>
+                                </div>
+                                <div class="product-price">
+                                    <del class="old-price">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></del>
+                                    <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>
