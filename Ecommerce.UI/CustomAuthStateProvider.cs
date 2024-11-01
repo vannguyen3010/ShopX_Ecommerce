@@ -52,7 +52,12 @@ namespace Ecommerce.UI
 
             return state;
         }
-
+        public void NotifyUserAuthentication(string token)
+        {
+            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt"));
+            var state = new AuthenticationState(authenticatedUser);
+            NotifyAuthenticationStateChanged(Task.FromResult(state));
+        }
 
         private byte[] ParseBase64WithoutPadding(string base64)
         {

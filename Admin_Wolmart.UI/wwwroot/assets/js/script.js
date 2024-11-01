@@ -25,6 +25,7 @@
                 $(this).toggleClass("hoverd");
             }
         );
+
         $(window).on('scroll', function () {
             if ($(this).scrollTop() < 600) {
                 $(".sidebar-list").removeClass("hoverd");
@@ -35,6 +36,7 @@
     /*----------------------------------------
      passward show hide
      ----------------------------------------*/
+
     $('.show-hide').show();
     $('.show-hide span').addClass('show');
 
@@ -55,6 +57,7 @@
     /*=====================
       02. Background Image js
       ==========================*/
+
     $(".bg-center").parent().addClass('b-center');
     $(".bg-img-cover").parent().addClass('bg-size');
     $('.bg-img-cover').each(function () {
@@ -126,6 +129,7 @@
         localStorage.setItem('body', 'dark-only');
 
         ////ck editor body dark
+
         $('.cke_wysiwyg_frame').contents().find('body').each(function () {
             if ($("body").hasClass("dark-only")) {
                 $('.cke_wysiwyg_frame').contents().find('body').css({
@@ -199,7 +203,6 @@ function toggleFullScreen() {
         });
 })(jQuery, window, document);
 
-
 // active link
 
 $(".chat-menu-icons .toogle-bar").click(function () {
@@ -227,6 +230,7 @@ $(".bg-right").parent().addClass('b-right'); // background postion right
 $(".bg_size_content").parent().addClass('b_size_content'); // background size content
 $(".bg-img").parent().addClass('bg-size');
 $(".bg-img.blur-up").parent().addClass('blur-up lazyload');
+
 $('.bg-img').each(function () {
 
     var el = $(this),
@@ -243,6 +247,7 @@ $('.bg-img').each(function () {
     });
     el.hide();
 });
+
 $("#dropdownMenuButton").click(function () {
     $(".dropdown-menu").toggleClass("show")
 });

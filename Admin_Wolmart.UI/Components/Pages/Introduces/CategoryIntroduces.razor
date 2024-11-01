@@ -1,10 +1,8 @@
 ﻿@page "/danh-muc-gioi-thieu"
-
 @inject CateIntroduceServices _cateIntroduceServices
-
 @rendermode InteractiveServer
-
 <link href="css/introduces.css" rel="stylesheet" />
+
 
 
 <div class="page-body">
@@ -62,7 +60,7 @@
                                                     {
                                                         <td>
                                                             <label class="switch">
-                                                                <input type="checkbox" checked @onchange="@(e => UpdateStatus(item.Id, false))">
+                                                                <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
                                                                 <span class="slider round"></span>
                                                             </label>
                                                         </td>
@@ -71,7 +69,7 @@
                                                     {
                                                         <td>
                                                             <label class="switch">
-                                                                <input type="checkbox" @onchange="@(e => UpdateStatus(item.Id, true))">
+                                                                <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
                                                                 <span class="slider round"></span>
                                                             </label>
                                                         </td>
@@ -168,7 +166,8 @@
 </div>
 
 
-@code {
+@code 
+{
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
     private CategoryIntroduceDto category;
 
@@ -210,6 +209,7 @@
         {
             category = response.Data;
         }
+
         isModalOpen = true;
     }
 
