@@ -323,10 +323,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await AuthenticationStateProvider.GetAuthenticationStateAsync();
         cateProducts = await BaseServices.GetAllCategoryProducts();
         cateIntroduces = await BaseServices.GetAllCategoryIntroduces();
     }
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Gọi để lấy trạng thái xác thực
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            // Cập nhật trạng thái UI của bạn nếu cần thiết
+            StateHasChanged(); // Gọi lại để cập nhật UI
+        }
+    }
     private async Task Logout()
     {
         await LocalStorage.RemoveItemAsync("authToken");

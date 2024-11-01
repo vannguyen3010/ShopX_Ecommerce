@@ -20,15 +20,17 @@ namespace Ecommerce_Wolmart.API.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
+        private readonly IConfiguration _configuration;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
         private readonly JwtHandler _jwtHandler;
         private readonly IEmailSender _emailSender;
         private readonly ILoggerManager _logger;
 
-        public AccountsController(UserManager<User> userManager, IRepositoryManager repository, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender, ILoggerManager logger)
+        public AccountsController(UserManager<User> userManager, IConfiguration configuration, IRepositoryManager repository, IMapper mapper, JwtHandler jwtHandler, IEmailSender emailSender, ILoggerManager logger)
         {
             _userManager = userManager;
+            _configuration = configuration;
             _repository = repository;
             _mapper = mapper;
             _jwtHandler = jwtHandler;
@@ -215,19 +217,25 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
             // Kiểm tra refresh token
-            var refreshToken = await _repository.AccountRepository.GetByTokenAsync(refreshTokenDto.RefreshTokens);
-            if (refreshToken == null || refreshToken.IsUsed || refreshToken.Expiration < DateTime.UtcNow)
+            var existingRefreshToken = await _repository.AccountRepository.GetByTokenAsync(refreshTokenDto.RefreshTokens);
+            if (existingRefreshToken == null || existingRefreshToken.IsUsed || existingRefreshToken.Expiration < DateTime.UtcNow)
             {
                 return Unauthorized(new ApiResponse<Object>
                 {
                     Success = false,
-                    Message = "Refresh token không hợp lệ.",
+                    Message = "Refresh token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.",
                     Data = null
                 });
             }
 
+            // Đánh dấu refresh token hiện tại là đã sử dụng và thu hồi
+            existingRefreshToken.IsUsed = true;
+            existingRefreshToken.IsRevoked = true;
+            await _repository.AccountRepository.UpdateAsync(existingRefreshToken);
+
+
             // Lấy user dựa trên refresh token
-            var user = await _userManager.FindByIdAsync(refreshToken.UserId);
+            var user = await _userManager.FindByIdAsync(existingRefreshToken.UserId);
             if (user == null)
             {
                 return NotFound(new ApiResponse<Object>
@@ -237,20 +245,27 @@ namespace Ecommerce_Wolmart.API.Controllers
                     Data = null
                 });
             }
+            int refreshTokenExpiryInDays = int.Parse(_configuration["JWTSettings:refreshTokenExpiryInDays"]);
 
-            // Tạo Token mới
-            var newToken = await _jwtHandler.GenerateToken(user);
-            
-            refreshToken.RefreshTokens = GenerateRefreshToken();
-            refreshToken.Expiration = DateTime.UtcNow.AddDays(7); // Cập nhật thời gian hết hạn
-            refreshToken.IsUsed = false; // Đánh dấu là chưa sử dụng
-            refreshToken.IsRevoked = false;// Đánh dấu là chưa bị thu hồi
+            // Tạo Token và Refresh Token mới
+            var newAccessToken = await _jwtHandler.GenerateToken(user);
+            var newRefreshToken = new RefreshToken
+            {
+                RefreshTokens = GenerateRefreshToken(),
+                Expiration = DateTime.UtcNow.AddDays(refreshTokenExpiryInDays),
+                IsUsed = false,
+                IsRevoked = false,
+                UserId = user.Id
+            };
 
-            // Đánh dấu refresh token là đã sử dụng
-            refreshToken.IsUsed = true;
-            await _repository.AccountRepository.UpdateAsync(refreshToken);
+            await _repository.AccountRepository.UpdateAsync(existingRefreshToken);
 
-            return Ok(new RefreshTokenResponseDto { IsAuthSuccessful = true, Token = newToken, RefreshTokens = refreshToken.RefreshTokens});
+            return Ok(new RefreshTokenResponseDto
+            {
+                IsAuthSuccessful = true,
+                Token = newAccessToken,
+                RefreshTokens = newRefreshToken.RefreshTokens
+            });
 
         }
 

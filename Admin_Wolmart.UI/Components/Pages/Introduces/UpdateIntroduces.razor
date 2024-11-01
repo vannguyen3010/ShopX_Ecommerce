@@ -1,0 +1,199 @@
+﻿@page "/cap-nhat-bai-viet/{id:guid}"
+
+@inject IntroduceServices _introduceServices
+@inject CateIntroduceServices _cateIntroduceServices
+
+@rendermode InteractiveServer
+
+@if(introduces != null)
+{
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-8 m-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header-2">
+                                        <h5>Cập nhật bài viết</h5>
+                                    </div>
+
+                                    <form class="theme-form theme-form-2 mega-form">
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">
+                                                Tên bài viết
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"
+                                                       placeholder="@introduces.Name" @bind="introduces.Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">
+                                                Danh mục bài viết
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <select class="js-example-basic-single w-100" name="state" @bind="introduces.CategoryId">
+                                                    @if (cateIntroduces != null && cateIntroduces.Any())
+                                                    {
+                                                        @foreach (var item in cateIntroduces)
+                                                        {
+                                                            <option value="@item.Id" selected="@(introduces != null && item.Id == introduces.CategoryId ? "selected" : null)">
+                                                                @item.Name
+                                                            </option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">Nổi bật</label>
+                                            <div class="col-sm-9">
+                                                <select class="js-example-basic-single w-100">  @* @bind="introduces.IsHot" *@
+                                                    <option value="true" selected="@(introduces.IsHot == true)">Có</option>
+                                                    <option value="false" selected="@(introduces.IsHot == false)">Không</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row">
+                                            <label class="form-label-title col-sm-3 mb-0">
+                                                Mổ tả
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="3" @bind="introduces.Description">@introduces.Description</textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">Ảnh</label>
+                                            <div class="table-image" style="width: 200px;">
+                                                <img src="@(string.IsNullOrEmpty(introduces.FilePath) ? "/Img_Dev/banner.png" : introduces.FilePath)" class="img-fluid"
+                                                     alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-3 col-form-label form-label-title">
+                                               
+                                            </label>
+                                            <InputFile class="table-image col-6" OnChange="OnFileSelected" />
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" @onclick="UpdateIntroduce">Cập nhật</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code{
+    [Parameter]
+    public Guid id { get; set; }
+    private IEnumerable<CategoryIntroduceDto> cateIntroduces;
+    private IntroduceDto introduces;
+
+    private string? keyword = null;
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    private IBrowserFile selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetIntroduceById();
+        await LoadListCategoriesIntroduces();
+    }
+
+    private async Task GetIntroduceById()
+    {
+        var response = await _introduceServices.GetIntroduceByIdAsync(id);
+
+        if (response != null && response.Success)
+        {
+            introduces = response.Data;
+        }
+        else
+        {
+            introduces = new IntroduceDto();
+        }
+    }
+
+    private async Task LoadListCategoriesIntroduces()
+    {
+        var response = await _cateIntroduceServices.GetAllCategoryPaginationAsync(currentPage, pageSize, keyword);
+
+        if (response != null && response.Success)
+        {
+            cateIntroduces = response.Data.categories;
+        }
+        else
+        {
+            cateIntroduces = new List<CategoryIntroduceDto>();
+        }
+
+    }
+
+    private async Task UpdateIntroduce()
+    {
+        if (introduces != null)
+        {
+            if (selectedFile == null || selectedFile.Size == 0)
+            {
+                return;
+            }
+            var updateDto = new UpdateIntroduceDto
+                {
+                    Name = introduces.Name,
+                    CategoryId = introduces.CategoryId,
+                    Description = introduces.Description,
+                    File = await ConvertToFile(selectedFile),
+                    IsHot = introduces.IsHot
+                };
+
+            bool isSuccess = await _introduceServices.UpdateIntroduceAsync(introduces.id, updateDto);
+            if (isSuccess)
+            {
+                NavigationManager.NavigateTo("/quan-ly-bai-viet", forceLoad: false);
+            }
+        }
+    }
+
+    private async Task<IFormFile> ConvertToFile(IBrowserFile browserFile)
+    {
+        if (browserFile == null || browserFile.Size == 0)
+        {
+            return null;
+        }
+        try
+        {
+            var stream = browserFile.OpenReadStream(20 * 1024 * 1024);
+            var formFile = new FormFile(stream, 0, browserFile.Size, browserFile.Name, browserFile.Name)
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = browserFile.ContentType
+                };
+            return formFile;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+}

@@ -37,11 +37,13 @@
                         <div>
                             <div class="table-responsive">
                                 <table class="table all-package theme-table table-product" id="table_id">
+
                                     <thead>
                                         <tr>
                                             <th>Ảnh</th>
                                             <th>Tên bài viết</th>
                                             <th>Danh mục</th>
+                                            <th>Nổi bật</th>
                                             <th>Ngày đăng</th>
                                             <th>Trang thái</th>
                                             <th>Hành động</th>
@@ -65,13 +67,27 @@
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.CategoryName</td>
 
+                                                    @if(@item.IsHot == true)
+                                                    {
+                                                        <td class="@(item.Status ? "" : "table_row_disabled")">
+                                                            Có
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="@(item.Status ? "" : "table_row_disabled")">
+                                                            Không
+                                                        </td>
+                                                    }
+
+
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.CreatedAt.ToString("dd-MM-yyyy")</td>
 
                                                     @if(item.Status == true)
                                                     {
                                                         <td>
                                                             <label class="switch">
-                                                                <input type="checkbox" checked @onchange="@(e => UpdateStatus(item.id, false))">
+                                                                <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.id, false))">
                                                                 <span class="slider round"></span>
                                                             </label>
                                                         </td>
@@ -80,7 +96,7 @@
                                                     {
                                                         <td>
                                                             <label class="switch">
-                                                                <input type="checkbox" @onchange="@(e => UpdateStatus(item.id, true))">
+                                                                <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.id, true))">
                                                                 <span class="slider round"></span>
                                                             </label>
                                                         </td>
@@ -89,14 +105,14 @@
 
                                                     <td>
                                                         <ul>
-                                                            <li>
+                                                          @*   <li>
                                                                 <a class="cursor" data-bs-toggle="modal" data-bs-target="#exampleModal" @onclick="() => GetIntroduceById(item.id)">
                                                                     <i class="ri-eye-line"></i>
                                                                 </a>
-                                                            </li>
+                                                            </li> *@
 
                                                             <li>
-                                                                <a href="javascript:void(0)" @onclick="() => OpenModal(item.id)">
+                                                                <a href="javascript:void(0)" @onclick="() => GetIntroductOrUpdate(item.id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>
@@ -152,218 +168,15 @@
     </div>
 </div>
 
-<!-- Modal -->
-@if(introduces != null)
-{
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card-header-2">
-                                <h5>Thông tin Bài viết</h5>
-                            </div>
-
-                            <form class="theme-form theme-form-2 mega-form">
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Ảnh
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <div class="table-image" style="width: 90px;height: 70px;">
-                                            <img src="@(string.IsNullOrEmpty(introduces.FilePath) ? "/Img_Dev/banner.png" : introduces.FilePath)" class="img-fluid"
-                                                 alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Tên
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <input class="form-control" type="text"
-                                               placeholder="@introduces.Name">
-                                    </div>
-                                </div>
-
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Danh mục
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <input class="form-control" type="text"
-                                               placeholder="@introduces.CategoryName">
-                                    </div>
-                                </div>
-                             
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Nổi bật
-                                    </label>
-                                    <div class="col-sm-9">
-                                        @if (@introduces.IsHot == true)
-                                        {
-                                            <input class="form-control" type="text"
-                                            placeholder="Có">
-                                        }
-                                        else
-                                        {
-                                            <input class="form-control" type="text"
-                                                   placeholder="Không">
-                                        }
-                                    </div>
-                                </div>
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Ngày đăng
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <input class="form-control" type="text"
-                                               placeholder="@introduces.CreatedAt.ToString("dd-MM-yyyy")">
-                                    </div>
-                                </div>
-                                <div class="mb-4 row align-items-center">
-                                    <label class="col-sm-3 col-form-label form-label-title">Trạng thái</label>
-                                    <div class="col-sm-9">
-                                        @if(introduces.Status == true)
-                                        {
-                                            <input class="form-control" type="text"
-                                            placeholder="Mở">
-                                        }
-                                        else
-                                        {
-                                            <input class="form-control" type="text"
-                                                   placeholder="Tắt">
-                                        }
-                                    </div>
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">
-                                            Mô tả
-                                        </label>
-                                        <div class="col-sm-9 mt-4">
-                                            <textarea class="form-control" rows="4">@introduces.Description</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-@if (isModalOpen && introduces != null)
-{
-    <div class="modal fade show d-block" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" @onclick="CloseModal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card-header-2">
-                                <h5>Thông tin bài viết</h5>
-                            </div>
-
-                            <form class="theme-form theme-form-2 mega-form">
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Tên
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <input class="form-control" type="text"
-                                               placeholder="Product Name" @bind="introduces.Name">
-                                    </div>
-                                </div>
-
-                                <div class="mb-4 row align-items-center">
-                                    <label class="col-sm-3 col-form-label form-label-title">
-                                        Danh mục
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <select class="js-example-basic-single w-100" @bind="introduces.CategoryId">
-                                            <option value="@introduces.CategoryId" disabled>@introduces.CategoryName</option>
-                                            @if(cateIntroduces != null && cateIntroduces.Any())
-                                            {
-                                                @foreach (var item in cateIntroduces)
-                                                {
-                                                    <option value ="@item.Id">@item.Name</option>
-                                                }
-                                            }
-                                          
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="mb-4 row align-items-center">
-                                    <label class="col-sm-3 col-form-label form-label-title">Nổi bật</label>
-                                    <div class="col-sm-9">
-                                        <select class="js-example-basic-single w-100" @bind="introduces.IsHot">
-                                            <option value="true">Có</option>
-                                            <option value="false">Không</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Mô tả
-                                    </label>
-                                    <div class="col-sm-9 mt-4">
-                                        <textarea class="form-control" rows="4" @bind="introduces.Description"></textarea>
-                                    </div>
-                                </div>
-                                <div class="mb-4 row align-items-center">
-                                    <label class="form-label-title col-sm-3 mb-0">
-                                        Ảnh
-                                    </label>
-                                    <div class="col-sm-9">
-                                        <div class="table-image" style="width: 90px;height: 70px;">
-                                            <img src="@(string.IsNullOrEmpty(introduces.FilePath) ? "/Img_Dev/banner.png" : introduces.FilePath)" class="img-fluid"
-                                                 alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                                        </div>
-                                        <InputFile OnChange="OnFileSelected" />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="CloseModal" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary" @onclick="UpdateIntroduce">Cập nhật</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
 
 @code{
-    private IEnumerable<CategoryIntroduceDto> cateIntroduces;
     private IEnumerable<IntroduceDto> listIntroduces;
-    private UpdateIntroduceDto updateIntroduce = new UpdateIntroduceDto();
-    private IntroduceDto introduces;
 
     private string? keyword = null;
     private int currentPage = 1;
     private int pageSize = 10;
     private int totalPages;
     private int totalCount;
-    private IBrowserFile selectedFile;
-    // private IBrowserFile selectedFile;
-
-    private bool isModalOpen = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -376,9 +189,7 @@
         }
 
         await LoadListIntroduces();
-        await LoadListCategoriesIntroduces();
     }
-
 
     private async Task LoadListIntroduces()
     {
@@ -398,7 +209,6 @@
 
     private async Task ChangePage(int page)
     {
-        // Chỉ cập nhật nếu page khác currentPage
         if (page != currentPage)
         {
             currentPage = page;
@@ -459,111 +269,13 @@
         }
     }
 
-    private async Task GetIntroduceById(Guid id)
+    private async Task GetIntroductOrUpdate(Guid id)
     {
-        var response = await _introduceServices.GetIntroduceByIdAsync(id);
-
-        if (response != null && response.Success)
-        {
-            introduces = response.Data;
-        }
+        NavigationManager.NavigateTo($"/cap-nhat-bai-viet/{id}", forceLoad: true);
     }
 
-    private async Task UpdateIntroduce()
-    {
-        if (introduces != null)
-        {
-            if (selectedFile == null || selectedFile.Size == 0) // Kiểm tra này cần ở đây
-            {
-                // Xử lý trường hợp không có tệp được chọn
-                return;
-            }
-            var updateDto = new UpdateIntroduceDto
-            {
-                Name = introduces.Name,
-                CategoryId = introduces.CategoryId,
-                Description = introduces.Description,
-                File = await ConvertToFile(selectedFile),
-                IsHot = introduces.IsHot
-            };
-
-            bool isSuccess = await _introduceServices.UpdateIntroduceAsync(introduces.id, updateDto);
-            if (isSuccess)
-            {
-                await LoadListIntroduces();
-                CloseModal();
-            }
-        }
-    }
-
-    private void OpenModals()
-    {
-        isModalOpen = true;
-    }
-
-    private void CloseModal()
-    {
-        isModalOpen = false;
-    }
-
-    private async Task OpenModal(Guid id)
-    {
-        var response = await _introduceServices.GetIntroduceByIdAsync(id);
-
-        if (response != null && response.Success)
-        {
-            introduces = response.Data;
-        }
-        isModalOpen = true;
-    }
-
-    private async Task LoadListCategoriesIntroduces()
-    {
-        var response = await _cateIntroduceServices.GetAllCategoryPaginationAsync(currentPage, pageSize, keyword);
-
-        if (response != null && response.Success)
-        {
-            cateIntroduces = response.Data.categories;
-        }
-        else
-        {
-            cateIntroduces = new List<CategoryIntroduceDto>();
-        }
-
-    }
-
-    private async Task<IFormFile> ConvertToFile(IBrowserFile browserFile)
-    {
-        if (browserFile == null || browserFile.Size == 0)
-        {
-            return null;
-        }
-        try
-        {
-            var stream = browserFile.OpenReadStream(20 * 1024 * 1024); // Giới hạn kích thước file
-            var formFile = new FormFile(stream, 0, browserFile.Size, browserFile.Name, browserFile.Name)
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentType = browserFile.ContentType
-                };
-            return formFile;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-       
-    }
-
-    private void OnFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
-    }
-
-    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
     private async Task UpdateUrlAndLoadIntroduces()
     {
-        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
         var queryParameters = new Dictionary<string, string>
             {
                 ["pageNumber"] = currentPage.ToString(),
@@ -575,12 +287,10 @@
             queryParameters["keyword"] = keyword;
         }
 
-        // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("quan-ly-bai-viet", queryParameters!);
 
         NavigationManager.NavigateTo(newUrl, forceLoad: false);
 
-        // Tải lại danh sách sản phẩm
         await LoadListIntroduces();
     }
 }
