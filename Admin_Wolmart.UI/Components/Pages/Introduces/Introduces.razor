@@ -60,6 +60,8 @@
                                                         <div class="table-image">
                                                             <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" class="img-fluid"
                                                                  alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                          @*   <img src="@(CommonConstants.imgUrl + (string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath))"
+                                                                 alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';"> *@
                                                         </div>
                                                     </td>
 

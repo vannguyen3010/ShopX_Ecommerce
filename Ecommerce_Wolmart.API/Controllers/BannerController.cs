@@ -176,16 +176,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        private async Task<string> SaveFileAndGetRelativePath(IFormFile file, string fileName, string fileExtension)
-        {
-            var relativeFilePath = Path.Combine("Img_Repository/Banner", $"{fileName}{fileExtension}");
-            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
-
-            using var stream = new FileStream(localFilePath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
-        }
+  
 
         [HttpGet]
         [Route("GetAllBannerPosition")]
@@ -356,6 +347,17 @@ namespace Ecommerce_Wolmart.API.Controllers
             var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Banner/{fileName}{fileExtension}";
 
             return urlFilePath;
+        }
+
+        private async Task<string> SaveFileAndGetRelativePath(IFormFile file, string fileName, string fileExtension)
+        {
+            var relativeFilePath = Path.Combine("Img_Repository/Banner", $"{fileName}{fileExtension}");
+            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+
+            using var stream = new FileStream(localFilePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
         }
 
         private BannerPosition MapBannerPosition(BannerPosition position)
