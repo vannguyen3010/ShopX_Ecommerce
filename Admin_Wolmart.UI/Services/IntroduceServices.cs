@@ -88,6 +88,11 @@ namespace Admin_Wolmart.UI.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> CreateIntroduceAsync(CreateIntroduceDto request)
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/Introduce/CreateIntroduce", request);
+            return response.IsSuccessStatusCode;
+        }
 
     }
 }

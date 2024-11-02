@@ -101,6 +101,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Gán CategoryName cho Introduce entity
                 introduceEntity.CategoryName = category.Name;
                 introduceEntity.Status = true;
+                introduceEntity.FileDescription = createIntroduceDto.Name;
+                introduceEntity.FileName = createIntroduceDto.Name;
 
                 // Tạo NameSlug từ Title
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(createIntroduceDto.Name);
@@ -552,5 +554,15 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return urlFilePath;
         }
+        //private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
+        //{
+        //    var relativeFilePath = Path.Combine("Img_Repository/Introduce", $"{fileName}{fileExtension}");
+        //    var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+
+        //    using var stream = new FileStream(localFilePath, FileMode.Create);
+        //    await file.CopyToAsync(stream);
+
+        //    return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
+        //}
     }
 }
