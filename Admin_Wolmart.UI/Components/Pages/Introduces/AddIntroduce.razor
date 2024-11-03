@@ -2,6 +2,8 @@
 @inject CateIntroduceServices _cateIntroduceServices
 @inject IntroduceServices _introduceServices
 
+<script src="assets/js/ckeditor.js"></script>
+<script src="assets/js/ckeditor-custom.js"></script>
 
 @rendermode InteractiveServer
 
@@ -24,7 +26,7 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <input class="form-control" type="text" @bind="introduce.Name"
-                                                   placeholder="Nhập tên" >
+                                                   placeholder="Nhập tên" required>
                                         </div>
                                     </div>
 
@@ -33,7 +35,7 @@
                                             Danh mục bài viết
                                         </label>
                                         <div class="col-sm-9">
-                                            <select class="js-example-basic-single w-100" name="state" @bind="introduce.CategoryId">
+                                            <select class="js-example-basic-single w-100" name="state" @bind="introduce.CategoryId" required>
                                                 @if (cateIntroduces != null && cateIntroduces.Any())
                                                 {
                                                     <option selected disabled>Chọn danh mục</option>
@@ -49,19 +51,10 @@
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-sm-3 col-form-label form-label-title">Nổi bật</label>
                                         <div class="col-sm-9">
-                                            <select class="js-example-basic-single w-100" name="state" @bind="introduce.IsHot">
-                                                <option disabled selected>Chọn nổi bật</option>
-                                                <option value="true">Có</option>
-                                                <option value="false">Không</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4 row">
-                                        <label class="form-label-title col-sm-3 mb-0">
-                                            Mổ tả
-                                        </label>
-                                        <div class="col-sm-9">
-                                            <textarea class="form-control" @bind="introduce.Description" rows="3"></textarea>
+                                            <label class="switch">
+                                                <input type="checkbox" @bind="@introduce.IsHot" />
+                                                <span class="slider round"></span>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -74,13 +67,28 @@
 
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-3 col-form-label form-label-title"></label>
-                                        <InputFile class="form-control form-choose" OnChange="OnFileSelected" />
+                                        <InputFile class="form-control form-choose" OnChange="OnFileSelected" accept=".jpg,.jpeg,.png" required />
                                     </div>
 
+                                    <div class="mb-4 row">
+                                        <label class="form-label-title col-sm-3 mb-0">
+                                            Mô tả
+                                        </label>
+                                     @*    <div class="col-sm-9">
+                                            <div @bind="introduce.Description" id="editor"></div>
+                                        </div> *@
+                                        <div class="col-sm-9">
+                                            <textarea class="form-control" @bind="introduce.Description" rows="3"></textarea>
+                                        </div>
+                                    </div>
 
                                     <div class="modal-footer">
                                         <button type="submit" class="btn btn-primary">Thêm</button>
                                     </div>
+                                    @if (!string.IsNullOrEmpty(message))
+                                    {
+                                        <div class="alert alert-success mt-4">@message</div>
+                                    }
                                 </form>
                             </div>
                         </div>
@@ -97,11 +105,16 @@
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
     private CreateIntroduceDto introduce = new CreateIntroduceDto();
 
-    private string imagePreviewUrl;
+    private string imagePreviewUrl = "/img_dev/datanull.png";
 
     private string? keyword = null;
     private int currentPage = 1;
     private int pageSize = 10;
+
+    private IBrowserFile? selectedFile;
+
+    private string message;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -122,62 +135,26 @@
         }
 
     }
-
-    // Xử lý chọn file và hiển thị preview ảnh
-    private async Task OnFileSelected(InputFileChangeEventArgs e)
-    {
-        var files = e.GetMultipleFiles(); // Lấy danh sách file đã chọn
-
-        foreach (var file in files)
-        {
-            // Lấy tên file và kích thước file
-            var fileName = file.Name;
-
-            // Hiển thị file (nếu bạn muốn preview ảnh)
-            var buffer = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(buffer);
-            var imageBase64 = Convert.ToBase64String(buffer);
-            // Gán chuỗi base64 vào một biến để hiển thị trong img tag
-            imagePreviewUrl = $"data:image/png;base64,{imageBase64}";
-
-            // Xác định ContentDisposition và ContentType
-            var contentDisposition = $"form-data; name=\"file\"; filename=\"{fileName}\"";
-            var contentType = file.ContentType;
-
-            // Chuyển đổi IBrowserFile thành IFormFile
-            using (var stream = new MemoryStream(buffer))
-            {
-                introduce.File = new FormFile(stream, 0, stream.Length, "file", fileName)
-                {
-                    Headers = new HeaderDictionary(),
-                    ContentDisposition = contentDisposition,
-                    ContentType = contentType
-                };
-            }
-        }
-    }
-
-    private async Task<string> GetImagePreviewUrl(IBrowserFile file)
-    {
-        var resizedFile = await file.RequestImageFileAsync("image/png", 200, 200);
-        var buffer = new byte[resizedFile.Size];
-        await resizedFile.OpenReadStream().ReadAsync(buffer);
-        return $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
-    }
-
     private async Task HandleSubmit()
     {
-        if (string.IsNullOrWhiteSpace(introduce.Name) || introduce.File == null)
-        {
-            return;
-        }
-
-        var success = await _introduceServices.CreateIntroduceAsync(introduce);
-
+        var success = await _introduceServices.CreateIntroduceAsync(introduce, selectedFile);
         if (success)
         {
             introduce = new CreateIntroduceDto();
-            imagePreviewUrl = null;
+            imagePreviewUrl = "/img_dev/datanull.png";
+            message = "Tại bài viết thành công";
         }
+        else
+        {
+            message = "Tại bài viết thất bại";
+        }
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        var buffer = new byte[selectedFile.Size];
+        await selectedFile.OpenReadStream(10485760).ReadAsync(buffer);
+        imagePreviewUrl = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
     }
 }

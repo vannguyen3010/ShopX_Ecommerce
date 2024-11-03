@@ -88,11 +88,28 @@ namespace Admin_Wolmart.UI.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> CreateIntroduceAsync(CreateIntroduceDto request)
+        public async Task<bool> CreateIntroduceAsync(CreateIntroduceDto introduce, IBrowserFile? file)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/Introduce/CreateIntroduce", request);
+            var content = new MultipartFormDataContent();
+
+            // Thêm các trường khác vào form-data
+            content.Add(new StringContent(introduce.Name ?? ""), "Name");
+            content.Add(new StringContent(introduce.Description ?? ""), "Description");
+            content.Add(new StringContent(introduce.CategoryId.ToString()), "CategoryId");
+            content.Add(new StringContent(introduce.IsHot.ToString()), "IsHot");
+
+            // Đọc và thêm file vào form-data
+            if (file != null)
+            {
+                var fileContent = new StreamContent(file.OpenReadStream(10485760)); // 10MB limit
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                content.Add(fileContent, "File", file.Name);
+            }
+
+            // Gửi request
+            var response = await _httpClient.PostAsync("/api/Introduce/CreateIntroduce", content);
             return response.IsSuccessStatusCode;
         }
-
     }
 }
+
