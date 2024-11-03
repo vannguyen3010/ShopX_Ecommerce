@@ -36,8 +36,10 @@ builder.Services.AddBlazoredToast();
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 20 * 1024 * 1024; // 10 MB
+    //options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
+    options.MultipartBodyLengthLimit = 104857450;
 });
+
 
 var app = builder.Build();
 
@@ -45,7 +47,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
