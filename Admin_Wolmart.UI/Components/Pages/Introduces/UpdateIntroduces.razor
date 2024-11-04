@@ -1,5 +1,4 @@
 ﻿@page "/cap-nhat-bai-viet/{id:guid}"
-@using Admin_Wolmart.UI.ViewModel
 
 @inject IntroduceServices _introduceServices
 @inject CateIntroduceServices _cateIntroduceServices
@@ -99,7 +98,6 @@
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
     private IntroduceDto introduces;
     private IBrowserFile? selectedFile;
-    private string imagePreviewUrl;
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,6 +128,7 @@
     private async Task UpdateIntroduce()
     {
         IFormFile formFile = selectedFile != null ? new CustomFormFile(selectedFile) : null;
+
         var updateIntroduceDto = new UpdateIntroduceDto
             {
                 Name = introduces.Name,

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-
-namespace Admin_Wolmart.UI.ViewModel
+namespace Admin_Wolmart.UI.Lib
 {
     public class CustomFormFile : IFormFile
     {
