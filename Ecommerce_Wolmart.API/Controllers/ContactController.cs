@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Banner;
 using Shared.DTO.Contact;
+using Shared.DTO.Product;
+using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -44,9 +46,16 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var contactEntity = _mapper.Map<Contact>(contactDto);
 
+                contactEntity.Status = false;
+
                 await _repository.Contact.CreateContactAsync(contactEntity);
 
-                return Ok(_mapper.Map<ContactDto>(contactEntity));
+                return Ok(new ApiResponse<ContactDto>
+                {
+                    Success = true,
+                    Message = "Banner created successfully.",
+                    Data = _mapper.Map<ContactDto>(contactEntity)
+                });
             }
             catch (Exception ex)
             {
@@ -71,7 +80,12 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 _logger.LogInfo($"Returned brand with id: {id}");
 
-                return Ok(_mapper.Map<ContactDto>(contact));
+                return Ok(new ApiResponse<ContactDto>
+                {
+                    Success = true,
+                    Message = "Banner created successfully.",
+                    Data = _mapper.Map<ContactDto>(contact)
+                });
             }
             catch (Exception ex)
             {
@@ -83,15 +97,24 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllContact")]
-        public async Task<IActionResult> GetAllContact()
+        public async Task<IActionResult> GetAllContact(int type = 0, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                var contacts = await _repository.Contact.GetAllContactAsync(trackChanges: false);
+                var (contacts, totalCount) = await _repository.Contact.GetAllContactAsync(trackChanges: false, type: type, pageNumber, pageSize);
                 _logger.LogInfo("Returned all brands from database.");
 
                 var contactsResult = _mapper.Map<IEnumerable<ContactDto>>(contacts);
-                return Ok(contactsResult);
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Banner created successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        contacts = contactsResult
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -116,7 +139,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                 _repository.Contact.DeleteContact(contact);
                 _repository.SaveAsync();
 
-                return Ok(_mapper.Map<ContactDto>(contact));
+                return Ok(new ApiResponse<ContactDto>
+                {
+                    Success = true,
+                    Message = "Banner created successfully.",
+                    Data = _mapper.Map<ContactDto>(contact)
+                });
             }
             catch (Exception ex)
             {
@@ -127,7 +155,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateContact/{id}")]
-        public async Task<IActionResult> UpdateContact(Guid id, [FromBody] UpdateContactDto contactDto)
+        public async Task<IActionResult> UpdateContact(Guid id, [FromQuery] UpdateContactDto contactDto)
         {
             try
             {
@@ -155,7 +183,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                 _repository.Contact.UpdateContact(contactEntity);
                 _repository.SaveAsync();
 
-                return Ok(_mapper.Map<ContactDto>(contactEntity));
+                return NoContent();
+                //return Ok(_mapper.Map<ContactDto>(contactEntity));
+                
             }
             catch (Exception ex)
             {

@@ -4,6 +4,7 @@
 @inject CateIntroduceServices _cateIntroduceServices
 
 <link href="css/introduces.css" rel="stylesheet" />
+
 @rendermode InteractiveServer
 
 <div class="page-body">
@@ -32,7 +33,7 @@
                                         @foreach (var item in cateIntroduces)
                                         {
                                           
-                                            <option class="cursor" value="@item.Id">@item.Name</option>
+                                            <option value="@item.Id">@item.Name</option>
                                         }
                                     }
                                 </select>
