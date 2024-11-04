@@ -39,6 +39,49 @@ namespace Admin_Wolmart.UI.Services
             return null;
         }
 
+        public async Task<ApiResponse<IntroduceResponse>> GetListIntroduceTypeAsync(int pageNumber = 1, int pageSize = 10, Guid? categoryId = null, string? keyword = null, int? type = null)
+        {
+            var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = pageNumber.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+            if (categoryId.HasValue)
+            {
+                queryParameters["categoryId"] = categoryId.Value.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                queryParameters["keyword"] = keyword;
+            }
+
+            if (type.HasValue)
+            {
+                queryParameters["type"] = type.Value.ToString();  // Thêm tham số type vào chuỗi truy vấn
+            }
+
+            var query = QueryHelpers.AddQueryString("/api/Introduce/GetListIntroduce", queryParameters);
+
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<IntroduceResponse>>();
+                return result;
+            }
+            return null;
+        }
+        public async Task<ApiResponse<CategoryIntroduceDto>> GetListIntroduceByCategoryId(Guid Id)
+        {
+            var response = await _httpClient.GetAsync($"/api/CategoryIntroduce/GetCateIntroduceByCategoryId/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<CategoryIntroduceDto>>();
+            }
+            return null;
+        }
+
         public async Task<bool> UpdateIntroduceStatusAsync(Guid id, bool status)
         {
             var updateStatus = new UpdateCateIntroDtoStatus { Status = status };
@@ -68,20 +111,22 @@ namespace Admin_Wolmart.UI.Services
             return null;
         }
 
-        public async Task<bool> UpdateIntroduceAsync(Guid id, UpdateIntroduceDto request)
+        public async Task<bool> UpdateIntroduceAsync(Guid id, UpdateIntroduceDto request, IBrowserFile? file)
         {
-            var content = new MultipartFormDataContent
-            {
-                { new StringContent(request.Name), "Name" },
-                { new StringContent(request.CategoryId.ToString()), "CategoryId" },
-                { new StringContent(request.Description), "Description" },
-                { new StringContent(request.IsHot.ToString()), "IsHot" }
-            };
+            var content = new MultipartFormDataContent();
 
-            if (request.File != null)
+            // Thêm các trường khác vào form-data
+            content.Add(new StringContent(request.Name ?? ""), "Name");
+            content.Add(new StringContent(request.Description ?? ""), "Description");
+            content.Add(new StringContent(request.CategoryId.ToString()), "CategoryId");
+            content.Add(new StringContent(request.IsHot.ToString()), "IsHot");
+
+            // Đọc và thêm file vào form-data
+            if (file != null)
             {
-                var fileContent = new StreamContent(request.File.OpenReadStream());
-                content.Add(fileContent, "File", request.File.Name);
+                var fileContent = new StreamContent(file.OpenReadStream(10485760)); // 10MB limit
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                content.Add(fileContent, "File", file.Name);
             }
 
             var response = await _httpClient.PutAsync($"/api/Introduce/UpdateIntroduce/{id}", content);

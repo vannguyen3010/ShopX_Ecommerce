@@ -33,3 +33,7 @@
     color: #999;
     padding: 0 10px;
 }
+.sort_categories {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
