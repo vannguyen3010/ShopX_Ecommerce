@@ -16,5 +16,7 @@ namespace Shared.DTO.Introduce
         public bool Status { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        [NotMapped] // Để tránh EF Core theo dõi thuộc tính này
+        public IFormFile File { get; set; }
     }
 }

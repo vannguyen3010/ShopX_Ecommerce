@@ -65,19 +65,24 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-4 row align-items-center">
+                                  @*   <div class="mb-4 row align-items-center">
                                         <label class="col-3 col-form-label form-label-title"></label>
                                         <InputFile class="form-control form-choose" OnChange="OnFileSelected" accept=".jpg,.jpeg,.png" required />
+                                    </div> *@
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-3 col-form-label form-label-title">
+
+                                        </label>
+                                        <InputFile class="table-image col-5" OnChange="OnFileSelected" accept=".jpg,.jpeg,.png" required />
                                     </div>
+
 
                                     <div class="mb-4 row">
                                         <label class="form-label-title col-sm-3 mb-0">
                                             Mô tả
                                         </label>
-                                     @*    <div class="col-sm-9">
-                                            <div @bind="introduce.Description" id="editor"></div>
-                                        </div> *@
                                         <div class="col-sm-9">
+                                            @* <div @bind="introduce.Description" id="editor"></div> *@
                                             <textarea class="form-control" @bind="introduce.Description" rows="3"></textarea>
                                         </div>
                                     </div>
@@ -99,7 +104,6 @@
         </div>
     </div>
 </div>
-
 
 @code{
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
@@ -129,11 +133,6 @@
         {
             cateIntroduces = response.Data.categories;
         }
-        else
-        {
-            cateIntroduces = new List<CategoryIntroduceDto>();
-        }
-
     }
     private async Task HandleSubmit()
     {
@@ -142,11 +141,11 @@
         {
             introduce = new CreateIntroduceDto();
             imagePreviewUrl = "/img_dev/datanull.png";
-            message = "Tại bài viết thành công";
+            message = "Tạo bài viết thành công";
         }
         else
         {
-            message = "Tại bài viết thất bại";
+            message = "Tạo bài viết thất bại";
         }
     }
 

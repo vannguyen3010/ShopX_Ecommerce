@@ -153,20 +153,24 @@
                                                 <div class="widget-col">
                                                     @foreach (var item in chunk)
                                                     {
-                                                        <div class="post-widget mb-4">
-                                                            <figure class="post-media br-sm" style="flex: 0 0 35.6% !important;max-width: unset !important">
-                                                                <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" style="height: 80px"
-                                                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
-                                                            </figure>
-                                                            <div class="post-details">
-                                                                <div class="post-meta">
-                                                                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                                        @if (item.Status == true)
+                                                        {
+                                                            <div class="post-widget mb-4">
+                                                                <figure class="post-media br-sm" style="flex: 0 0 35.6% !important;max-width: unset !important">
+                                                                    <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" style="height: 80px"
+                                                                         onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                                                </figure>
+                                                                <div class="post-details">
+                                                                    <div class="post-meta">
+                                                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="post-date cursor">@item.CreatedAt.ToString("dd-MM-yyyy")</a>
+                                                                    </div>
+                                                                    <h4 class="post-title">
+                                                                        <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
+                                                                    </h4>
                                                                 </div>
-                                                                <h4 class="post-title">
-                                                                    <a onclick="window.location.href='/gioi-thieu/@item.NameSlug/@item.id';" class="cursor">@item.Name</a>
-                                                                </h4>
                                                             </div>
-                                                        </div>
+                                                        }
+                                                     
                                                     }
                                                 </div> <!-- Kết thúc slide -->
                                             }
@@ -260,7 +264,7 @@
 
         if (response != null && response.Success)
         {
-            introduces = response.Data.Introduces;
+            introduces = response.Data.Introduces.Where(x => x.Status == true).ToList();
             totalCount = response.Data.TotalCount;
             totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         }

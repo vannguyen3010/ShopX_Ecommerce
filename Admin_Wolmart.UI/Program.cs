@@ -2,21 +2,18 @@
 using Admin_Wolmart.UI.Services;
 using Blazored.LocalStorage;
 using Blazored.Toast;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Options;
+using Sitko.Blazor.CKEditor;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Đăng ký cấu hình
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
-// Khởi tạo HttpClient với URL từ appsettings.json
 builder.Services.AddScoped(sp =>
 {
     var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
     return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
 });
-
 
 builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<AccountServices>();
@@ -25,20 +22,17 @@ builder.Services.AddScoped<CateProductServices>();
 builder.Services.AddScoped<CateIntroduceServices>();
 builder.Services.AddScoped<IntroduceServices>();
 
-
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
 
-builder.Services.Configure<FormOptions>(options =>
-{
-    //options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
-    options.MultipartBodyLengthLimit = 104857450;
-});
+//builder.Services.Configure<FormOptions>(options =>
+//{
+//    //options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
+//    options.MultipartBodyLengthLimit = 104857450;
+//});
 
 
 var app = builder.Build();
@@ -51,7 +45,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 

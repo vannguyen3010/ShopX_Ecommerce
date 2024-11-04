@@ -4,7 +4,7 @@
 @inject CateIntroduceServices _cateIntroduceServices
 
 <link href="css/introduces.css" rel="stylesheet" />
-
+<link href="css/introduces.css" rel="stylesheet" />
 @rendermode InteractiveServer
 
 <div class="page-body">
@@ -18,17 +18,29 @@
                             <div class="right-options">
                                 <ul>
                                     <li>
-                                        <a class="btn btn-solid" href="add-new-product.html">Thêm bài viết</a>
+                                        <a class="btn btn-solid" onclick="window.location.href='/add-introduces'">Thêm bài viết</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                         <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
+                            @* <div class="icon-box-content">
+                            <h4 class=""> Tổng bài viết / trang: @totalIntroduces <i class="w-icon-orders"></i></h4>
+                            </div> *@
                             <div class="icon-box-content">
-                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">  <i class="w-icon-orders"></i></h4>
+                                <select class="js-example-basic-single w-100 sort_categories search_input cursor" @onchange="OnCategoryChanged" name="state" required>
+                                    <option class="cursor" value="">Chọn danh mục</option>
+                                    @if (cateIntroduces != null && cateIntroduces.Any())
+                                    {
+                                        @foreach (var item in cateIntroduces)
+                                        {
+                                            <option class="cursor" value="@item.Id">@item.Name</option>
+                                        }
+                                    }
+                                </select>
                             </div>
                             <form @onsubmit="HandleSearch" class="search_box">
-                                <input type="text" class="search_input" placeholder="Tìm kiếm đơn hàng..." @bind="keyword">
+                                <input type="text" class="search_input" placeholder="Tìm kiếm bài viết..." @bind="keyword">
                                 <button type="submit" class="search_button">
                                     <i class="fa-solid fa-magnifying-glass fs-6"></i>
                                 </button>
@@ -63,11 +75,11 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.Name</td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")no_wrap_1" style="line-height: 60px;">@item.Name</td>
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.CategoryName</td>
 
-                                                    @if(@item.IsHot == true)
+                                                    @if (@item.IsHot == true)
                                                     {
                                                         <td class="@(item.Status ? "" : "table_row_disabled")">
                                                             Có
@@ -83,7 +95,7 @@
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.CreatedAt.ToString("dd-MM-yyyy")</td>
 
-                                                    @if(item.Status == true)
+                                                    @if (item.Status == true)
                                                     {
                                                         <td>
                                                             <label class="switch">
@@ -123,40 +135,52 @@
                                                 </tr>
                                             }
                                         }
-                                       
+                                        else
+                                        {
+                                            <tr>
+                                                <td class="container">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
+                                                    </div>
+                                                    <span>Không có bài viết nào !</span>
+                                                </td>
+                                            </tr>
+
+                                        }
+
                                     </tbody>
                                 </table>
-                                @if (totalPages > 1)
-                                {
-                                    <nav class="custome-pagination mt-5">
-                                        <ul class="pagination justify-content-center custom_pagination_ul">
-                                            <li class="page-item custom_lef @(currentPage == 1 ? "disabled" : "")">
-                                                <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
-                                                    <i class="fa-solid fa-angles-left"></i>
-                                                </a>
-                                            </li>
-                                            @for (int i = 1; i <= totalPages; i++)
-                                            {
-                                                var pageNumber = i;
-
-                                                <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
-                                                    <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
-                                                </li>
-                                            }
-
-                                            <li class="page-item custom_left @(currentPage == totalPages ? "disabled" : "")">
-                                                <a class="page-link" href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
-                                                    <i class="fa-solid fa-angles-right"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-
-                                }
 
                             </div>
                         </div>
                     </div>
+                    @if (totalPages > 1)
+                    {
+                        <nav class="custome-pagination mt-5">
+                            <ul class="pagination justify-content-center custom_pagination_ul">
+                                <li class="page-item custom_lef @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                        <i class="fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    var pageNumber = i;
+
+                                    <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
+                                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                    </li>
+                                }
+
+                                <li class="page-item custom_left @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                        <i class="fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    }
                 </div>
             </div>
         </div>
@@ -164,19 +188,34 @@
 </div>
 
 
-@code{
+@code {
     private IEnumerable<IntroduceDto> listIntroduces;
+    private IEnumerable<CategoryIntroduceDto> cateIntroduces;
 
+    private Guid? categoryId = null;
     private string? keyword = null;
     private int currentPage = 1;
     private int pageSize = 10;
     private int totalPages;
     private int totalCount;
+    private int totalIntroduces;
+    private int? type = null;
 
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("c", out var cId))
+        {
+            categoryId = string.IsNullOrEmpty(cId) ? (Guid?)null : new Guid(cId);
+
+            var categoryResponse = await _introduceServices.GetListIntroduceByCategoryId(categoryId.Value);
+            if (categoryResponse != null && categoryResponse.Success)
+            {
+                var category = categoryResponse.Data;
+            }
+        }
 
         if (query.TryGetValue("pageNumber", out var page))
         {
@@ -184,11 +223,22 @@
         }
 
         await LoadListIntroduces();
+        await LoadListCategoriesIntroduces();
     }
+
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value?.ToString();
+        categoryId = string.IsNullOrEmpty(selectedValue) ? (Guid?)null : Guid.Parse(selectedValue);
+
+        currentPage = 1;
+        await UpdateUrlAndLoadIntroduces();
+    }
+
 
     private async Task LoadListIntroduces()
     {
-        var response = await _introduceServices.GetListIntroduceAsync(currentPage, pageSize, keyword);
+        var response = await _introduceServices.GetListIntroduceTypeAsync(currentPage, pageSize, categoryId, keyword, type);
 
         if (response != null && response.Success)
         {
@@ -199,6 +249,15 @@
         else
         {
             listIntroduces = new List<IntroduceDto>();
+        }
+    }
+    private async Task LoadListCategoriesIntroduces()
+    {
+        var response = await _cateIntroduceServices.GetAllCategoryPaginationAsync(currentPage, pageSize, keyword);
+
+        if (response != null && response.Success)
+        {
+            cateIntroduces = response.Data.categories;
         }
     }
 
@@ -282,9 +341,14 @@
             queryParameters["keyword"] = keyword;
         }
 
+        if (categoryId.HasValue)
+        {
+            queryParameters["c"] = categoryId.Value.ToString();
+        }
+
         var newUrl = QueryHelpers.AddQueryString("quan-ly-bai-viet", queryParameters!);
 
-        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+        NavigationManager.NavigateTo(newUrl, forceLoad: true);
 
         await LoadListIntroduces();
     }
