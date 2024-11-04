@@ -391,6 +391,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(updateIntroduceDto.Name);
                 introduceEntity.UpdatedAt = DateTime.UtcNow;
                 introduceEntity.CategoryName = category.Name;
+                introduceEntity.CategoryId = category.Id;
 
                 if (updateIntroduceDto.File != null)
                 {

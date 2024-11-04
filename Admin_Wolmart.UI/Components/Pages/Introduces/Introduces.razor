@@ -4,7 +4,6 @@
 @inject CateIntroduceServices _cateIntroduceServices
 
 <link href="css/introduces.css" rel="stylesheet" />
-<link href="css/introduces.css" rel="stylesheet" />
 @rendermode InteractiveServer
 
 <div class="page-body">
@@ -24,16 +23,15 @@
                             </div>
                         </div>
                         <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
-                            @* <div class="icon-box-content">
-                            <h4 class=""> Tổng bài viết / trang: @totalIntroduces <i class="w-icon-orders"></i></h4>
-                            </div> *@
                             <div class="icon-box-content">
                                 <select class="js-example-basic-single w-100 sort_categories search_input cursor" @onchange="OnCategoryChanged" name="state" required>
-                                    <option class="cursor" value="">Chọn danh mục</option>
+                                   
                                     @if (cateIntroduces != null && cateIntroduces.Any())
                                     {
+                                        <option class="cursor" value="">Chọn danh mục</option>
                                         @foreach (var item in cateIntroduces)
                                         {
+                                          
                                             <option class="cursor" value="@item.Id">@item.Name</option>
                                         }
                                     }
@@ -63,7 +61,18 @@
                                     </thead>
 
                                     <tbody>
-                                        @if (listIntroduces != null && listIntroduces.Any())
+                                        @if (isLoading)
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="loading-container">
+                                                        <div class="loading"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                       
+                                        else @if (listIntroduces != null && listIntroduces.Any())
                                         {
                                             @foreach (var item in listIntroduces)
                                             {
@@ -75,7 +84,7 @@
                                                         </div>
                                                     </td>
 
-                                                    <td class="@(item.Status ? "" : "table_row_disabled")no_wrap_1" style="line-height: 60px;">@item.Name</td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")no_wrap_1" style="line-height: 66px;">@item.Name</td>
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.CategoryName</td>
 
@@ -138,14 +147,13 @@
                                         else
                                         {
                                             <tr>
-                                                <td class="container">
+                                                <td colspan="7">
                                                     <div class="d-flex justify-content-center">
                                                         <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
                                                     </div>
                                                     <span>Không có bài viết nào !</span>
                                                 </td>
                                             </tr>
-
                                         }
 
                                     </tbody>
@@ -201,6 +209,8 @@
     private int totalIntroduces;
     private int? type = null;
 
+    private bool isLoading = false;
+
     protected override async Task OnInitializedAsync()
     {
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -238,6 +248,7 @@
 
     private async Task LoadListIntroduces()
     {
+        isLoading = true;
         var response = await _introduceServices.GetListIntroduceTypeAsync(currentPage, pageSize, categoryId, keyword, type);
 
         if (response != null && response.Success)
@@ -246,10 +257,9 @@
             totalCount = response.Data.TotalCount;
             totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         }
-        else
-        {
-            listIntroduces = new List<IntroduceDto>();
-        }
+
+        await Task.Delay(1000);
+        isLoading = false;
     }
     private async Task LoadListCategoriesIntroduces()
     {
@@ -348,7 +358,7 @@
 
         var newUrl = QueryHelpers.AddQueryString("quan-ly-bai-viet", queryParameters!);
 
-        NavigationManager.NavigateTo(newUrl, forceLoad: true);
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
 
         await LoadListIntroduces();
     }
