@@ -30,7 +30,9 @@ namespace Admin_Wolmart.UI.Services
             }
 
             var query = QueryHelpers.AddQueryString("/api/Introduce/GetAllIntroducesPagination", queryParameters);
+
             var response = await _httpClient.GetAsync(query);
+
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse<IntroduceResponse>>();
@@ -72,6 +74,7 @@ namespace Admin_Wolmart.UI.Services
             }
             return null;
         }
+
         public async Task<ApiResponse<CategoryIntroduceDto>> GetListIntroduceByCategoryId(Guid Id)
         {
             var response = await _httpClient.GetAsync($"/api/CategoryIntroduce/GetCateIntroduceByCategoryId/{Id}");

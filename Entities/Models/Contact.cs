@@ -12,7 +12,7 @@ namespace Entities.Models
         public string Email { get; set; }
         [Required]
         public string PhoneNumber { get; set; }
-
+        public bool? Status { get; set; }
         [Required]
         public string Message { get; set; }
 

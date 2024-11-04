@@ -21,6 +21,7 @@ builder.Services.AddScoped<OrderServices>();
 builder.Services.AddScoped<CateProductServices>();
 builder.Services.AddScoped<CateIntroduceServices>();
 builder.Services.AddScoped<IntroduceServices>();
+builder.Services.AddScoped<ContactServices>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

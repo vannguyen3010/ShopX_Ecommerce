@@ -1,0 +1,408 @@
+﻿@page "/lien-he"
+
+@inject ContactServices _contactServices
+
+<link href="css/introduces.css" rel="stylesheet" />
+
+@rendermode InteractiveServer
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <!-- Table Start -->
+                    <div class="card-body">
+                        <div class="title-header option-title">
+                            <h5>Phản hồi khách hàng</h5>
+                        </div>
+                        <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
+                            <div class="icon-box-content">
+                                <select class="js-example-basic-single w-100 sort_categories search_input cursor" name="state" @onchange="OnTypeChanged">
+                                    <option value="">Chọn</option>
+                                    <option value="0">Tất cả</option>
+                                    <option value="1">Đã xử lý</option>
+                                    <option value="2">Chưa xử lý</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="table ticket-table all-package theme-table" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <span>Tên</span>
+                                            </th>
+                                            <th>
+                                                <span>Email</span>
+                                            </th>
+                                            <th>
+                                                <span>Ngày tạo</span>
+                                            </th>
+                                            <th>
+                                                <span>Số điện thoại</span>
+                                            </th>
+                                            <th>
+                                                <span>Trạng thái</span>
+                                            </th>
+                                            <th>
+                                                <span>Nội dung</span>
+                                            </th>
+                                            <th>
+                                                <span>Hành động</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (isLoading)
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="loading-container">
+                                                        <div class="loading"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if(listContact != null && listContact.Any())
+                                        {
+                                            @foreach (var item in listContact)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <span>@item.Name</span>
+                                                    </td>
+
+                                                    <td>@item.Email</td>
+
+                                                    <td>@item.CreatedAt.ToString("dd-MM-yyyy")</td>
+
+                                                    <td>@item.PhoneNumber</td>
+
+                                                    @if(item.Status == true)
+                                                    {
+                                                        <td class="status-close">
+                                                            <span>Đã xử lý</span>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="status-danger">
+                                                            <span style="background-color: rgba(226, 36, 84, 0.15)!important;">Chưa xử lý</span>
+                                                        </td>
+                                                    }
+
+                                                    <td style="font-weight: unset!important;">@item.Message</td>
+
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <a href="javascript(void)" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @onclick="() => GetContactbyId(item.Id)">
+                                                                    <i class="ri-eye-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            @if(item.Status == true)
+                                                            {
+
+                                                                <li>
+                                                                    <label class="switch mb-0 mx-0">
+                                                                        <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li>
+                                                                    <label class="switch mb-0 mx-0">
+                                                                        <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                </li>
+                                                            }
+
+                                                        </ul>
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
+                                                    </div>
+                                                    <span>Không có bài viết nào !</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @if (totalPages > 1)
+                    {
+                        <nav class="custome-pagination mt-5">
+                            <ul class="pagination justify-content-center custom_pagination_ul">
+                                <li class="page-item custom_lef @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                        <i class="fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    var pageNumber = i;
+
+                                    <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
+                                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                    </li>
+                                }
+
+                                <li class="page-item custom_left @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                        <i class="fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* Modal *@
+@if(contact != null)
+{
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-header-2">
+                                <h5>Chi tiết phản hồi</h5>
+                            </div>
+
+                            <form class="theme-form theme-form-2 mega-form">
+                                <div class="mb-4 row align-items-center">
+                                    <label class="form-label-title col-sm-3 mb-0">
+                                        Tên
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text"
+                                               placeholder="@contact.Name">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 row align-items-center">
+                                    <label class="col-sm-3 col-form-label form-label-title">
+                                        Email
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="email"
+                                               placeholder="@contact.Email">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 row align-items-center">
+                                    <label class="col-sm-3 col-form-label form-label-title">
+                                        Ngày tạo
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text"
+                                               placeholder="@contact.CreatedAt.ToString("dd-MM-yyyy")">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 row align-items-center">
+                                    <label class="col-sm-3 col-form-label form-label-title">
+                                        Số điện thoại
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input class="form-control" type="text"
+                                               placeholder="@contact.PhoneNumber">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4 row align-items-center">
+                                    <label class="col-sm-3 col-form-label form-label-title">
+                                        Trang thái
+                                    </label>
+                                    <div class="col-sm-9">
+                                        @if(contact.Status == true)
+                                        {
+                                            <div class="status-close">
+                                                <span>Đã xử lý</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="status-danger">
+                                                <span style="background-color: rgba(226, 36, 84, 0.15)!important;">Chưa xử lý</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="mb-4 row align-items-center">
+                                    <label class="col-sm-3 col-form-label form-label-title">
+                                        Nội dung
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <textarea class="form-control" rows="3" placeholder="@contact.Message"></textarea>
+                                    </div>
+                                </div>
+                             
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code{
+    private IEnumerable<ContactDto> listContact;
+    private ContactDto contact;
+
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages;
+    private int totalCount;
+
+    private int? type = null;
+
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("pageNumber", out var page))
+        {
+            int.TryParse(page, out currentPage);
+        }
+
+        await LoadListContact();
+    }
+
+    private async Task LoadListContact()
+    {
+        isLoading = true;
+        var response = await _contactServices.GetAllContactAsync(currentPage, pageSize, type);
+
+        if (response != null && response.Success)
+        {
+            listContact = response.Data.contacts;
+            totalCount = response.Data.totalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        }
+
+        await Task.Delay(1000);
+        isLoading = false;
+    }
+
+    private async Task ChangePage(int page)
+    {
+        if (page != currentPage)
+        {
+            currentPage = page;
+            await UpdateUrlAndLoadContacts();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await UpdateUrlAndLoadContacts();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await UpdateUrlAndLoadContacts();
+        }
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse(e.Value.ToString());
+
+        currentPage = 1;
+        await UpdateUrlAndLoadContacts();
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _contactServices.UpdateContactStatusAsync(id, status);
+
+        if (isSuccess)
+        {
+            await LoadListContact();
+        }
+    }
+
+    private async Task OnTypeChanged(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value?.ToString();
+
+        type = string.IsNullOrEmpty(selectedValue) ? null : int.Parse(selectedValue);
+
+        currentPage = 1;
+        await UpdateUrlAndLoadContacts();
+    }
+
+    private async Task GetContactbyId(Guid id)
+    {
+        var response = await _contactServices.GetContactByIdAsync(id);
+
+        if (response != null && response.Success)
+        {
+            contact = response.Data;
+        }
+
+    }
+
+    private async Task UpdateUrlAndLoadContacts()
+    {
+        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
+        var queryParameters = new Dictionary<string, string>
+        {
+            ["pageNumber"] = currentPage.ToString(),
+            ["pageSize"] = pageSize.ToString()
+        };
+
+        if (type.HasValue)
+        {
+            queryParameters["c"] = type.Value.ToString();
+        }
+
+        // Tạo URL query string
+        var newUrl = QueryHelpers.AddQueryString("lien-he", queryParameters!);
+
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+
+        await LoadListContact();
+    }
+}

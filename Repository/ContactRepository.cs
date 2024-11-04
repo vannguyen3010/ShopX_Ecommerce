@@ -25,9 +25,36 @@ namespace Repository
         {
             return await FindByCondition(x => x.Id.Equals(id), trackChanges).FirstOrDefaultAsync();
         }
-        public async Task<IEnumerable<Contact>> GetAllContactAsync(bool trackChanges)
+
+        public async Task<(IEnumerable<Contact> Contacts, int Total)> GetAllContactAsync(bool trackChanges, int type, int pageNumber, int pageSize)
         {
-            return await FindAll(trackChanges).OrderBy(x => x.Name).ToListAsync();
+            var query = FindAll(trackChanges);
+
+            // Lọc theo type
+            switch(type)
+            {
+                case 1:
+                    query = query.Where(x => x.Status == true);
+                    break;
+                case 2:
+                    query = query.Where(x => x.Status == false);
+                    break;
+                case 0:
+                default:
+                    break;
+            }
+
+            // Đếm tổng số bản ghi sau khi lọc
+            int totalCount = await query.CountAsync();
+
+            // Áp dụng phân trang
+            var pagedContacts = await query
+                .OrderBy(x => x.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (pagedContacts, totalCount);
         }
 
         public void UpdateContact(Contact contact)
