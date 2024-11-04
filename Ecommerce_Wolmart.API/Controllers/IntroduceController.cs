@@ -221,7 +221,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Gọi repository để lấy sản phẩm theo CategoryId với phân trang
                 var (introduces, totalCount) = await _repository.Introduce.GetAllProductsByCategoryIdAsync(categoryId, pageNumber, pageSize);
 
                 if (!introduces.Any())
@@ -236,7 +235,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 var productDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
 
-                // Trả về response với dữ liệu phân trang và số lượng sản phẩm
                 return Ok(new
                 {
                     success = true,
