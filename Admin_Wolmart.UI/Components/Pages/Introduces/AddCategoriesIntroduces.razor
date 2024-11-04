@@ -32,9 +32,17 @@
                                     <div class="mb-4 row align-items-center">
                                         <div class="col-sm-9">
                                             <div class="dropdown icon-dropdown" style="float: right">
-                                                <button class="btn btn-success" type="submit" @onclick="SubmitCategory" style="background: #50852d !important;">
-                                                    Tạo mới
-                                                </button>
+                                                  @if (ShowLoadingButton)
+                                                  {
+                                                      <ButtonLoad></ButtonLoad>
+                                                  }
+                                                  else
+                                                  {
+                                                    <button class="btn btn-success" type="submit" @onclick="SubmitCategory" style="background: #50852d !important;">
+                                                        Tạo mới
+                                                    </button>
+                                                  }
+                                             
                                             </div>
                                         </div>
                                     </div>
@@ -51,14 +59,19 @@
 
 @code{
     private CreateCategoryIntroDto newCategories = new CreateCategoryIntroDto();
+    public bool ShowLoadingButton { get; set; } = false;
 
     private async Task SubmitCategory()
     {
+        ShowLoadingButton = true;
+
         var result = await _cateIntroduceServices.CreateCategoriesAsync(newCategories);
         if (result)
         {
             toastService.ShowSuccess("Tạo thành công!");
             newCategories.Name = "";
         }
+
+        ShowLoadingButton = false;
     }
 }
