@@ -44,10 +44,8 @@ builder.Services.AddScoped<IBannerRepository, BannerRepository>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-//builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
 
-
-//
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

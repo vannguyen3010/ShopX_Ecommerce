@@ -3,6 +3,7 @@ using Contracts;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Shared.DTO.Banner;
 using Shared.DTO.Contact;
 using Shared.DTO.Product;
@@ -17,12 +18,14 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public ContactController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper)
+        public ContactController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IMemoryCache cache)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -71,20 +74,42 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var contact = await _repository.Contact.GetContactByIdAsync(id, trackChanges: false);
-                if (contact == null)
-                {
-                    _logger.LogError($"Contact with id: {id}, hasn't been found in db.");
-                    return NotFound();
-                }
+                string cacheKey = $"Contact_{id}";
 
-                _logger.LogInfo($"Returned brand with id: {id}");
+                // Kiểm tra xem cache có tồn tại với key này không
+                if (!_cache.TryGetValue(cacheKey, out ContactDto cachedContact))
+                {
+                    var contact = await _repository.Contact.GetContactByIdAsync(id, trackChanges: false);
+                    if (contact == null)
+                    {
+                        _logger.LogError($"Contact with id: {id}, hasn't been found in db.");
+                        return NotFound(new ApiResponse<ContactDto>
+                        {
+                            Success = false,
+                            Message = "Contact not found.",
+                            Data = null
+                        });
+                    }
+
+                    cachedContact = _mapper.Map<ContactDto>(contact);
+
+                    // Cấu hình và lưu dữ liệu vào cache
+                    var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10)) // Gia hạn cache nếu được truy cập trong khoảng thời gian này
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1));  // Cache hết hạn sau 1 giờ
+
+                    _cache.Set(cacheKey, cachedContact, cacheOptions);
+                }
+                else
+                {
+                    _logger.LogInfo($"Cache hit for contact with id: {id}");
+                }
 
                 return Ok(new ApiResponse<ContactDto>
                 {
                     Success = true,
                     Message = "Banner created successfully.",
-                    Data = _mapper.Map<ContactDto>(contact)
+                    Data = cachedContact
                 });
             }
             catch (Exception ex)
