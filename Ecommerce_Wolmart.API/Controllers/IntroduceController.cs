@@ -390,6 +390,16 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 introduceEntity.NameSlug = SlugGenerator.GenerateSlug(updateIntroduceDto.Name);
                 introduceEntity.UpdatedAt = DateTime.UtcNow;
+                introduceEntity.CategoryName = category.Name;
+
+                if (updateIntroduceDto.File != null)
+                {
+                    string mainImageFileName = $"{Guid.NewGuid()}{Path.GetExtension(updateIntroduceDto.File.FileName)}";
+                    introduceEntity.FilePath = await SaveFileAndGetUrl(updateIntroduceDto.File, mainImageFileName, Path.GetExtension(updateIntroduceDto.File.FileName));
+                    introduceEntity.FileName = mainImageFileName;
+                    introduceEntity.FileExtension = Path.GetExtension(updateIntroduceDto.File.FileName);
+                    introduceEntity.FileSizeInBytes = updateIntroduceDto.File.Length;
+                }
 
                 _repository.Introduce.UpdateIntroduce(introduceEntity);
                 _repository.SaveAsync();
