@@ -15,4 +15,8 @@ namespace Shared.DTO.Banner
         [Required]
         public BannerPosition Position { get; set; }
     }
+    public class BannerUpdateStatusDto
+    {
+        public bool Status { get; set; }
+    }
 }

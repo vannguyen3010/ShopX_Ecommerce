@@ -10,6 +10,7 @@ namespace Entities.Models
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Desc { get; set; }
+        public bool Status { get; set; }
 
         [NotMapped] // Sẽ ko lưu ảnh vào Db
         public IFormFile File { get; set; }

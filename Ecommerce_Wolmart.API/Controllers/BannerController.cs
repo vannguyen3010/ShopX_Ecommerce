@@ -64,6 +64,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ Dto thành entity
                 var bannerEntity = _mapper.Map<Banner>(createbannerDto);
 
+                bannerEntity.Status = true;
+
                 // Xử lý tập tin hình ảnh
                 if (createbannerDto.File != null)
                 {
@@ -177,7 +179,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
   
-
         [HttpGet]
         [Route("GetAllBannerPosition")]
         public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition? position)
@@ -264,6 +265,32 @@ namespace Ecommerce_Wolmart.API.Controllers
                     return Ok(_mapper.Map<BannerDto>(existingBanner));
                 }
                 return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Banner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateBannerStatus/{id}")]
+        public async Task<IActionResult> UpdateBannerStatus(Guid id, [FromQuery] BannerUpdateStatusDto request)
+        {
+            try
+            {
+                var existingBanner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
+                if (existingBanner == null)
+                {
+                    return NotFound("Banner not found");
+                }
+
+                existingBanner.Status = request.Status;
+
+                await _repository.Banner.UpdateBanner(existingBanner);
+
+                return NoContent();
+
             }
             catch (Exception ex)
             {

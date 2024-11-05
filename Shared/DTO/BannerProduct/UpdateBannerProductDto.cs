@@ -11,4 +11,8 @@ namespace Shared.DTO.BannerProduct
         [Required]
         public IFormFile File { get; set; }
     }
+    public class UpdateBannerProductStatusDto
+    {
+        public bool Status { get; set; }
+    }
 }
