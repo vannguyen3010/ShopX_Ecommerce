@@ -144,40 +144,19 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Tạo key cache duy nhất dựa trên tất cả các tham số
-                string cacheKey = $"Introduce_{pageNumber}_{pageSize}_{categoryId}_{keyword}_{type}";
+                var (introduces, totalCount) = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword, type);
 
-                // Kiểm tra xem dữ liệu có tồn tại trong cache không
-                if (!_cache.TryGetValue(cacheKey, out (IEnumerable<IntroduceDto> IntroduceDtos, int TotalCount) cachedData))
+                if (!introduces.Any())
                 {
-                    var (introduces, totalCount) = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword, type);
-
-                    if (!introduces.Any())
+                    return NotFound(new ApiResponse<object>
                     {
-                        return NotFound(new ApiResponse<object>
-                        {
-                            Success = false,
-                            Message = "Không có bài viết",
-                            Data = null
-                        });
-                    }
-
-                    var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
-
-                    cachedData = (introduceDtos, totalCount);
-
-                    // Cấu hình cache với thời gian hết hạn 10 phút
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromMinutes(10))
-                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
-
-                    // Lưu dữ liệu vào cache
-                    _cache.Set(cacheKey, cachedData, cacheOptions);
+                        Success = false,
+                        Message = "Không có bài viết",
+                        Data = null
+                    });
                 }
-                else
-                {
-                    _logger.LogInfo($"Cache hit for Introduces list with key: {cacheKey}");
-                }
+
+                var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
 
                 return Ok(new
                 {
@@ -185,8 +164,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                     message = "Products retrieved successfully.",
                     data = new
                     {
-                        totalCount = cachedData.TotalCount,
-                        introduces = cachedData.IntroduceDtos
+                        totalCount,
+                        introduces = introduceDtos
                     }
                 });
             }
@@ -596,26 +575,26 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
         }
-        //private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
-        //{
-        //    var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Introduce", $"{fileName}{fileExtension}");
-
-        //    using var stream = new FileStream(localFilePath, FileMode.Create);
-        //    await file.CopyToAsync(stream);
-
-        //    var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Introduce/{fileName}{fileExtension}";
-
-        //    return urlFilePath;
-        //}
         private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         {
-            var relativeFilePath = Path.Combine("Img_Repository/Introduce", $"{fileName}{fileExtension}");
-            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Introduce", $"{fileName}{fileExtension}");
 
             using var stream = new FileStream(localFilePath, FileMode.Create);
             await file.CopyToAsync(stream);
 
-            return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
+            var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Introduce/{fileName}{fileExtension}";
+
+            return urlFilePath;
         }
+        //private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
+        //{
+        //    var relativeFilePath = Path.Combine("Img_Repository/Introduce", $"{fileName}{fileExtension}");
+        //    var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+
+        //    using var stream = new FileStream(localFilePath, FileMode.Create);
+        //    await file.CopyToAsync(stream);
+
+        //    return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
+        //}
     }
 }

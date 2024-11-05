@@ -4,7 +4,7 @@
 @code{
     private IEnumerable<OrderDto> orders;
 
-    public int days = 7;
+    public int days = 30;
 
     protected override async Task OnInitializedAsync()
     {
@@ -17,11 +17,6 @@
         if (response.Success)
         {
             orders = response.Data;
-        }
-        else
-        {
-            // Xử lý khi không có dữ liệu sản phẩm mới
-            orders = Enumerable.Empty<OrderDto>();
         }
     }
 }

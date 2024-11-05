@@ -41,7 +41,10 @@
                                                     <option selected disabled>Chọn danh mục</option>
                                                     @foreach (var item in cateIntroduces)
                                                     {
-                                                        <option value="@item.Id">@item.Name</option>
+                                                        @if(item.Status == true)
+                                                        {
+                                                            <option value="@item.Id">@item.Name</option>
+                                                        }
                                                     }
                                                 }
                                             </select>
@@ -65,10 +68,6 @@
                                         </div>
                                     </div>
 
-                                  @*   <div class="mb-4 row align-items-center">
-                                        <label class="col-3 col-form-label form-label-title"></label>
-                                        <InputFile class="form-control form-choose" OnChange="OnFileSelected" accept=".jpg,.jpeg,.png" required />
-                                    </div> *@
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-3 col-form-label form-label-title">
 

@@ -32,8 +32,10 @@
                                         <option class="cursor" value="">Chọn danh mục</option>
                                         @foreach (var item in cateIntroduces)
                                         {
-                                          
-                                            <option value="@item.Id">@item.Name</option>
+                                            @if(item.Status == true)
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+                                            }
                                         }
                                     }
                                 </select>
