@@ -61,6 +61,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ Dto thành entity
                 var bannerProductEntity = _mapper.Map<BannerProduct>(createBannerDto);
 
+                bannerProductEntity.Status = true;
+
                 // Xử lý tập tin hình ảnh
                 if (createBannerDto.File != null)
                 {
@@ -198,6 +200,51 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
 
                 _mapper.Map(updateBannerDto, bannerEntity);
+
+                _repository.BannerProduct.UpdateBannerProduct(bannerEntity);
+                _repository.SaveAsync();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside UpdateBrand action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateBannerProductStatus/{id}")]
+        public async Task<IActionResult> UpdateBannerProductStatus(Guid id, [FromForm] UpdateBannerProductStatusDto request)
+        {
+            try
+            {
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Banner object sent from client.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Invalid Banner object sent from client!",
+                        Data = null
+                    });
+                }
+
+                var bannerEntity = await _repository.BannerProduct.GetBannerProductbyId(id, trackChanges: true);
+                if (bannerEntity == null)
+                {
+                    _logger.LogError($"Banner with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Banner with id: {id}, hasn't been found in db!",
+                        Data = null
+                    });
+                }
+
+                _mapper.Map(request, bannerEntity);
 
                 _repository.BannerProduct.UpdateBannerProduct(bannerEntity);
                 _repository.SaveAsync();

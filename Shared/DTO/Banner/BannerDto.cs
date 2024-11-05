@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Desc { get; set; }
+        public bool Status { get; set; }
         public string filePath { get; set; }
         public string SecondFilePath { get; set; }
         public BannerPosition Position { get; set; }

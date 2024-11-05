@@ -8,6 +8,7 @@ namespace Shared.DTO.BannerProduct
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Desc { get; set; }
+        public bool Status { get; set; }
         public string FilePath { get; set; }
         public BannerProductWithPopupPosition Position { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
