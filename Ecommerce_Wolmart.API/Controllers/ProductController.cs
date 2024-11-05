@@ -180,40 +180,19 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Tạo key cache duy nhất dựa trên tất cả các tham số
-                string cacheKey = $"Products_{pageNumber}_{pageSize}_{minPrice}_{maxPrice}_{categoryId}_{keyword}_{type}";
+                var (products, totalCount) = await _repository.Product.GetListProducAsync(pageNumber, pageSize, minPrice, maxPrice, categoryId, keyword, type);
 
-                // Kiểm tra xem dữ liệu có tồn tại trong cache không
-                if (!_cache.TryGetValue(cacheKey, out (IEnumerable<ProductDto> ProductDtos, int TotalCount) cachedData))
+                if (!products.Any())
                 {
-                    var (products, totalCount) = await _repository.Product.GetListProducAsync(pageNumber, pageSize, minPrice, maxPrice, categoryId, keyword, type);
-
-                    if (!products.Any())
+                    return NotFound(new ApiResponse<object>
                     {
-                        return NotFound(new ApiResponse<object>
-                        {
-                            Success = false,
-                            Message = "No products found.",
-                            Data = null
-                        });
-                    }
-
-                    var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
-
-                    cachedData = (productDtos, totalCount);
-
-                    // Cấu hình cache với thời gian hết hạn 10 phút
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromMinutes(10))
-                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
-
-                    // Lưu dữ liệu vào cache
-                    _cache.Set(cacheKey, cachedData, cacheOptions);
+                        Success = false,
+                        Message = "No products found.",
+                        Data = null
+                    });
                 }
-                else
-                {
-                    _logger.LogInfo($"Cache hit for product list with key: {cacheKey}");
-                }
+
+                var productDtos = _mapper.Map<IEnumerable<ProductDto>>(products);
 
 
                 return Ok(new
@@ -222,8 +201,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                     message = "Products retrieved successfully.",
                     data = new
                     {
-                        totalCount = cachedData.TotalCount,
-                        products = cachedData.ProductDtos
+                        totalCount,
+                        products = productDtos
                     }
                 });
             }
