@@ -19,21 +19,23 @@
             {
                 @foreach (var item in leftBanners)
                 {
-
-                    <div class="banner banner-fixed br-sm">
-                        <figure>
-                            <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
-                                 width="640" height="200" style="background-color: #25282D;"
-                                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
-                        </figure>
-                        <div class="banner-content y-50 text-center">
-                            <h3 class="banner-title text-white ls-25 mb-0">@item.Title</h3>
-                            <div class="banner-price-info text-white font-weight-bold text-uppercase mb-1">
-                                @item.Desc
+                    @if (item.Status == true)
+                    {
+                        <div class="banner banner-fixed br-sm">
+                            <figure>
+                                <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
+                                     width="640" height="200" style="background-color: #25282D;"
+                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                            </figure>
+                            <div class="banner-content y-50 text-center">
+                                <h3 class="banner-title text-white ls-25 mb-0">@item.Title</h3>
+                                <div class="banner-price-info text-white font-weight-bold text-uppercase mb-1">
+                                    @item.Desc
+                                </div>
+                                <hr class="banner-divider bg-white" />
                             </div>
-                            <hr class="banner-divider bg-white" />
                         </div>
-                    </div>
+                    }
                 }
             }
             else
@@ -57,19 +59,22 @@
             {
                 @foreach (var item in rightBanners)
                 {
-                    <div class="banner banner-fixed br-sm">
-                        <figure>
-                            <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
-                                 width="640" height="200" style="background-color: #eeedec;" />
-                        </figure>
-                        <div class="banner-content y-50 text-center">
-                            <h3 class="banner-title ls-25 text-capitalize mb-0">@item.Title</h3>
-                            <div class="banner-price-info font-weight-bold text-uppercase mb-1">
-                                @item.Desc
+                    @if (item.Status == true)
+                    {
+                        <div class="banner banner-fixed br-sm">
+                            <figure>
+                                <img src="@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)" alt="Category Banner"
+                                     width="640" height="200" style="background-color: #eeedec;" />
+                            </figure>
+                            <div class="banner-content y-50 text-center">
+                                <h3 class="banner-title ls-25 text-capitalize mb-0">@item.Title</h3>
+                                <div class="banner-price-info font-weight-bold text-uppercase mb-1">
+                                    @item.Desc
+                                </div>
+                                <hr class="banner-divider bg-dark" />
                             </div>
-                            <hr class="banner-divider bg-dark" />
                         </div>
-                    </div>
+                    }
                 }
             }
             else

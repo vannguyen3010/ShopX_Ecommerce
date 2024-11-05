@@ -16,16 +16,11 @@
         <div class="container">
             <!-- Start of Shop Content -->
             <div class="shop-content row gutter-lg">
-
-
                 <aside class="sidebar shop-sidebar sticky-sidebar-wrapper sidebar-fixed">
-                    <!-- Start of Sidebar Overlay -->
                     <div class="sidebar-overlay"></div>
                     <a class="sidebar-close"><i class="close-icon"></i></a>
 
-                    <!-- Start of Sidebar Content -->
                     <div class="sidebar-content scrollable">
-                        <!-- Start of Sticky Sidebar -->
                         <div class="sticky-sidebar">
                             <div class="widget widget-collapsible">
                                 <h3 class="widget-title"><span>Danh mục</span></h3>
@@ -102,20 +97,24 @@
                         {
                             @foreach (var item in bannerProducts)
                             {
-                                <div class="shop-default-banner shop-boxed-banner banner d-flex align-items-center mb-6 br-xs"
-                                     style="background-image: url('@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)'); background-color: #494844;"
-                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                                    <div class="banner-content">
-                                        <h4 class="banner-subtitle font-weight-normal text-uppercase text-white ls-normal">
-                                            @item.Title
-                                        </h4>
-                                        <h3 class="banner-title text-white text-capitalize ls-25">@item.Desc</h3>
-                                        <a href=""
-                                           class="btn btn-white btn-rounded btn-icon-right btn-outline">
-                                            Xem thêm<i class="w-icon-long-arrow-right"></i>
-                                        </a>
+                                @if (item.Status == true)
+                                {
+                                    <div class="shop-default-banner shop-boxed-banner banner d-flex align-items-center mb-6 br-xs"
+                                         style="background-image: url('@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)'); background-color: #494844;"
+                                         onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                        <div class="banner-content">
+                                            <h4 class="banner-subtitle font-weight-normal text-uppercase text-white ls-normal">
+                                                @item.Title
+                                            </h4>
+                                            <h3 class="banner-title text-white text-capitalize ls-25">@item.Desc</h3>
+                                            <a href=""
+                                               class="btn btn-white btn-rounded btn-icon-right btn-outline">
+                                                Xem thêm<i class="w-icon-long-arrow-right"></i>
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
+                                }
+                               
                             }
                         }
                     </div>

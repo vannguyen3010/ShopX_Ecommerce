@@ -20,34 +20,38 @@
         {
             @foreach (var item in banners)
             {
-                <div class="banner banner-fixed content-center intro-slide intro-slide1"
-                     style="background-image: url('@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)'); background-color: #EEF4F4;"
-                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                    <div class="container">
-                        <div class="banner-content d-inline-block y-50">
-                            <div class="slide-animate" data-animation-options="{
+                @if(item.Status == true)
+                {
+                    <div class="banner banner-fixed content-center intro-slide intro-slide1"
+                         style="background-image: url('@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)'); background-color: #EEF4F4;"
+                         onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                        <div class="container">
+                            <div class="banner-content d-inline-block y-50">
+                                <div class="slide-animate" data-animation-options="{
                                     'name': 'zoomIn', 'duration': '1s'
                                 }">
-                                <h5 class="banner-subtitle text-uppercase font-weight-bold no_wrap_2">
-                                    @item.Title
-                                </h5>
-                                <h3 class="banner-title text-capitalize ls-25">
-                                    <span class="text-primary no_wrap_2">@item.Desc</span>
-                                </h3>
-                                <a href="demo9-shop.html"
-                                   class="btn btn-dark btn-outline btn-rounded btn-icon-right">
-                                    Shop Now<i class="w-icon-long-arrow-right"></i>
-                                </a>
+                                    <h5 class="banner-subtitle text-uppercase font-weight-bold no_wrap_2">
+                                        @item.Title
+                                    </h5>
+                                    <h3 class="banner-title text-capitalize ls-25">
+                                        <span class="text-primary no_wrap_2">@item.Desc</span>
+                                    </h3>
+                                    <a href="demo9-shop.html"
+                                       class="btn btn-dark btn-outline btn-rounded btn-icon-right">
+                                        Shop Now<i class="w-icon-long-arrow-right"></i>
+                                    </a>
+                                </div>
                             </div>
+                            <figure class="slide-image skrollable slide-animate">
+                                <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Banner"
+                                     data-bottom-top="transform: translatex(-10vh);"
+                                     data-top-bottom="transform: translateX(10vh);" width="472" height="510"
+                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                            </figure>
                         </div>
-                        <figure class="slide-image skrollable slide-animate">
-                            <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Banner"
-                                 data-bottom-top="transform: translatex(-10vh);"
-                                 data-top-bottom="transform: translateX(10vh);" width="472" height="510"
-                                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                        </figure>
                     </div>
-                </div>
+                }
+              
             }
         }
        
@@ -58,9 +62,12 @@
         <div class="custom-dots owl-img-dots appear-animate">
             @foreach (var item in banners)
             {
-                <a href="#">
-                    <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Dot" width="70" height="70" />
-                </a>
+                @if(item.Status == true)
+                {
+                    <a href="#">
+                        <img src="@(string.IsNullOrEmpty(item.SecondFilePath) ? "/Img_Dev/banner.png" : item.SecondFilePath)" alt="Dot" width="70" height="70" />
+                    </a>
+                }
             }
         </div>
       

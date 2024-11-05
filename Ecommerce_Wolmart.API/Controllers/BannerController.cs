@@ -8,6 +8,9 @@ using Repository;
 using Microsoft.AspNetCore.Hosting;
 using Shared.DTO.Response;
 using Shared.DTO.BannerProduct;
+using Shared.DTO.Address;
+using Microsoft.Extensions.Caching.Memory;
+using Shared.DTO.Introduce;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -20,14 +23,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMemoryCache _cache;
 
-        public BannerController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
+        public BannerController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor, IMemoryCache cache)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _httpContextAccessor = httpContextAccessor;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -106,79 +111,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("CreateBannerTest")]
-        public async Task<IActionResult> CreateBannerTest([FromForm] CreateBannerDto createbannerDto)
-        {
-            try
-            {
-                ValidateFileUpload(createbannerDto);
-
-                // Kiểm tra object được gửi từ client
-                if (createbannerDto == null)
-                {
-                    _logger.LogError("Banner object sent from client is null.");
-                    return NotFound(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = $"Banner object is null",
-                        Data = null
-                    });
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Invalid Banner object sent from client.");
-                    return NotFound(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = $"Invalid model object",
-                        Data = null
-                    });
-                }
-
-                // Ánh xạ Dto thành entity
-                var bannerEntity = _mapper.Map<Banner>(createbannerDto);
-
-                // Xử lý tập tin hình ảnh
-                if (createbannerDto.File != null)
-                {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.File.FileName)}";
-                    var fileExtension = Path.GetExtension(createbannerDto.File.FileName);
-                    bannerEntity.FilePath = await SaveFileAndGetRelativePath(createbannerDto.File, fileName, fileExtension);
-                    bannerEntity.FileName = fileName;
-                    bannerEntity.FileExtension = fileExtension;
-                    bannerEntity.FileSizeInBytes = createbannerDto.File.Length;
-                }
-
-                // Xử lý tập tin hình ảnh thứ hai
-                if (createbannerDto.SecondFile != null)
-                {
-                    string secondFileName = $"{Guid.NewGuid()}{Path.GetExtension(createbannerDto.SecondFile.FileName)}";
-                    var secondFileExtension = Path.GetExtension(createbannerDto.SecondFile.FileName);
-                    bannerEntity.SecondFilePath = await SaveFileAndGetRelativePath(createbannerDto.SecondFile, secondFileName, secondFileExtension);
-                    bannerEntity.SecondFileName = secondFileName;
-                    bannerEntity.SecondFileExtension = secondFileExtension;
-                    bannerEntity.SecondFileSizeInBytes = createbannerDto.SecondFile.Length;
-                }
-
-                // Lưu vào cơ sở dữ liệu
-                await _repository.Banner.CreateBanner(bannerEntity);
-
-                return Ok(new ApiResponse<BannerDto>
-                {
-                    Success = true,
-                    Message = "Banner created successfully.",
-                    Data = _mapper.Map<BannerDto>(bannerEntity)
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside Banner action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-        }
-  
         [HttpGet]
         [Route("GetAllBannerPosition")]
         public async Task<IActionResult> GetAllBannerPosition([FromQuery] BannerPosition? position)
@@ -211,16 +143,46 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var banner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
-                if (banner == null)
+                // Tạo key cache duy nhất cho mỗi banner theo id
+                string cacheKey = $"Banner_{id}";
+
+                // Kiểm tra cache xem đã tồn tại dữ liệu cho id này chưa
+                if (!_cache.TryGetValue(cacheKey, out BannerDto cachedBanner))
                 {
-                    _logger.LogError($"Brand with id: {id}, hasn't been found in db.");
-                    return NotFound();
+                    var banner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
+                    if (banner == null)
+                    {
+                        _logger.LogError($"Banner with id: {id}, hasn't been found in db.");
+                        return NotFound(new ApiResponse<BannerDto>
+                        {
+                            Success = false,
+                            Message = "Banner not found.",
+                            Data = null
+                        });
+                    }
+
+                    // Chuyển đổi banner thành BannerDto
+                    cachedBanner = _mapper.Map<BannerDto>(banner);
+
+                    // Cấu hình và lưu dữ liệu vào cache
+                    var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10))  // Gia hạn cache nếu được truy cập trong vòng 10 phút
+                        .SetAbsoluteExpiration(TimeSpan.FromHours(1));   // Cache hết hạn sau 1 giờ
+
+                    _cache.Set(cacheKey, cachedBanner, cacheOptions); // Lưu dữ liệu vào cache
+                }
+                else
+                {
+                    _logger.LogInfo($"Cache hit for banner with id: {id}");
                 }
 
-                _logger.LogInfo($"Returned brand with id: {id}");
 
-                return Ok(_mapper.Map<BannerDto>(banner));
+                return Ok(new ApiResponse<BannerDto>
+                {
+                    Success = true,
+                    Message = "Banner retrieved successfully.",
+                    Data = cachedBanner
+                });
             }
             catch (Exception ex)
             {
@@ -264,7 +226,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     await _repository.Banner.UpdateBanner(existingBanner);
                     return Ok(_mapper.Map<BannerDto>(existingBanner));
                 }
-                return BadRequest(ModelState);
+                return NoContent();
             }
             catch (Exception ex)
             {
