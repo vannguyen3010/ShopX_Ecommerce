@@ -3,6 +3,7 @@ using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
@@ -18,14 +19,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMemoryCache _cache;
 
-        public IntroduceController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
+        public IntroduceController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor, IMemoryCache cache)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _httpContextAccessor = httpContextAccessor;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -141,19 +144,40 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var (introduces, totalCount) = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword, type);
+                // Tạo key cache duy nhất dựa trên tất cả các tham số
+                string cacheKey = $"Introduce_{pageNumber}_{pageSize}_{categoryId}_{keyword}_{type}";
 
-                if(!introduces.Any())
+                // Kiểm tra xem dữ liệu có tồn tại trong cache không
+                if (!_cache.TryGetValue(cacheKey, out (IEnumerable<IntroduceDto> IntroduceDtos, int TotalCount) cachedData))
                 {
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = "Không có bài viết",
-                        Data = null
-                    });
-                }
+                    var (introduces, totalCount) = await _repository.Introduce.GetListIntroduceAsync(pageNumber, pageSize, categoryId, keyword, type);
 
-                var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
+                    if (!introduces.Any())
+                    {
+                        return NotFound(new ApiResponse<object>
+                        {
+                            Success = false,
+                            Message = "Không có bài viết",
+                            Data = null
+                        });
+                    }
+
+                    var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
+
+                    cachedData = (introduceDtos, totalCount);
+
+                    // Cấu hình cache với thời gian hết hạn 10 phút
+                    var cacheOptions = new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromMinutes(10))
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
+
+                    // Lưu dữ liệu vào cache
+                    _cache.Set(cacheKey, cachedData, cacheOptions);
+                }
+                else
+                {
+                    _logger.LogInfo($"Cache hit for Introduces list with key: {cacheKey}");
+                }
 
                 return Ok(new
                 {
@@ -161,8 +185,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                     message = "Products retrieved successfully.",
                     data = new
                     {
-                        totalCount,
-                        introduces = introduceDtos
+                        totalCount = cachedData.TotalCount,
+                        introduces = cachedData.IntroduceDtos
                     }
                 });
             }
@@ -297,32 +321,52 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                var introduce = await _repository.Introduce.GetIntroduceByIdAsync(id, trackChanges: false);
-                if (introduce == null)
+                // Tạo key cache duy nhất cho từng sản phẩm theo id
+                string cacheKey = $"Introduce_{id}";
+
+                if (!_cache.TryGetValue(cacheKey, out ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>> cachedResponse))
                 {
-                    _logger.LogError($"Không tìm thấy introduce id này {id}");
-                    return NotFound(new ApiResponse<object>
+                    var introduce = await _repository.Introduce.GetIntroduceByIdAsync(id, trackChanges: false);
+                    if (introduce == null)
                     {
-                        Success = false,
-                        Message = "Không tìm thấy introduce id này!",
-                        Data = null
-                    });
+                        _logger.LogError($"Không tìm thấy introduce id này {id}");
+                        return NotFound(new ApiResponse<object>
+                        {
+                            Success = false,
+                            Message = "Không tìm thấy introduce id này!",
+                            Data = null
+                        });
+                    }
+
+                    // Lấy danh sách bài viết liên quan (ví dụ: cùng danh mục)
+                    var relateIntroduces = await _repository.Introduce.GetRelatedIntroducesAsync(id, introduce.CategoryId, trackChanges: true);
+
+                    var introduceDto = _mapper.Map<IntroduceDto>(introduce);
+
+                    var introduceResult = _mapper.Map<IEnumerable<IntroduceDto>>(relateIntroduces);
+
+                    cachedResponse =new ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>
+                    {
+                        Success = true,
+                        Message = "Introduce retrieved successfully.",
+                        Data = introduceDto,
+                        Data2nd = introduceResult // Trả về bài viết liên quan trong Data2nd
+                    };
+
+                    var cacheOptions = new MemoryCacheEntryOptions()
+                     .SetSlidingExpiration(TimeSpan.FromMinutes(10)) // Gia hạn nếu được truy cập
+                     .SetAbsoluteExpiration(TimeSpan.FromHours(1));  // Cache hết hạn sau 1 giờ
+
+                    _cache.Set(cacheKey, cachedResponse, cacheOptions);
+                }
+                else
+                {
+                    _logger.LogInfo($"Cache hit for introduce with id: {id}");
                 }
 
-                // Lấy danh sách bài viết liên quan (ví dụ: cùng danh mục)
-                var relateIntroduces = await _repository.Introduce.GetRelatedIntroducesAsync(id, introduce.CategoryId, trackChanges: true);
+                return Ok(cachedResponse);
 
-                var introduceDto = _mapper.Map<IntroduceDto>(introduce);
 
-                var introduceResult = _mapper.Map<IEnumerable<IntroduceDto>>(relateIntroduces);
-
-                return Ok(new ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>
-                {
-                    Success = true,
-                    Message = "Introduce retrieved successfully.",
-                    Data = introduceDto,
-                    Data2nd = introduceResult // Trả về bài viết liên quan trong Data2nd
-                });
             }
             catch (Exception ex)
             {
@@ -552,26 +596,26 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
         }
-        private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
-        {
-            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Introduce", $"{fileName}{fileExtension}");
-
-            using var stream = new FileStream(localFilePath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Introduce/{fileName}{fileExtension}";
-
-            return urlFilePath;
-        }
         //private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
         //{
-        //    var relativeFilePath = Path.Combine("Img_Repository/Introduce", $"{fileName}{fileExtension}");
-        //    var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+        //    var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Introduce", $"{fileName}{fileExtension}");
 
         //    using var stream = new FileStream(localFilePath, FileMode.Create);
         //    await file.CopyToAsync(stream);
 
-        //    return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
+        //    var urlFilePath = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}{_httpContextAccessor.HttpContext.Request.PathBase}/Img_Repository/Introduce/{fileName}{fileExtension}";
+
+        //    return urlFilePath;
         //}
+        private async Task<string> SaveFileAndGetUrl(IFormFile file, string fileName, string fileExtension)
+        {
+            var relativeFilePath = Path.Combine("Img_Repository/Introduce", $"{fileName}{fileExtension}");
+            var localFilePath = Path.Combine(_webHostEnvironment.ContentRootPath, relativeFilePath);
+
+            using var stream = new FileStream(localFilePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/{relativeFilePath.Replace("\\", "/")}";  // Đảm bảo đường dẫn dùng '/' cho web
+        }
     }
 }
