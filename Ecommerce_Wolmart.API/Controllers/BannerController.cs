@@ -300,7 +300,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpDelete]
-        [Route("DelateBanner/{id}")]
+        [Route("DeleteBanner/{id}")]
         public async Task<IActionResult> DeleteBanner(Guid id)
         {
             var banner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
