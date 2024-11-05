@@ -187,6 +187,7 @@
     }
 
     private async Task UpdateStatus(Guid id, bool status)
+
     {
         bool isSuccess = await _bannerServices.UpdateBannerStatusAsync(id, status);
 
