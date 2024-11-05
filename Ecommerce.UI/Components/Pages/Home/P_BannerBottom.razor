@@ -16,28 +16,31 @@
     {
         @foreach (var item in bottomBanner)
         {
-            <div class="banner banner-fashion appear-animate br-sm mb-9" style="background-image: url('@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)'); background-color: #383839;"
-                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                <div class="banner-content align-items-center">
-                    <div class="content-left d-flex align-items-center mb-3">
-                        <div class="banner-price-info font-weight-bolder text-secondary text-uppercase lh-1 ls-25">
-                            25
-                            <sup class="font-weight-bold">%</sup><sub class="font-weight-bold ls-25"></sub>
+            @if (item.Status == true)
+            {
+                <div class="banner banner-fashion appear-animate br-sm mb-9" style="background-image: url('@(string.IsNullOrEmpty(item.filePath) ? "/Img_Dev/banner.png" : item.filePath)'); background-color: #383839;"
+                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                    <div class="banner-content align-items-center">
+                        <div class="content-left d-flex align-items-center mb-3">
+                            <div class="banner-price-info font-weight-bolder text-secondary text-uppercase lh-1 ls-25">
+                                25
+                                <sup class="font-weight-bold">%</sup><sub class="font-weight-bold ls-25"></sub>
+                            </div>
+                            <hr class="banner-divider bg-white mt-0 mb-0 mr-8">
                         </div>
-                        <hr class="banner-divider bg-white mt-0 mb-0 mr-8">
-                    </div>
-                    <div class="content-right d-flex align-items-center flex-1 flex-wrap">
-                        <div class="banner-info mb-0 mr-auto pr-4 mb-3">
-                            <h3 class="banner-title text-white font-weight-bolder text-uppercase ls-25">
-                                @item.Title
-                            </h3>
-                            <p class="text-white mb-0">
-                                @item.Desc
-                            </p>
+                        <div class="content-right d-flex align-items-center flex-1 flex-wrap">
+                            <div class="banner-info mb-0 mr-auto pr-4 mb-3">
+                                <h3 class="banner-title text-white font-weight-bolder text-uppercase ls-25">
+                                    @item.Title
+                                </h3>
+                                <p class="text-white mb-0">
+                                    @item.Desc
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         }
     }
   
