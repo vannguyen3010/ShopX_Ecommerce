@@ -51,7 +51,7 @@ namespace Repository
 
             return await _dbContext.CategoryIntroduces
               .Where(x => x.Name.ToLower() == lowerName) // So sánh chuỗi sau khi chuyển đổi về dạng chữ thường
-              .FirstOrDefaultAsync();
+              .FirstOrDefaultAsync();   
         }
 
         public async Task<bool> HasIntroducesInCategoryAsync(Guid categoryId)

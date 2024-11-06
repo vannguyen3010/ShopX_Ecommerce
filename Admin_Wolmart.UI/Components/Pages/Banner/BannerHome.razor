@@ -16,21 +16,10 @@
                         <div class="title-header option-title">
                             <h5>Quản lý Banner</h5>
                             <form class="d-inline-flex">
-                            @*     <a href="add-new-category.html"
+                                <a onclick="window.location.href='/them-banner'"
                                    class="align-items-center btn btn-theme d-flex">
                                     <i data-feather="plus-square"></i>Thêm banner
-                                </a> *@
-                                @if (ShowLoadingButton)
-                                {
-                                    <ButtonLoad></ButtonLoad>
-                                }
-                                else
-                                {
-                                    <a href="add-new-category.html"
-                                       class="align-items-center btn btn-theme d-flex">
-                                        <i data-feather="plus-square"></i>Thêm banner
-                                    </a>
-                                }
+                                </a>
                             </form>
                         </div>
                         <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
@@ -177,6 +166,7 @@
     private async Task LoadListBanner(BannerPosition? position = null)
     {
         isLoading = true;
+
         var response = await _bannerServices.GetAllBannerPositionAsync(position);
 
         if (response != null && response.Success)
@@ -212,12 +202,16 @@
 
     private async Task DeleteBanner(Guid id)
     {
+        isLoading = true;
+
         bool isDeleted = await _bannerServices.DeleteBannerAsync(id);
 
         if (isDeleted)
         {
             await LoadListBanner();
         }
+        await Task.Delay(1000);
+        isLoading = false;
     }
 
     private async Task GetBannerByid(Guid id)

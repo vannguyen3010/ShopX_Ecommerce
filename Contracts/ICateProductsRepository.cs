@@ -5,6 +5,7 @@ namespace Contracts
     public interface ICateProductsRepository
     {
         Task<CateProduct> CreateCategoryAsync(CateProduct cateProducs);
+        Task<(IEnumerable<CateProduct> CateProducts, int Total)> GetAllCategoryProductPagitionAsync(int pageNumber, int pageSize, string? keyword = null);
         Task<IEnumerable<CateProduct>> GetAllCategoryProduct(bool trackChanges);
         Task<CateProduct> GetCategoryProductByIdAsync(Guid id, bool trackChanges);
         Task<CateProduct> GetCategoryByNameAsync(string name);

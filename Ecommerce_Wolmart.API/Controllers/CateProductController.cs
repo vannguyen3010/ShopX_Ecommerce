@@ -265,6 +265,47 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpGet]
+        [Route("GetAllCategoryProductsPage")]
+        public async Task<IActionResult> GetAllCategoryProductsPage([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? keyword = null)
+        {
+            try
+            {
+                // Lấy tất cả danh mục
+                var (categories, totalCount) = await _repository.CateProduct.GetAllCategoryProductPagitionAsync(pageNumber, pageSize, keyword);
+
+                // Ánh xạ các danh mục cha và con với AutoMapper
+                var parentCategories = categories
+                    .Where(c => c.ParentCategoryId == null)
+                    .ToList();
+
+                var result = _mapper.Map<IEnumerable<CateProductDto>>(parentCategories); // Sử dụng AutoMapper
+
+                // Trả về response
+                return Ok(new
+                {
+                    Success = true,
+                    Message = "Categories Product retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        categories = result
+                    }
+                });
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetAllCategories action: {ex.Message}");
+                return StatusCode(500, new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Internal server error",
+                    Data = null
+                });
+            }
+        }
+
+        [HttpGet]
         [Route("GetAllCategoryProductsHaveProduct")]
         public async Task<IActionResult> GetAllCategoryProductsHaveProduct()
         {
