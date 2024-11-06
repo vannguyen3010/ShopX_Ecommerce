@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
+using Shared.DTO.CategoryIntroduce;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Response;
 
@@ -48,6 +49,15 @@ namespace Admin_Wolmart.UI.Services
                 return result;
             }
             return null;
+        }
+
+        public async Task<bool> UpdateCategoryProductStatusAsync(Guid id, bool status)
+        {
+            var updateStatus = new UpdateCateIntroDtoStatus { Status = status };
+            var query = $"/api/CateProduct/UpdateCategoryProductStatus/{id}?Status={status}";
+            var response = await _httpClient.PutAsJsonAsync(query, updateStatus);
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

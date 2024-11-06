@@ -117,24 +117,31 @@
                                     {
                                         @foreach (var item in cateProducts)
                                         {
-                                            <li>
-                                                <a class="cursor" onclick="window.location.href='/san-pham/?c1=@item.Id';">
-                                                    <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/default.png" : item.FilePath)" alt="Category Image" />
-                                                    <span>@item.Name</span>
-                                                </a>
-                                                @if (item.CategoriesObjs.Any())
-                                                {
-                                                    <ul>
-                                                        @foreach (var res in item.CategoriesObjs)
-                                                        {
-                                                            <li>
-                                                                <a class="cursor" onclick="window.location.href='/san-pham?c2=@res.Id';">@res.Name</a>
-                                                            </li>
-                                                        }
-                                                    </ul>
-                                                }
+                                            @if(item.Status == true)
+                                            {
+                                                <li>
+                                                    <a class="cursor" onclick="window.location.href='/san-pham/?c1=@item.Id';">
+                                                        <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/default.png" : item.FilePath)" alt="Category Image" />
+                                                        <span>@item.Name</span>
+                                                    </a>
+                                                    @if (item.CategoriesObjs.Any())
+                                                    {
+                                                        <ul>
+                                                            @foreach (var res in item.CategoriesObjs)
+                                                            {
+                                                                @if(res.Status == true)
+                                                                {
+                                                                    <li>
+                                                                        <a class="cursor" onclick="window.location.href='/san-pham?c2=@res.Id';">@res.Name</a>
+                                                                    </li>
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    }
 
-                                            </li>
+                                                </li>
+                                            }
+                                           
                                         }
                                     }
 

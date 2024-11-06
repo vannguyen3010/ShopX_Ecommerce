@@ -1,9 +1,41 @@
 ﻿@page "/quan-ly-danh-muc-san-pham"
 
 @inject CateProductServices _cateProductServices
-
+<link href="css/introduces.css" rel="stylesheet" />
 @rendermode InteractiveServer
 
+
+<script>
+  function toggleSubCategories(subCategoryId) {
+        var rows = document.querySelectorAll(`#${subCategoryId}`);
+        rows.forEach(row => {
+            if (row.classList.contains("show")) {
+                row.classList.remove("show"); // Ẩn đi
+                setTimeout(() => { row.style.display = "none"; }, 500); // Chờ animation kết thúc rồi mới ẩn hẳn
+            } else {
+                row.style.display = "table-row"; // Hiển thị hàng trước
+                setTimeout(() => { row.classList.add("show"); }, 10); // Sau đó thêm lớp để kích hoạt animation
+            }
+        });
+    }
+</script>
+
+<style>
+    .sub-category-row {
+        display: none;
+        overflow: hidden;
+        transition: max-height 0.5s ease, opacity 0.5s ease;
+        max-height: 0; /* Để tạo hiệu ứng trượt */
+        opacity: 0;
+    }
+
+        /* Khi hiển thị, đặt max-height lớn hơn và opacity đầy đủ */
+    .sub-category-row.show {
+        display: table-row;
+        max-height: 100px; /* Tùy chỉnh giá trị phù hợp với nội dung của bạn */
+        opacity: 1;
+    }
+</style>
 <div class="page-body">
     <div class="container-fluid">
         <div class="row">
@@ -12,6 +44,17 @@
                     <div class="card-body">
                         <div class="title-header option-title d-sm-flex d-block">
                             <h5>Danh mục sản phẩm</h5>
+                        </div>
+                        <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
+                            <div class="icon-box-content">
+                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">  <i class="w-icon-orders"></i></h4>
+                            </div>
+                            <form @onsubmit="HandleSearch" class="search_box">
+                                <input type="text" class="search_input" placeholder="Tìm kiếm đơn hàng..." @bind="keyword">
+                                <button type="submit" class="search_button">
+                                    <i class="fa-solid fa-magnifying-glass fs-6"></i>
+                                </button>
+                            </form>
                         </div>
                         <div>
                             <div class="table-responsive">
@@ -29,30 +72,68 @@
                                     </thead>
 
                                     <tbody>
-                                        @if(cateProducts != null && cateProducts.Any())
+                                        @if (isLoading)
                                         {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="loading-container">
+                                                        <div class="loading"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if(cateProducts != null && cateProducts.Any())
+                                        {
+                                            int index = 0;
                                             @foreach (var item in cateProducts)
                                             {
                                                 <tr>
-                                                    <td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">
                                                         <div class="table-image">
                                                             <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" class="img-fluid"
                                                                  alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                                                         </div>
                                                     </td>
 
-                                                    <td>@item.Name</td>
 
-                                                    <td>@item.CreateAt.ToString("dd-MM-yyyy")</td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.Name</td>
 
-                                                    <td>12</td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.CreateAt.ToString("dd-MM-yyyy")</td>
 
-                                                    <td>Cấp 1</td>
+                                                    @if (item.Status == true)
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
 
-                                                    <td class="td-price">12</td>
+                                                    }
 
-                                                    <td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled") status-danger">
+                                                        <span>Cấp 1</span>
+                                                    </td>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")td-price">@item.TotalCount</td>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">
                                                         <ul>
+                                                            <li>
+                                                                <!-- Nút xem/ẩn cấp 2 -->
+                                                                <a href="javascript:void(0)" onclick="toggleSubCategories('sub-@index')">
+                                                                    <i class="ri-eye-line"></i>
+                                                                </a>
+                                                            </li>
                                                             <li>
                                                                 <a href="javascript:void(0)">
                                                                     <i class="ri-pencil-line"></i>
@@ -68,13 +149,113 @@
                                                         </ul>
                                                     </td>
                                                 </tr>
+
+                                                // Hiển thị danh mục cấp 2 (nếu có)
+                                                @if(item.CategoriesObjs != null && item.CategoriesObjs.Any())
+                                                {
+                                                    @foreach (var subItem in item.CategoriesObjs)
+                                                    {
+                                                        <tr id="sub-@index" class="sub-category-row">
+                                                            <td>
+                                                                <div class="table-image">
+                                                                    <img src="@(string.IsNullOrEmpty(subItem.FilePath) ? "/Img_Dev/banner.png" : subItem.FilePath)" class="img-fluid"
+                                                                         alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                                </div>
+                                                            </td>
+
+
+                                                            <td>@subItem.Name</td>
+
+                                                            <td>@subItem.CreateAt.ToString("dd-MM-yyyy")</td>
+
+                                                            @if (subItem.Status == true)
+                                                            {
+                                                                <td>
+                                                                    <label class="switch">
+                                                                        <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                </td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>
+                                                                    <label class="switch">
+                                                                        <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                </td>
+
+                                                            }
+
+                                                            <td class="status-close">
+                                                                <span>Cấp 2</span>
+                                                            </td>
+
+                                                            <td class="td-price">@subItem.TotalCount</td>
+
+                                                            <td>
+                                                                <ul>
+                                                                    <li>
+                                                                        <a href="javascript:void(0)">
+                                                                            <i class="ri-pencil-line"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="javascript:void(0)">
+                                                                            <i class="ri-pencil-line"></i>
+                                                                        </a>
+                                                                    </li>
+
+                                                                    <li>
+                                                                        <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                           data-bs-target="#exampleModalToggle">
+                                                                            <i class="ri-delete-bin-line"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                index++; // Tăng index để ID tiếp theo là duy nhất
                                             }
                                         }
+                                      
+
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
+                    @if (totalPages > 1)
+                    {
+                        <nav class="custome-pagination mt-5">
+                            <ul class="pagination justify-content-center custom_pagination_ul">
+                                <li class="page-item custom_lef @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                        <i class="fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    var pageNumber = i;
+
+                                    <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
+                                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                    </li>
+                                }
+
+                                <li class="page-item custom_left @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                        <i class="fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    }
+
                 </div>
             </div>
         </div>
@@ -90,12 +271,24 @@
     private int totalPages;
     private int totalCount;
 
+    private bool isLoading = false;
+
     protected override async Task OnInitializedAsync()
     {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("pageNumber", out var page))
+        {
+            int.TryParse(page, out currentPage);
+        }
+
         await LoadListCategoriesProducts();
     }
     private async Task LoadListCategoriesProducts()
     {
+        isLoading = true;
+
         var response = await _cateProductServices.GetAllCategoryProductPaginationAsync(currentPage, pageSize, keyword);
 
         if (response != null && response.Success)
@@ -104,5 +297,84 @@
             totalCount = response.Data.TotalCount;
             totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         }
+
+        await Task.Delay(1000);
+        isLoading = false;
+    }
+    private async Task ChangePage(int page)
+    {
+        // Chỉ cập nhật nếu page khác currentPage
+        if (page != currentPage)
+        {
+            currentPage = page;
+            await UpdateUrlAndLoadCategories();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await UpdateUrlAndLoadCategories();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await UpdateUrlAndLoadCategories();
+        }
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse(e.Value.ToString());
+
+        currentPage = 1;
+        await UpdateUrlAndLoadCategories();
+    }
+
+    private async Task HandleSearch()
+    {
+        currentPage = 1;
+        await UpdateUrlAndLoadCategories();
+
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _cateProductServices.UpdateCategoryProductStatusAsync(id, status);
+
+        if (isSuccess)
+        {
+            await LoadListCategoriesProducts();
+        }
+    }
+
+    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
+    private async Task UpdateUrlAndLoadCategories()
+    {
+        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
+        var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = currentPage.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            queryParameters["keyword"] = keyword;
+        }
+
+        // Tạo URL query string
+        var newUrl = QueryHelpers.AddQueryString("quan-ly-danh-muc-san-pham", queryParameters!);
+
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+
+        // Tải lại danh sách sản phẩm
+        await LoadListCategoriesProducts();
     }
 }
