@@ -125,6 +125,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Tạo NameSlug từ Title
                 cateProductEntity.NameSlug = SlugGenerator.GenerateSlug(createCategoryDto.Name);
 
+                cateProductEntity.Status = true;
+
                 // Xử lý tập tin hình ảnh
                 if (createCategoryDto.File != null)
                 {
@@ -464,6 +466,42 @@ namespace Ecommerce_Wolmart.API.Controllers
                     Message = "Category retrieved successfully.",
                     Data = _mapper.Map<CateProductDto>(existingCateProduct)
                 });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside DeleteCategory action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateCategoryProductStatus/{id}")]
+        public async Task<IActionResult> UpdateCategoryProductStatus(Guid id, [FromForm] UpdateCateProductStatusDto request)
+        {
+            try
+            {
+                var existingCateProduct = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
+                if (existingCateProduct == null)
+                {
+                    _logger.LogError($"Category with id {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Category with id {id} not found.",
+                        Data = null
+                    });
+
+                }
+
+                // Update category properties
+                existingCateProduct.Status = request.Status;
+
+                existingCateProduct.DateTime = DateTime.UtcNow;
+
+                await _repository.CateProduct.UpdateCategoryAsync(existingCateProduct);
+
+                return NoContent();
             }
             catch (Exception ex)
             {

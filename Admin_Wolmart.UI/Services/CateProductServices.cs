@@ -1,4 +1,5 @@
-﻿using Shared.DTO.CateProduct;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Shared.DTO.CateProduct;
 using Shared.DTO.Response;
 
 namespace Admin_Wolmart.UI.Services
@@ -25,6 +26,28 @@ namespace Admin_Wolmart.UI.Services
             }
         }
 
+        public async Task<ApiResponse<CateProductResponseDto>> GetAllCategoryProductPaginationAsync(int pageNumber, int pageSize, string? keyword = null)
+        {
+            var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = pageNumber.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
 
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                queryParameters["keyword"] = keyword;
+            }
+
+            var query = QueryHelpers.AddQueryString("/api/CateProduct/GetAllCategoryProductsPage", queryParameters);
+
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<CateProductResponseDto>>();
+                return result;
+            }
+            return null;
+        }
     }
 }

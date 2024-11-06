@@ -1,0 +1,108 @@
+﻿@page "/quan-ly-danh-muc-san-pham"
+
+@inject CateProductServices _cateProductServices
+
+@rendermode InteractiveServer
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="title-header option-title d-sm-flex d-block">
+                            <h5>Danh mục sản phẩm</h5>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="table all-package theme-table table-product" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>Ảnh</th>
+                                            <th>Tên</th>
+                                            <th>Ngày</th>
+                                            <th>Trạng thái</th>
+                                            <th>Cấp</th>
+                                            <th>SL Sản phẩm</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if(cateProducts != null && cateProducts.Any())
+                                        {
+                                            @foreach (var item in cateProducts)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="table-image">
+                                                            <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" class="img-fluid"
+                                                                 alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                        </div>
+                                                    </td>
+
+                                                    <td>@item.Name</td>
+
+                                                    <td>@item.CreateAt.ToString("dd-MM-yyyy")</td>
+
+                                                    <td>12</td>
+
+                                                    <td>Cấp 1</td>
+
+                                                    <td class="td-price">12</td>
+
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <a href="javascript:void(0)">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                   data-bs-target="#exampleModalToggle">
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    private IEnumerable<CateProductDto> cateProducts;
+
+    private string? keyword = null;
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages;
+    private int totalCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListCategoriesProducts();
+    }
+    private async Task LoadListCategoriesProducts()
+    {
+        var response = await _cateProductServices.GetAllCategoryProductPaginationAsync(currentPage, pageSize, keyword);
+
+        if (response != null && response.Success)
+        {
+            cateProducts = response.Data.Categories;
+            totalCount = response.Data.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        }
+    }
+}

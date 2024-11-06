@@ -9,6 +9,7 @@ namespace Shared.DTO.CateProduct
         public string NameSlug { get; set; }
         public string FilePath { get; set; }
         public int TotalCount { get; set; }
+        public bool Status { get; set; }
         public Guid? ParentCategoryId { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime DateTime { get; set; }
