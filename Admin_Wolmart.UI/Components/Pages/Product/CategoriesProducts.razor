@@ -10,11 +10,11 @@
         var rows = document.querySelectorAll(`#${subCategoryId}`);
         rows.forEach(row => {
             if (row.classList.contains("show")) {
-                row.classList.remove("show"); // Ẩn đi
-                setTimeout(() => { row.style.display = "none"; }, 500); // Chờ animation kết thúc rồi mới ẩn hẳn
+                row.classList.remove("show"); 
+                setTimeout(() => { row.style.display = "none"; }, 500);
             } else {
-                row.style.display = "table-row"; // Hiển thị hàng trước
-                setTimeout(() => { row.classList.add("show"); }, 10); // Sau đó thêm lớp để kích hoạt animation
+                row.style.display = "table-row";
+                setTimeout(() => { row.classList.add("show"); }, 10);
             }
         });
     }
@@ -25,14 +25,12 @@
         display: none;
         overflow: hidden;
         transition: max-height 0.5s ease, opacity 0.5s ease;
-        max-height: 0; /* Để tạo hiệu ứng trượt */
+        max-height: 0;
         opacity: 0;
     }
-
-        /* Khi hiển thị, đặt max-height lớn hơn và opacity đầy đủ */
     .sub-category-row.show {
         display: table-row;
-        max-height: 100px; /* Tùy chỉnh giá trị phù hợp với nội dung của bạn */
+        max-height: 100px;
         opacity: 1;
     }
 </style>
@@ -44,16 +42,11 @@
                     <div class="card-body">
                         <div class="title-header option-title d-sm-flex d-block">
                             <h5>Danh mục sản phẩm</h5>
-                        </div>
-                        <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
-                            <div class="icon-box-content">
-                                <h4 class="icon-box-title text-capitalize ls-normal mb-0">  <i class="w-icon-orders"></i></h4>
-                            </div>
-                            <form @onsubmit="HandleSearch" class="search_box">
-                                <input type="text" class="search_input" placeholder="Tìm kiếm đơn hàng..." @bind="keyword">
-                                <button type="submit" class="search_button">
-                                    <i class="fa-solid fa-magnifying-glass fs-6"></i>
-                                </button>
+                            <form class="d-inline-flex">
+                                <a href="add-new-category.html"
+                                   class="align-items-center btn btn-theme d-flex">
+                                    <i data-feather="plus-square"></i>Thêm mới Danh mục
+                                </a>
                             </form>
                         </div>
                         <div>
@@ -135,14 +128,13 @@
                                                                 </a>
                                                             </li>
                                                             <li>
-                                                                <a href="javascript:void(0)">
+                                                                <a href="javascript:void(0)" @onclick="() => GetIntroductOrUpdate(item.Id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>
 
                                                             <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle">
+                                                                <a href="javascript:void(0)" @onclick="() => DeleteCategory(item.Id)">
                                                                     <i class="ri-delete-bin-line"></i>
                                                                 </a>
                                                             </li>
@@ -202,14 +194,14 @@
                                                                         </a>
                                                                     </li>
                                                                     <li>
-                                                                        <a href="javascript:void(0)">
+                                                                        <a href="javascript:void(0)" @onclick="() => GetIntroductOrUpdate(subItem.Id)">
+                                                                            >
                                                                             <i class="ri-pencil-line"></i>
                                                                         </a>
                                                                     </li>
 
                                                                     <li>
-                                                                        <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                           data-bs-target="#exampleModalToggle">
+                                                                        <a href="javascript:void(0)" @onclick="() => DeleteCategory(subItem.Id)">
                                                                             <i class="ri-delete-bin-line"></i>
                                                                         </a>
                                                                     </li>
@@ -218,7 +210,7 @@
                                                         </tr>
                                                     }
                                                 }
-                                                index++; // Tăng index để ID tiếp theo là duy nhất
+                                                index++;
                                             }
                                         }
                                       
@@ -285,6 +277,7 @@
 
         await LoadListCategoriesProducts();
     }
+
     private async Task LoadListCategoriesProducts()
     {
         isLoading = true;
@@ -301,9 +294,9 @@
         await Task.Delay(1000);
         isLoading = false;
     }
+
     private async Task ChangePage(int page)
     {
-        // Chỉ cập nhật nếu page khác currentPage
         if (page != currentPage)
         {
             currentPage = page;
@@ -354,10 +347,23 @@
         }
     }
 
-    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
+    private async Task DeleteCategory(Guid id)
+    {
+        bool isDeleted = await _cateProductServices.DeleteCategoryProductAsync(id);
+
+        if (isDeleted)
+        {
+            await LoadListCategoriesProducts();
+        }
+    }
+
+    private async Task GetIntroductOrUpdate(Guid id)
+    {
+        NavigationManager.NavigateTo($"/cap-nhat-danh-muc-san-pham/{id}", forceLoad: true);
+    }
+
     private async Task UpdateUrlAndLoadCategories()
     {
-        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
         var queryParameters = new Dictionary<string, string>
             {
                 ["pageNumber"] = currentPage.ToString(),
@@ -369,12 +375,10 @@
             queryParameters["keyword"] = keyword;
         }
 
-        // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("quan-ly-danh-muc-san-pham", queryParameters!);
 
         NavigationManager.NavigateTo(newUrl, forceLoad: false);
 
-        // Tải lại danh sách sản phẩm
         await LoadListCategoriesProducts();
     }
 }
