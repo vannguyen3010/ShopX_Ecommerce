@@ -85,5 +85,34 @@ namespace Admin_Wolmart.UI.Services
             var response = await _httpClient.PutAsync($"/api/Banner/UpdateBanner/{id}", content);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> CreateBannerAsync(CreateBannerDto request, IBrowserFile? file, IBrowserFile? secondFile)
+        {
+            var content = new MultipartFormDataContent();
+
+            // Thêm các trường khác vào form-data
+            content.Add(new StringContent(request.Title), "Title");
+            content.Add(new StringContent(request.Desc), "Desc");
+            content.Add(new StringContent(request.Position.ToString()), "Position");
+
+            // Đọc và thêm file vào form-data
+            if (file != null)
+            {
+                var fileContent = new StreamContent(file.OpenReadStream(10485760)); // 10MB limit
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                content.Add(fileContent, "File", file.Name);
+            }
+
+            if (secondFile != null)
+            {
+                var fileSecondContent = new StreamContent(secondFile.OpenReadStream(10485760)); // 10MB limit
+                fileSecondContent.Headers.ContentType = new MediaTypeHeaderValue(secondFile.ContentType);
+                content.Add(fileSecondContent, "SecondFile", secondFile.Name);
+            }
+
+            // Gửi request
+            var response = await _httpClient.PostAsync("/api/Banner/CreateBanner", content);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
