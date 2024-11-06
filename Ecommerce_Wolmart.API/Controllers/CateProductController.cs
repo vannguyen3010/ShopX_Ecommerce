@@ -341,72 +341,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
-        [HttpDelete]
-        [Route("DeleteCategoryProduct")]
-        public async Task<IActionResult> DeleteCategoryProduct(Guid id)
-        {
-            try
-            {
-                // Kiểm tra xem danh mục có sản phẩm không
-                var hasProducts = await _repository.CateProduct.HasProductsInCategoryAsync(id);
-
-                if(hasProducts)
-                {
-                    _logger.LogError($"Không thể xóa danh mục có id {id} vì nó chứa sản phẩm.");
-                    return BadRequest(new ApiResponse<Object>
-                    {
-                        Success = false,
-                        Message = $"Không thể xóa danh mục có id {id} vì nó chứa sản phẩm.",
-                        Data = null
-                    });
-                }
-
-                // Kiểm tra xem danh mục có tồn tại không
-                var category = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
-
-                if (category == null)
-                {
-                    _logger.LogError($"Không tìm thấy danh mục có id {id}.");
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = $"Không tìm thấy danh mục có id {id}.",
-                        Data = null
-                    });
-
-                }
-
-                //kiểm tra nếu cấp 1 có cấp con thì không cho xóa
-                var childCategories = await _repository.CateProduct.GetChildCategoriesAsync(id);
-
-                if (childCategories.Any())
-                {
-                    _logger.LogError($"Category with id {id} not found.");
-                    return NotFound(new ApiResponse<object>
-                    {
-                        Success = false,
-                        Message = $"Không thể xóa danh mục vì nó có các danh mục con. Vui lòng xóa tất cả các danh mục con trước.",
-                        Data = null
-                    });
-                }
-
-                await _repository.CateProduct.DeleteCategoryAsync(category);
-
-                return Ok(new ApiResponse<Object>
-                {
-                    Success = true,
-                    Message = "Category deleted successfully.",
-                    Data = null
-                });
-            }
-            catch (Exception ex)
-            {
-
-                _logger.LogError($"Something went wrong inside DeleteCategory action: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-        }
-
         [HttpPut]
         [Route("UpdateCategoryProduct/{id}")]
         public async Task<IActionResult> UpdateCategoryProduct(Guid id, [FromForm] UpdateCateProductDto updateCateProduct)
@@ -523,6 +457,73 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpDelete]
+        [Route("DeleteCategoryProduct")]
+        public async Task<IActionResult> DeleteCategoryProduct(Guid id)
+        {
+            try
+            {
+                // Kiểm tra xem danh mục có sản phẩm không
+                var hasProducts = await _repository.CateProduct.HasProductsInCategoryAsync(id);
+
+                if (hasProducts)
+                {
+                    _logger.LogError($"Không thể xóa danh mục có id {id} vì nó chứa sản phẩm.");
+                    return BadRequest(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không thể xóa danh mục có id {id} vì nó chứa sản phẩm.",
+                        Data = null
+                    });
+                }
+
+                // Kiểm tra xem danh mục có tồn tại không
+                var category = await _repository.CateProduct.GetCategoryProductByIdAsync(id, trackChanges: false);
+
+                if (category == null)
+                {
+                    _logger.LogError($"Không tìm thấy danh mục có id {id}.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy danh mục có id {id}.",
+                        Data = null
+                    });
+
+                }
+
+                //kiểm tra nếu cấp 1 có cấp con thì không cho xóa
+                var childCategories = await _repository.CateProduct.GetChildCategoriesAsync(id);
+
+                if (childCategories.Any())
+                {
+                    _logger.LogError($"Category with id {id} not found.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = $"Không thể xóa danh mục vì nó có các danh mục con. Vui lòng xóa tất cả các danh mục con trước.",
+                        Data = null
+                    });
+                }
+
+                await _repository.CateProduct.DeleteCategoryAsync(category);
+
+                return Ok(new ApiResponse<Object>
+                {
+                    Success = true,
+                    Message = "Category deleted successfully.",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside DeleteCategory action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
 
         private void UpdateFileUpload(UpdateCateProductDto request)
         {
