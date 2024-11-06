@@ -143,38 +143,20 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Tạo key cache duy nhất cho mỗi banner theo id
-                string cacheKey = $"Banner_{id}";
-
-                // Kiểm tra cache xem đã tồn tại dữ liệu cho id này chưa
-                if (!_cache.TryGetValue(cacheKey, out BannerDto cachedBanner))
+                var banner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
+                if (banner == null)
                 {
-                    var banner = await _repository.Banner.GetBannerByIdAsync(id, trackChanges: false);
-                    if (banner == null)
+                    _logger.LogError($"Banner with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<BannerDto>
                     {
-                        _logger.LogError($"Banner with id: {id}, hasn't been found in db.");
-                        return NotFound(new ApiResponse<BannerDto>
-                        {
-                            Success = false,
-                            Message = "Banner not found.",
-                            Data = null
-                        });
-                    }
-
-                    // Chuyển đổi banner thành BannerDto
-                    cachedBanner = _mapper.Map<BannerDto>(banner);
-
-                    // Cấu hình và lưu dữ liệu vào cache
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromMinutes(10))  // Gia hạn cache nếu được truy cập trong vòng 10 phút
-                        .SetAbsoluteExpiration(TimeSpan.FromHours(1));   // Cache hết hạn sau 1 giờ
-
-                    _cache.Set(cacheKey, cachedBanner, cacheOptions); // Lưu dữ liệu vào cache
+                        Success = false,
+                        Message = "Banner not found.",
+                        Data = null
+                    });
                 }
-                else
-                {
-                    _logger.LogInfo($"Cache hit for banner with id: {id}");
-                }
+
+                // Chuyển đổi banner thành BannerDto
+                var cachedBanner = _mapper.Map<BannerDto>(banner);
 
 
                 return Ok(new ApiResponse<BannerDto>
@@ -217,14 +199,22 @@ namespace Ecommerce_Wolmart.API.Controllers
                         existingBanner.FileExtension = Path.GetExtension(updateDto.File.FileName);
                         existingBanner.FileSizeInBytes = updateDto.File.Length;
                         existingBanner.FileName = updateDto.File.FileName;
-                        //existingBanner.FileDescription = updateDto.FileDescription;
                         existingBanner.FilePath = await SaveFileAndGetUrl(updateDto.File, existingBanner.FileName, existingBanner.FileExtension);
                     }
 
+                    if (updateDto.SecondFile != null)
+                    {
+                        existingBanner.SecondFile = updateDto.SecondFile;
+                        existingBanner.SecondFileExtension = Path.GetExtension(updateDto.SecondFile.FileName);
+                        existingBanner.SecondFileSizeInBytes = updateDto.SecondFile.Length;
+                        existingBanner.FileName = updateDto.SecondFile.FileName;
+                        existingBanner.SecondFilePath = await SaveFileAndGetUrl(updateDto.SecondFile, existingBanner.FileName, existingBanner.SecondFileExtension);
+                    }
                     existingBanner.Position = MapBannerPosition(updateDto.Position);
 
                     await _repository.Banner.UpdateBanner(existingBanner);
-                    return Ok(_mapper.Map<BannerDto>(existingBanner));
+
+                    return NoContent();
                 }
                 return NoContent();
             }
