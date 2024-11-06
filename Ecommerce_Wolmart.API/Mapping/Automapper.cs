@@ -52,7 +52,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<CateProduct, CateProductDto>()
               .ForMember(dest => dest.ParentCategory, opt => opt.MapFrom(src => src.ParentCategory))
-              .ForMember(dest => dest.CategoriesObjs, opt => opt.MapFrom(src => src.CategoriesObjs));
+              .ForMember(dest => dest.CategoriesObjs, opt => opt.MapFrom(src => src.CategoriesObjs))
+              .ForMember(dest => dest.TotalCount, opt => opt.MapFrom(src => src.Products.Count()));
 
             CreateMap<CreateProductDto, Product>();
 

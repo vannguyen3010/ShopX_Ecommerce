@@ -99,7 +99,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllCategoryPagination")]
-        public async Task<IActionResult> GetAllCategoryPagination([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? keyword = null)
+        public async Task<IActionResult> GetAllCategoryPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? keyword = null)
         {
             try
             {

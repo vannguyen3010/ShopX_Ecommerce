@@ -23,7 +23,9 @@ namespace Repository
 
         public async Task<IEnumerable<CateProduct>> GetAllCategoryProduct(bool trackChanges)
         {
-            return await _dbContext.CateProducts.ToListAsync();
+            return await _dbContext.CateProducts
+                .Include(x => x.Products)
+                .ToListAsync();
         }
         public async Task<CateProduct> GetCategoryProductByIdAsync(Guid id, bool trackChanges)
         {
@@ -70,11 +72,37 @@ namespace Repository
             return await _dbContext.Products.AnyAsync(x => x.CategoryId == categoryId);
         }
 
+        public async Task<(IEnumerable<CateProduct> CateProducts, int Total)> GetAllCategoryProductPagitionAsync(int pageNumber, int pageSize, string? keyword = null)
+        {
+
+            var cateProductQuery = _dbContext.CateProducts.AsQueryable();
+
+            //Lọc theo keyword nếu có
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                string lowerCaseName = keyword.ToLower();
+
+                cateProductQuery = cateProductQuery.Where(x => x.Name.ToLower().Contains(lowerCaseName));
+            }
+
+            int totalCount = await cateProductQuery.CountAsync();
+
+            //Phân trang
+            var categories = await cateProductQuery
+                .Include(x => x.Products)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (categories, totalCount);
+        }
+
         public async Task<IEnumerable<CateProduct>> GetAllCategoryProductWithProducts(bool trackChanges)
         {
             return await _dbContext.CateProducts
                     .Where(x => x.Products.Any())
                     .ToListAsync();
         }
+
     }
 }

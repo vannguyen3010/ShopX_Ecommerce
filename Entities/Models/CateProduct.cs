@@ -19,7 +19,7 @@ namespace Entities.Models
         public ICollection<CateProduct> CategoriesObjs { get; set; }
         public ICollection<Product> Products { get; set; }
 
-        [NotMapped] // Sẽ ko lưu ảnh vào Db
+        [NotMapped]
         public IFormFile? File { get; set; }
         public string? FileName { get; set; }
         public string? FileDescription { get; set; }
