@@ -35,9 +35,6 @@
                                                     {
                                                         @foreach (var item in cateIntroduces)
                                                         {
-                                                          @*   <option value="@item.Id" selected="@(introduces != null && item.Id == introduces.CategoryId ? "selected" : null)">
-                                                                @item.Name
-                                                            </option> *@
                                                             <option value="@item.Id" selected="@(introduces.CategoryId == item.Id ? "selected" : null)">
                                                                 @item.Name
                                                             </option>
@@ -141,7 +138,7 @@
         if (success)
         {
             // Chuyển hướng đến danh sách hoặc trang khác
-            NavigationManager.NavigateTo("/quan-ly-bai-viet");
+            NavigationManager.NavigateTo("/quan-ly-bai-viet", forceLoad: true);
         }
     }
 

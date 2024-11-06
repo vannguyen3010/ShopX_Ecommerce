@@ -60,9 +60,9 @@
                                                 </td>
                                             </tr>
                                         }
-                                        else if (banners != null && banners.Any())
+                                        else if (listBanner != null && listBanner.Any())
                                         {
-                                            @foreach (var item in banners)
+                                            @foreach (var item in listBanner)
                                             {
 
                                                 <tr>
@@ -114,7 +114,7 @@
                                                     <td>
                                                         <ul>
                                                             <li>
-                                                                <a href="javascript:void(0)">
+                                                                <a href="javascript:void(0)" @onclick="() => GetBannerByid(item.Id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>
@@ -153,7 +153,7 @@
 </div>
 
 @code {
-    private IEnumerable<BannerDto> banners;
+    private IEnumerable<BannerDto> listBanner;
     private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -168,7 +168,7 @@
 
         if (response != null && response.Success)
         {
-            banners = response.Data;
+            listBanner = response.Data;
         }
 
         await Task.Delay(1000);
@@ -205,5 +205,10 @@
         {
             await LoadListBanner();
         }
+    }
+
+    private async Task GetBannerByid(Guid id)
+    {
+        NavigationManager.NavigateTo($"/cap-nhat-banner/{id}", forceLoad: true);
     }
 }
