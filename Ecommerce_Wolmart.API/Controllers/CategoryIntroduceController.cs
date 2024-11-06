@@ -5,6 +5,7 @@ using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Shared.DTO.CategoryIntroduce;
 using Shared.DTO.CateProduct;
 using Shared.DTO.Introduce;
@@ -20,12 +21,14 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly ILoggerManager _logger;
         private readonly IRepositoryManager _repository;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
 
-        public CategoryIntroduceController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper)
+        public CategoryIntroduceController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IMemoryCache cache)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _cache = cache;
         }
 
         [HttpPost]
@@ -251,6 +254,8 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 _repository.CategoryIntroduce.UpdateCategory(categoryEntity);
                 _repository.SaveAsync();
+
+                _cache.Remove("CategoriesCacheKey");
 
                 return NoContent();
             }

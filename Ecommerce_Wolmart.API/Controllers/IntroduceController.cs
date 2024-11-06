@@ -3,7 +3,6 @@ using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
@@ -19,16 +18,14 @@ namespace Ecommerce_Wolmart.API.Controllers
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMemoryCache _cache;
 
-        public IntroduceController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor, IMemoryCache cache)
+        public IntroduceController(ILoggerManager logger, IRepositoryManager repository, IMapper mapper, IWebHostEnvironment webHostEnvironment, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _httpContextAccessor = httpContextAccessor;
-            _cache = cache;
         }
 
         [HttpPost]
@@ -155,7 +152,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
-
                 var introduceDtos = _mapper.Map<IEnumerable<IntroduceDto>>(introduces);
 
                 return Ok(new
@@ -300,51 +296,32 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Tạo key cache duy nhất cho từng sản phẩm theo id
-                string cacheKey = $"Introduce_{id}";
-
-                if (!_cache.TryGetValue(cacheKey, out ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>> cachedResponse))
+                var introduce = await _repository.Introduce.GetIntroduceByIdAsync(id, trackChanges: false);
+                if (introduce == null)
                 {
-                    var introduce = await _repository.Introduce.GetIntroduceByIdAsync(id, trackChanges: false);
-                    if (introduce == null)
+                    _logger.LogError($"Không tìm thấy introduce id này {id}");
+                    return NotFound(new ApiResponse<object>
                     {
-                        _logger.LogError($"Không tìm thấy introduce id này {id}");
-                        return NotFound(new ApiResponse<object>
-                        {
-                            Success = false,
-                            Message = "Không tìm thấy introduce id này!",
-                            Data = null
-                        });
-                    }
-
-                    // Lấy danh sách bài viết liên quan (ví dụ: cùng danh mục)
-                    var relateIntroduces = await _repository.Introduce.GetRelatedIntroducesAsync(id, introduce.CategoryId, trackChanges: true);
-
-                    var introduceDto = _mapper.Map<IntroduceDto>(introduce);
-
-                    var introduceResult = _mapper.Map<IEnumerable<IntroduceDto>>(relateIntroduces);
-
-                    cachedResponse =new ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>
-                    {
-                        Success = true,
-                        Message = "Introduce retrieved successfully.",
-                        Data = introduceDto,
-                        Data2nd = introduceResult // Trả về bài viết liên quan trong Data2nd
-                    };
-
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                     .SetSlidingExpiration(TimeSpan.FromMinutes(10)) // Gia hạn nếu được truy cập
-                     .SetAbsoluteExpiration(TimeSpan.FromHours(1));  // Cache hết hạn sau 1 giờ
-
-                    _cache.Set(cacheKey, cachedResponse, cacheOptions);
-                }
-                else
-                {
-                    _logger.LogInfo($"Cache hit for introduce with id: {id}");
+                        Success = false,
+                        Message = "Không tìm thấy introduce id này!",
+                        Data = null
+                    });
                 }
 
-                return Ok(cachedResponse);
+                // Lấy danh sách bài viết liên quan (ví dụ: cùng danh mục)
+                var relateIntroduces = await _repository.Introduce.GetRelatedIntroducesAsync(id, introduce.CategoryId, trackChanges: true);
 
+                var introduceDto = _mapper.Map<IntroduceDto>(introduce);
+
+                var introduceResult = _mapper.Map<IEnumerable<IntroduceDto>>(relateIntroduces);
+
+                return Ok (new ApiProductResponse<IntroduceDto, IEnumerable<IntroduceDto>>
+                {
+                    Success = true,
+                    Message = "Introduce retrieved successfully.",
+                    Data = introduceDto,
+                    Data2nd = introduceResult // Trả về bài viết liên quan trong Data2nd
+                });
 
             }
             catch (Exception ex)
@@ -425,6 +402,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 _repository.Introduce.UpdateIntroduce(introduceEntity);
                 _repository.SaveAsync();
+
 
                 return NoContent();
             }

@@ -8,9 +8,7 @@ namespace Shared.DTO.Banner
         [Required]
         public string Title { get; set; }
         public string Desc { get; set; }
-        [Required]
-        public IFormFile File { get; set; }
-        [Required]
+        public IFormFile? File { get; set; }
         public BannerPosition Position { get; set; }
 
         public IFormFile? SecondFile { get; set; }

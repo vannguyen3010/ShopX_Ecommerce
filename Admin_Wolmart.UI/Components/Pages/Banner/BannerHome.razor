@@ -16,10 +16,21 @@
                         <div class="title-header option-title">
                             <h5>Quản lý Banner</h5>
                             <form class="d-inline-flex">
-                                <a href="add-new-category.html"
+                            @*     <a href="add-new-category.html"
                                    class="align-items-center btn btn-theme d-flex">
                                     <i data-feather="plus-square"></i>Thêm banner
-                                </a>
+                                </a> *@
+                                @if (ShowLoadingButton)
+                                {
+                                    <ButtonLoad></ButtonLoad>
+                                }
+                                else
+                                {
+                                    <a href="add-new-category.html"
+                                       class="align-items-center btn btn-theme d-flex">
+                                        <i data-feather="plus-square"></i>Thêm banner
+                                    </a>
+                                }
                             </form>
                         </div>
                         <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
@@ -154,7 +165,9 @@
 
 @code {
     private IEnumerable<BannerDto> listBanner;
+
     private bool isLoading = true;
+    public bool ShowLoadingButton { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {

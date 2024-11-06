@@ -1,4 +1,22 @@
-﻿<button class="btn btn-primary float-end" type="button" disabled>
+﻿@* <button class="btn btn-primary float-end" type="button" disabled>
     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
     Loadding...
-</button>
+</button> *@
+<button class="buttonload"><i class="fa fa-spinner fa-spin"></i>Loading ...</button>
+
+<style>
+   .buttonload {
+      background-color: #039184;
+      border: none;
+      color: white;
+      padding: 9px 23px;
+      font-size: 16px;
+      margin: 25px;
+      border-radius: 30px;
+   }
+
+    .buttonload i {
+      margin-left: -12px;
+      margin-right: 8px;
+    }
+</style>
