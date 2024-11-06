@@ -78,7 +78,15 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" @onclick="HandleUpdateBanner">Cập nhật</button>
+                                @if (ShowLoadingButton)
+                                {
+                                    <ButtonLoad></ButtonLoad>
+                                }
+                                else
+                                {
+
+                                    <button type="button" class="btn btn-primary" @onclick="HandleUpdateBanner">Cập nhật</button>
+                                }
                             </div>
                         </div>
                     </div>
@@ -94,6 +102,8 @@
     private BannerDto banner;
     private IBrowserFile? firstImage;
     private IBrowserFile? secondImage;
+
+    public bool ShowLoadingButton { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,6 +121,8 @@
 
     private async Task HandleUpdateBanner()
     {
+        ShowLoadingButton = true;
+
         IFormFile formFile = firstImage != null ? new CustomFormFile(firstImage) : null;
         IFormFile formSecondFile = secondImage != null ? new CustomFormFile(secondImage) : null;
 
@@ -128,6 +140,9 @@
             // Chuyển hướng đến danh sách hoặc trang khác
             NavigationManager.NavigateTo("/banner-home");
         }
+
+        await Task.Delay(1000);
+        ShowLoadingButton = false;
     }
 
     private async Task OnFileSelected(InputFileChangeEventArgs e)

@@ -1,0 +1,89 @@
+﻿@page "/cap-nhat-danh-muc/{id:guid}"
+
+@inject IntroduceServices _introduceServices
+@inject CateIntroduceServices _cateIntroduceServices
+
+@rendermode InteractiveServer
+
+@if (category != null)
+{
+    <div class="page-body">
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-8 m-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header-2">
+                                        <h5>Cập nhật danh mục</h5>
+                                    </div>
+
+                                    <form class="theme-form theme-form-2 mega-form">
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Danh mục</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"
+                                                       @bind="category.Name">
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                @if (ShowLoadingButton)
+                                {
+                                    <ButtonLoad></ButtonLoad>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-primary" @onclick="HandleUpdateCategory">Cập nhật</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private CategoryIntroduceDto category;
+    public bool ShowLoadingButton { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCategoryById();
+    }
+
+    private async Task GetCategoryById()
+    {
+        var response = await _cateIntroduceServices.GetCategoryIntroduceByIdAsync(id);
+
+        if (response != null && response.Success)
+        {
+            category = response.Data;
+        }
+    }
+
+    private async Task HandleUpdateCategory()
+    {
+        ShowLoadingButton = true;
+
+        var updateDto = new UpdateCateIntroDto { Name = category.Name };
+        bool isSuccess = await _cateIntroduceServices.UpdateCategoryIntroduceAsync(category.Id, updateDto);
+        if (isSuccess)
+        {
+            NavigationManager.NavigateTo("/danh-muc-gioi-thieu", forceLoad: true);
+        }
+
+        await Task.Delay(1000);
+        ShowLoadingButton = false;
+    }
+
+}

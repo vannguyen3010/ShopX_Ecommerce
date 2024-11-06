@@ -82,7 +82,7 @@
                                                     <td>
                                                         <ul>
                                                             <li>
-                                                                <a class="@(item.Status ? "" : "table_row_disabled")" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal" @onclick="() => OpenModal(item.Id)">
+                                                                <a class="@(item.Status ? "" : "table_row_disabled")" href="javascript:void(0)" @onclick="() => GetCategoryOrUpdateByid(item.Id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>   
@@ -139,30 +139,6 @@
         </div>
     </div>
 
-    @if (isModalOpen && category != null)
-    {
-        <div class="modal fade show d-block" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Thông tin danh mục</h5>
-                        <button type="button" class="btn-close" @onclick="CloseModal" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-4 row align-items-center">
-                            <label class="form-label-title col-sm-3 mb-0">Tên Danh mục</label>
-                            <div class="col-sm-9">
-                                <input class="form-control" type="text" @bind="category.Name" placeholder="Tên Danh mục">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @onclick="UpdateCategory">Cập nhật</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
 
@@ -192,40 +168,9 @@
         await LoadListCategoriesIntroduces();
     }
 
-    private void OpenModals()
+    private async Task GetCategoryOrUpdateByid(Guid id)
     {
-        isModalOpen = true;
-    }
-
-    private void CloseModal()
-    {
-        isModalOpen = false;
-    }
-
-    private async Task OpenModal(Guid categoryId)
-    {
-        var response = await _cateIntroduceServices.GetCategoryIntroduceByIdAsync(categoryId);
-
-        if (response != null && response.Success)
-        {
-            category = response.Data;
-        }
-
-        isModalOpen = true;
-    }
-
-    private async Task UpdateCategory()
-    {
-        if (category != null)
-        {
-            var updateDto = new UpdateCateIntroDto { Name = category.Name };
-            bool isSuccess = await _cateIntroduceServices.UpdateCategoryIntroduceAsync(category.Id, updateDto);
-            if (isSuccess)
-            {
-                await LoadListCategoriesIntroduces();
-                CloseModal();
-            }
-        }
+        NavigationManager.NavigateTo($"/cap-nhat-danh-muc/{id}", forceLoad: true);
     }
 
     private async Task DeleteCategory(Guid id)
