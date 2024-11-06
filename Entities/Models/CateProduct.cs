@@ -27,8 +27,8 @@ namespace Entities.Models
         public string? FileExtension { get; set; }
         public long? FileSizeInBytes { get; set; }
         public string? FilePath { get; set; }
-        public DateTime CreateAt { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime CreateAt { get; set; } = DateTime.Now;
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
     }
 }

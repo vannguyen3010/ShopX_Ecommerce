@@ -89,6 +89,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                             Data = null
                         });
                     }
+
                     // Kiểm tra xem danh mục cấp 1 có sản phẩm không
                     var hasProducts = await _repository.CateProduct.HasProductsInCategoryAsync(createCategoryDto.ParentCategoryId.Value);
                     if(hasProducts)
@@ -316,7 +317,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Gọi repository để lấy danh mục có sản phẩm
                 var categories = await _repository.CateProduct.GetAllCategoryProductWithProducts(trackChanges: false);
 
-                var result = _mapper.Map<IEnumerable<CateProductDto>>(categories); // Sử dụng AutoMapper
+                var result = _mapper.Map<IEnumerable<CateProductDto>>(categories);
 
                 // Trả về response
                 var apiResponse = new ApiResponse<IEnumerable<CateProductDto>>
@@ -477,7 +478,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateCategoryProductStatus/{id}")]
-        public async Task<IActionResult> UpdateCategoryProductStatus(Guid id, [FromForm] UpdateCateProductStatusDto request)
+        public async Task<IActionResult> UpdateCategoryProductStatus(Guid id, [FromQuery] UpdateCateProductStatusDto request)
         {
             try
             {
@@ -496,8 +497,20 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 // Update category properties
                 existingCateProduct.Status = request.Status;
-
                 existingCateProduct.DateTime = DateTime.UtcNow;
+
+                // Kiểm tra xem danh mục này có phải là danh mục cha không
+                var childCategories = await _repository.CateProduct.GetChildCategoriesAsync(id);
+                if (childCategories != null && childCategories.Any())
+                {
+                    // Nếu là danh mục cha, cập nhật trạng thái cho tất cả danh mục con
+                    foreach (var childCategory in childCategories)
+                    {
+                        childCategory.Status = request.Status;
+                        childCategory.DateTime = DateTime.UtcNow;
+                        await _repository.CateProduct.UpdateCategoryAsync(childCategory);
+                    }
+                }
 
                 await _repository.CateProduct.UpdateCategoryAsync(existingCateProduct);
 
@@ -531,7 +544,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
         }
-
         private void ValidateFileUpload(CreateBannerDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
