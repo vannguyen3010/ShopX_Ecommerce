@@ -1,4 +1,5 @@
 ﻿using Shared.DTO.CategoryIntroduce;
+using Shared.DTO.CateProduct;
 using Shared.DTO.Contact;
 using Shared.DTO.Introduce;
 using Shared.DTO.Order;
@@ -29,6 +30,11 @@ namespace Shared.DTO.Response
     {
         public int TotalCount { get; set; }
         public IEnumerable<ProductDto> Products { get; set; }
+    }
+    public class CateProductResponseDto
+    {
+        public int TotalCount { get; set; }
+        public IEnumerable<CateProductDto> Categories { get; set; }
     }
     public class IntroduceResponse
     {

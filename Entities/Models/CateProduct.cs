@@ -9,6 +9,7 @@ namespace Entities.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string NameSlug { get; set; }
+        public bool Status { get; set; }
 
         [ForeignKey("ParentCategory")]
         public Guid? ParentCategoryId { get; set; }

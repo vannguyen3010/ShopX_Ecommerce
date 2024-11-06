@@ -13,4 +13,8 @@ namespace Shared.DTO.CateProduct
         [Required]
         public IFormFile File { get; set; }
     }
+    public class UpdateCateProductStatusDto
+    {
+        public bool Status { get; set; }
+    }
 }
