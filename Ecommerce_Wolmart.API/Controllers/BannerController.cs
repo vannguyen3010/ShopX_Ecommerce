@@ -70,6 +70,8 @@ namespace Ecommerce_Wolmart.API.Controllers
                 var bannerEntity = _mapper.Map<Banner>(createbannerDto);
 
                 bannerEntity.Status = true;
+                bannerEntity.FileName = createbannerDto.Title;
+                bannerEntity.FileDescription = createbannerDto.Title;
 
                 // Xử lý tập tin hình ảnh
                 if (createbannerDto.File != null)
