@@ -104,7 +104,7 @@ namespace Admin_Wolmart.UI.Services
                 content.Add(fileContent, "File", file.Name);
             }
 
-            var response = await _httpClient.PutAsync($"/api/CateProduct/UpdateCategoryProductStatus/{id}", content);
+            var response = await _httpClient.PutAsync($"/api/CateProduct/UpdateCategoryProduct/{id}", content);
             return response.IsSuccessStatusCode;
         }
     }
