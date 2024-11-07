@@ -80,5 +80,12 @@ namespace Admin_Wolmart.UI.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> DeleteProductByIdAsync(Guid id)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/Product/DeleteProductById/{id}");
+
+            return response.IsSuccessStatusCode;
+
+        }
     }
 }
