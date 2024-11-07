@@ -22,7 +22,7 @@
                                         <label class="form-label-title col-sm-3 mb-0">Tên danh mục</label>
                                         <div class="col-sm-9">
                                             <input class="form-control" type="text"
-                                                   placeholder="Nhập tên" @bind="newCategories.Name">
+                                                   placeholder="Nhập tên" @bind="newCategories.Name" required>
                                         </div>
                                     </div>
 
@@ -55,7 +55,7 @@
 
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-3 col-form-label form-label-title"></label>
-                                        <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" />
+                                        <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" required />
                                     </div>
 
                                     <div class="modal-footer">
