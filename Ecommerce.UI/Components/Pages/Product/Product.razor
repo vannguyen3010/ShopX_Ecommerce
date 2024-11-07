@@ -144,51 +144,54 @@
                         {
                             @foreach (var item in products)
                             {
-                                <div class="product-wrap">
-                                    <div class="product text-center img__wrapper">
-                                        <figure class="product-media spotlight">
-                                            <a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="cursor">
-                                                <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product"
-                                                     width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
-                                            </a>
-                                        </figure>
-                                        <img src="http://www.savoy-sharm.com/media-room/images/hi-res/king-bed-room-accommodation-savoy-luxury-5-stars-accommodation-sharm-el-sheikh.jpg" alt="" />
-                                        @if (item.Discount > 1)
-                                        {
-                                            <a class="sold_out">- @item.Discount.ToString("N0") </a>
-                                        }
-                                        <div class="product-details">
-                                            <h4 class="product-name"><a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="cursor">@item.Name</a></h4>
-                                            <div class="ratings-container">
-                                                <div class="star-rating">
-                                                    @for (int i = 0; i < item.Rating; i++)
-                                                    {
-                                                        <span class="fa fa-star checked"></span>
-                                                    }
-                                                    @for (int i = 0; i < (5 - item.Rating); i++)
-                                                    {
-                                                        <span class="fa fa-star"></span>
-                                                    }
+                                @if (item.Status == true)
+                                {
+                                    <div class="product-wrap">
+                                        <div class="product text-center img__wrapper">
+                                            <figure class="product-media spotlight">
+                                                <a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="cursor">
+                                                    <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="Product"
+                                                         width="300" height="338" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                                </a>
+                                            </figure>
+                                            <img src="http://www.savoy-sharm.com/media-room/images/hi-res/king-bed-room-accommodation-savoy-luxury-5-stars-accommodation-sharm-el-sheikh.jpg" alt="" />
+                                            @if (item.Discount > 1)
+                                            {
+                                                <a class="sold_out">- @item.Discount.ToString("N0") </a>
+                                            }
+                                            <div class="product-details">
+                                                <h4 class="product-name"><a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="cursor">@item.Name</a></h4>
+                                                <div class="ratings-container">
+                                                    <div class="star-rating">
+                                                        @for (int i = 0; i < item.Rating; i++)
+                                                        {
+                                                            <span class="fa fa-star checked"></span>
+                                                        }
+                                                        @for (int i = 0; i < (5 - item.Rating); i++)
+                                                        {
+                                                            <span class="fa fa-star"></span>
+                                                        }
 
+                                                    </div>
                                                 </div>
+                                                @if (item.Discount > 0)
+                                                {
+                                                    <div class="product-price">
+                                                        <del class="old-price">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                                        <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="product-price">
+                                                        <ins class="new-price text-danger">@((item.Price).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                                    </div>
+                                                }
+
                                             </div>
-                                            @if (item.Discount > 0)
-                                            {
-                                                <div class="product-price">
-                                                    <del class="old-price">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
-                                                    <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="product-price">
-                                                    <ins class="new-price text-danger">@((item.Price).ToString("N0")) <span class="currency-symbol">đ</span></ins>
-                                                </div>
-                                            }
-
                                         </div>
                                     </div>
-                                </div>
+                                }
                             }
                         }
                         else
@@ -244,7 +247,7 @@
     private IEnumerable<CateProductDto> cateProducts;
 
     private int currentPage = 1;
-    private int pageSize = 10;
+    private int pageSize = 12;
     private int totalPages;
     private int totalCount;
     private int? type;

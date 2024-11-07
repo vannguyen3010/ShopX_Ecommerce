@@ -55,117 +55,112 @@
                     {
                         @if (item.Price > 0 && (item.Discount / item.Price) >= 0.30m) //Sản phẩm giảm giá trên 30 % mới xuất hiện
                         {
-                            <div class="product product-single row">
-                                <div class="col-md-6">
-                                    <div class="product-gallery product-gallery-vertical mb-0">
-                                        <div class="product-single-carousel owl-carousel owl-theme owl-nav-inner row cols-1 gutter-no">
-                                            <figure class="product-image">
-                                                <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
-                                                     data-zoom-image="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
-                                                     alt="Product Image" width="800" height="900" id="main-image-@(item.Id)"
-                                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                                            </figure>
-                                        </div>
-                                        <div class="product-thumbs-wrap">
-                                            <div class="product-thumbs">
-                                                @if (item.ProductImages.Any())
-                                                {
-                                                    @foreach (var image in item.ProductImages.Select((img, index) => new { img, index }))
+                            @if(item.Status == true)
+                            {
+
+                                <div class="product product-single row">
+                                    <div class="col-md-6">
+                                        <div class="product-gallery product-gallery-vertical mb-0">
+                                            <div class="product-single-carousel owl-carousel owl-theme owl-nav-inner row cols-1 gutter-no">
+                                                <figure class="product-image">
+                                                    <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
+                                                         data-zoom-image="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
+                                                         alt="Product Image" width="800" height="900" id="main-image-@(item.Id)"
+                                                         onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                </figure>
+                                            </div>
+                                            <div class="product-thumbs-wrap">
+                                                <div class="product-thumbs">
+                                                    @if (item.ProductImages.Any())
                                                     {
-                                                        <div class="product-thumb @(image.index == 0 ? "active" : "")"
-                                                             onclick="setActiveImage(this, '@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)', 'main-image-@(item.Id)')">
-                                                            <img src="@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)"
-                                                                 onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" alt="Product thumb" width="60" height="68" />
-                                                        </div>
+                                                        @foreach (var image in item.ProductImages.Select((img, index) => new { img, index }))
+                                                        {
+                                                            <div class="product-thumb @(image.index == 0 ? "active" : "")"
+                                                                 onclick="setActiveImage(this, '@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)', 'main-image-@(item.Id)')">
+                                                                <img src="@(string.IsNullOrEmpty(image.img.ImageFilePath) ? "/Img_Dev/banner.png" : image.img.ImageFilePath)"
+                                                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" alt="Product thumb" width="60" height="68" />
+                                                            </div>
+                                                        }
                                                     }
-                                                }
-                                            </div>
-                                        </div>
-
-                                        <div class="product-label-group">
-                                            @if (item.Discount > 0)
-                                            {
-                                                <label class="product-label" style="background:#799b5a">Hot</label>
-                                            }
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="product-details scrollable">
-                                        <h2 class="product-title mb-1">
-                                            <a href="/san-pham/@item.NameSlug/@item.Id">
-                                                @item.Name
-                                            </a>
-                                        </h2>
-
-                                        <hr class="product-divider">
-                                        <div class="product-price">
-                                            <del class="old-price">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></del>
-                                            <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
-                                        </div>
-                                        <div class="ratings-container">
-                                            <div class="star-rating">
-                                                @for (int i = 0; i < item.Rating; i++)
-                                                {
-                                                    <span class="fa fa-star checked"></span>
-                                                }
-                                                @for (int i = 0; i < (5 - item.Rating); i++)
-                                                {
-                                                    <span class="fa fa-star"></span>
-                                                }
-
-                                            </div>
-                                        </div>
-
-                                        <div class="product_des">
-                                            <span class="no_wrap_3 fs-5">@item.Description</span>
-                                        </div>
-
-                                        <div class="product-form pt-4">
-                                            <div class="product-qty-form mb-2 mr-2">
-                                                <div class="input-group">
-                                                    <input class="quantity form-control" type="number" min="1"
-                                                           max="10000000">
-                                                    <button class="quantity-plus w-icon-plus"></button>
-                                                    <button class="quantity-minus w-icon-minus"></button>
                                                 </div>
                                             </div>
-                                            <button class="btn btn-primary btn-cart">
-                                                <i class="w-icon-cart"></i>
-                                                <span>Xem thêm</span>
-                                            </button>
+
+                                            <div class="product-label-group">
+                                                @if (item.Discount > 0)
+                                                {
+                                                    <label class="product-label" style="background:#799b5a">Hot</label>
+                                                }
+                                            </div>
                                         </div>
 
-                                        <div class="social-links-wrapper mt-1">
-                                            <div class="social-links">
-                                                <div class="social-icons social-no-color border-thin">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="product-details scrollable">
+                                            <h2 class="product-title mb-1">
+                                                <a href="/san-pham/@item.NameSlug/@item.Id">
+                                                    @item.Name
+                                                </a>
+                                            </h2>
+
+                                            <hr class="product-divider">
+                                            <div class="product-price">
+                                                <del class="old-price">@item.Price.ToString("N0") <span class="currency-symbol">đ</span></del>
+                                                <ins class="new-price text-danger">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
+                                            </div>
+                                            <div class="ratings-container">
+                                                <div class="star-rating">
+                                                    @for (int i = 0; i < item.Rating; i++)
+                                                    {
+                                                        <span class="fa fa-star checked"></span>
+                                                    }
+                                                    @for (int i = 0; i < (5 - item.Rating); i++)
+                                                    {
+                                                        <span class="fa fa-star"></span>
+                                                    }
+
+                                                </div>
+                                            </div>
+
+                                            <div class="product_des">
+                                                <span class="no_wrap_3 fs-5">@item.Description</span>
+                                            </div>
+
+                                            <div class="product-form pt-4">
+                                                <div class="product-qty-form mb-2 mr-2">
+                                                    <div class="input-group">
+                                                        <input class="quantity form-control" type="number" min="1"
+                                                               max="10000000">
+                                                        <button class="quantity-plus w-icon-plus"></button>
+                                                        <button class="quantity-minus w-icon-minus"></button>
+                                                    </div>
+                                                </div>
+                                                <button class="btn btn-primary btn-cart">
+                                                    <i class="w-icon-cart"></i>
+                                                    <span>Xem thêm</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="social-links-wrapper mt-1">
+                                                <div class="social-links">
+                                                    <div class="social-icons social-no-color border-thin">
+                                                        <a href="#"
+                                                           class="social-icon social-facebook w-icon-facebook"></a>
+
+                                                    </div>
+                                                </div>
+                                                <span class="divider d-xs-show"></span>
+                                                <div class="product-link-wrapper d-flex">
                                                     <a href="#"
-                                                       class="social-icon social-facebook w-icon-facebook"></a>
-
+                                                       class="btn-product-icon btn-wishlist w-icon-heart"></a>
                                                 </div>
-                                            </div>
-                                            <span class="divider d-xs-show"></span>
-                                            <div class="product-link-wrapper d-flex">
-                                                <a href="#"
-                                                   class="btn-product-icon btn-wishlist w-icon-heart"></a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         }
                        
                     }
-                }
-                else
-                {
-                    <div class="container">
-                        <div class="d-flex justify-content-center">
-                            <img src="img_dev/datanull.jpg" class="img-fluid" alt="Image" />
-                        </div>
-
-                    </div>
                 }
 
                 <!-- End of Product Single -->
@@ -206,47 +201,50 @@
                             <div class="product-widget-wrap">
                                 @foreach (var item in chunk.Take(10))
                                 {
-                                    <div class="product product-widget bb-no">
-                                        <figure class="product-media">
-                                            <a class="cursor" onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';">
-                                                <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
-                                                     alt="Product"
-                                                     width="105" height="118"
-                                                     onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
-                                            </a>
-                                        </figure>
-                                        <div class="product-details">
-                                            <h4 class="product-name">
-                                                <a class="cursor" onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';">@item.Name</a>
-                                            </h4>
-                                            <div class="ratings-container">
-                                                <div class="star-rating">
-                                                    @for (int i = 0; i < item.Rating; i++)
-                                                    {
-                                                        <span class="fa fa-star checked"></span>
-                                                    }
-                                                    @for (int i = 0; i < (5 - item.Rating); i++)
-                                                    {
-                                                        <span class="fa fa-star"></span>
-                                                    }
+                                    @if(item.Status == true)
+                                    {
+                                        <div class="product product-widget bb-no">
+                                            <figure class="product-media">
+                                                <a class="cursor" onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';">
+                                                    <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
+                                                         alt="Product"
+                                                         width="105" height="118"
+                                                         onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                                </a>
+                                            </figure>
+                                            <div class="product-details">
+                                                <h4 class="product-name">
+                                                    <a class="cursor" onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';">@item.Name</a>
+                                                </h4>
+                                                <div class="ratings-container">
+                                                    <div class="star-rating">
+                                                        @for (int i = 0; i < item.Rating; i++)
+                                                        {
+                                                            <span class="fa fa-star checked"></span>
+                                                        }
+                                                        @for (int i = 0; i < (5 - item.Rating); i++)
+                                                        {
+                                                            <span class="fa fa-star"></span>
+                                                        }
 
+                                                    </div>
                                                 </div>
+                                                @if (item.Discount > 0)
+                                                {
+                                                    <div class="product-price">
+                                                        <del class="old-price fs-5">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
+                                                        <del class="new-price text-danger fs-5">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></del>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="product-price">
+                                                        <del class="new-price text-danger fs-5">@((item.Price).ToString("N0")) <span class="currency-symbol">đ</span></del>
+                                                    </div>
+                                                }
                                             </div>
-                                            @if(item.Discount > 0)
-                                            {
-                                                <div class="product-price">
-                                                    <del class="old-price fs-5">@item.Price.ToString("N0")  <span class="currency-symbol">đ</span>  </del>
-                                                    <del class="new-price text-danger fs-5">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></del>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="product-price">
-                                                    <del class="new-price text-danger fs-5">@((item.Price).ToString("N0")) <span class="currency-symbol">đ</span></del>
-                                                </div>
-                                            }
                                         </div>
-                                    </div>
+                                    }
                                 }
                             </div> <!-- Kết thúc slide -->
                         }
