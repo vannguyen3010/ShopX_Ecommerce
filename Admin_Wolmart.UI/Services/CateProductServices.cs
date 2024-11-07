@@ -55,6 +55,20 @@ namespace Admin_Wolmart.UI.Services
             return null;
         }
 
+        public async Task<IEnumerable<CateProductDto>> GetAllCategoryProductsAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/CateProduct/GetAllCategoryProducts");
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<CateProductDto>>>();
+                return apiResponse?.Data ?? Enumerable.Empty<CateProductDto>();
+            }
+            else
+            {
+                return Enumerable.Empty<CateProductDto>();
+            }
+        }
+
         public async Task<bool> UpdateCategoryProductStatusAsync(Guid id, bool status)
         {
             var updateStatus = new UpdateCateIntroDtoStatus { Status = status };
@@ -115,6 +129,7 @@ namespace Admin_Wolmart.UI.Services
 
             // Thêm các trường khác vào form-data
             content.Add(new StringContent(request.Name ?? ""), "Name");
+            content.Add(new StringContent(request.ParentCategoryId.ToString() ?? ""), "ParentCategoryId");
 
             // Đọc và thêm file vào form-data
             if (file != null)
