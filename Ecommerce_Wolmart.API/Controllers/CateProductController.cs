@@ -128,6 +128,9 @@ namespace Ecommerce_Wolmart.API.Controllers
 
                 cateProductEntity.Status = true;
 
+                cateProductEntity.FileName = createCategoryDto.Name;
+                cateProductEntity.FileDescription = createCategoryDto.Name;
+
                 // Xử lý tập tin hình ảnh
                 if (createCategoryDto.File != null)
                 {
