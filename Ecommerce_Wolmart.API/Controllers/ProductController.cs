@@ -125,6 +125,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Tạo NameSlug từ Title
                 productEntity.NameSlug = SlugGenerator.GenerateSlug(createProductDto.Name);
 
+                productEntity.Status = true;
 
                 //Xử lý hình ảnh
                 if (createProductDto.ImageFile != null)
@@ -840,6 +841,40 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("UpdateProductStatus/{id}")]
+        public async Task<IActionResult> UpdateProductStatus(Guid id, [FromQuery] UpdateProductStatusDto request)
+        {
+            try
+            {
+                var productEntity = await _repository.Product.GetProductByIdAsync(id, trackChanges: true);
+
+                if (productEntity == null)
+                {
+                    _logger.LogError($"Không tìm thấy sản phẩm có id {id}");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy sản phẩm có id {id}",
+                        Data = null
+                    });
+                }
+
+                _mapper.Map(request, productEntity);
+                
+                productEntity.Status = request.Status;
+
+                await _repository.Product.UpdateProductAsync(productEntity);
+
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateProduct action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
 
         private byte[] ConvertHexStringToByteArray(string hex)

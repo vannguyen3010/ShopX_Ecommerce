@@ -13,14 +13,15 @@ namespace Shared.DTO.Product
         public decimal Discount { get; set; }
         public Guid CategoryId { get; set; }
         public string CategoryName { get; set; }
-        public CateProductDto ParentCategory { get; set; }
         public string ImageFilePath { get; set; }
+        public bool Status { get; set; }
         public bool IsHot { get; set; }
         public int Rating { get; set; }
         public int StockQuantity { get; set; }
         public int BestSeller { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public CateProductDto ParentCategory { get; set; }
         public List<ProductImageDto> ProductImages { get; set; } = new List<ProductImageDto>();
     }
     public class ProductImageDto

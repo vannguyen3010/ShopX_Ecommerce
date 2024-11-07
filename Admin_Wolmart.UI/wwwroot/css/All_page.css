@@ -105,3 +105,30 @@ input:checked + .slider:before {
         transform: rotate(359deg);
     }
 }
+.search_input {
+    font-family: 'Public Sans' !important;
+    border: none;
+    outline: none;
+    padding: 5px;
+    width: 200px;
+}
+
+.sort_categories {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.search_button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    padding: 0 10px;
+}
+.search_box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+}
