@@ -1,0 +1,90 @@
+﻿@page "/them-danh-muc-san-pham"
+@inject CateProductServices _cateProductServices
+
+@rendermode InteractiveServer
+
+<div class="page-body">
+
+    <!-- New Product Add Start -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-sm-8 m-auto">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-header-2">
+                                    <h5>Category Information</h5>
+                                </div>
+
+                                <form class="theme-form theme-form-2 mega-form" @onsubmit="HandleSubmit">
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="form-label-title col-sm-3 mb-0">Tên danh mục</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" type="text"
+                                                   placeholder="Nhập tên" @bind="newCategories.Name">
+                                        </div>
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-sm-3 col-form-label form-label-title">Ảnh nền</label>
+                                        <div class="table-image" style="width: 200px;">
+                                            <img src="@imagePreviewUrl" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4 row align-items-center">
+                                        <label class="col-3 col-form-label form-label-title"></label>
+                                        <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" />
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary">Thêm</button>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(message))
+                                    {
+                                        <div class="alert alert-success mt-4">@message</div>
+                                    }
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CreateCateProductDto newCategories = new CreateCateProductDto();
+
+    private string imagePreviewUrl = "/img_dev/datanull.png";
+    private IBrowserFile? selectedFile;
+    private bool ShowLoadingButton { get; set; } = false;
+    private string message;
+
+    private async Task HandleSubmit()
+    {
+        // ShowLoadingButton = true;
+        var success = await _cateProductServices.CreateCategoriesAsync(newCategories, selectedFile);
+        if (success)
+        {
+            newCategories = new CreateCateProductDto();
+            imagePreviewUrl = "/img_dev/datanull.png";
+            message = "Tạo bài viết thành công";
+        }
+        else
+        {
+            message = "Tạo bài viết thất bại";
+        }
+        // ShowLoadingButton = false;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        var buffer = new byte[selectedFile.Size];
+        await selectedFile.OpenReadStream(10485760).ReadAsync(buffer);
+        imagePreviewUrl = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
+}
