@@ -223,7 +223,7 @@
         {
             categoryId = string.IsNullOrEmpty(cId) ? (Guid?)null : new Guid(cId);
 
-            var categoryResponse = await _introduceServices.GetListIntroduceByCategoryId(categoryId.Value);
+            var categoryResponse = await _introduceServices.GetCateIntroduceByCategoryIdAsync(categoryId.Value);
             if (categoryResponse != null && categoryResponse.Success)
             {
                 var category = categoryResponse.Data;
@@ -235,19 +235,14 @@
             int.TryParse(page, out currentPage);
         }
 
+        if (query.TryGetValue("keyword", out var searchKeyword))
+        {
+            keyword = searchKeyword;
+        }
+
         await LoadListIntroduces();
         await LoadListCategoriesIntroduces();
     }
-
-    private async Task OnCategoryChanged(ChangeEventArgs e)
-    {
-        var selectedValue = e.Value?.ToString();
-        categoryId = string.IsNullOrEmpty(selectedValue) ? (Guid?)null : Guid.Parse(selectedValue);
-
-        currentPage = 1;
-        await UpdateUrlAndLoadIntroduces();
-    }
-
 
     private async Task LoadListIntroduces()
     {
@@ -260,10 +255,15 @@
             totalCount = response.Data.TotalCount;
             totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
         }
+        else
+        {
+            listIntroduces = new List<IntroduceDto>();
+        }
 
         await Task.Delay(1000);
         isLoading = false;
     }
+
     private async Task LoadListCategoriesIntroduces()
     {
         var response = await _cateIntroduceServices.GetAllCategoryPaginationAsync(currentPage, pageSize, keyword);
@@ -341,6 +341,15 @@
         NavigationManager.NavigateTo($"/cap-nhat-bai-viet/{id}", forceLoad: true);
     }
 
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value?.ToString();
+        categoryId = string.IsNullOrEmpty(selectedValue) ? (Guid?)null : Guid.Parse(selectedValue);
+
+        currentPage = 1;
+        await UpdateUrlAndLoadIntroduces();
+    }
+
     private async Task UpdateUrlAndLoadIntroduces()
     {
         var queryParameters = new Dictionary<string, string>
@@ -356,7 +365,7 @@
 
         if (categoryId.HasValue)
         {
-            queryParameters["c"] = categoryId.Value.ToString();
+            queryParameters["categoryId"] = categoryId.Value.ToString();
         }
 
         var newUrl = QueryHelpers.AddQueryString("quan-ly-bai-viet", queryParameters!);

@@ -75,7 +75,7 @@ namespace Admin_Wolmart.UI.Services
             return null;
         }
 
-        public async Task<ApiResponse<CategoryIntroduceDto>> GetListIntroduceByCategoryId(Guid Id)
+        public async Task<ApiResponse<CategoryIntroduceDto>> GetCateIntroduceByCategoryIdAsync(Guid Id)
         {
             var response = await _httpClient.GetAsync($"/api/CategoryIntroduce/GetCateIntroduceByCategoryId/{Id}");
             if (response.IsSuccessStatusCode)
