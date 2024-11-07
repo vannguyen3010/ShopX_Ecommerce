@@ -19,4 +19,9 @@ namespace Shared.DTO.Product
         public IFormFile? File { get; set; }
         public List<IFormFile> ImageObjectList { get; set; } = new List<IFormFile>();
     }
+
+    public class UpdateProductStatusDto
+    {
+        public bool Status { get; set; }
+    }
 }

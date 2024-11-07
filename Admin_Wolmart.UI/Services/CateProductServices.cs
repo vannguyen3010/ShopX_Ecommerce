@@ -143,5 +143,15 @@ namespace Admin_Wolmart.UI.Services
             var response = await _httpClient.PostAsync("/api/CateProduct/CreateCategoryProduct", content);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<ApiResponse<CateProductDto>> GetCategoryProductByCategoryId(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"/api/CateProduct/GetCategoryProductByCategoryId/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<CateProductDto>>();
+            }
+            return null;
+        }
     }
 }

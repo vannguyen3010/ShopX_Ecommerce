@@ -63,6 +63,8 @@ namespace Ecommerce_Wolmart.API.Mapping
             CreateMap<UpdateProductDto, Product>()
                 .ForMember(dest => dest.RowVersion, opt => opt.Ignore());
 
+            CreateMap<UpdateProductStatusDto, Product>();
+
             CreateMap<ProductImage, ProductImageDto>();
 
             CreateMap<ProductImageDto, ProductImage>();

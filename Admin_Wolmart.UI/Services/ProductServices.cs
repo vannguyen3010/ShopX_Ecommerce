@@ -1,4 +1,7 @@
-﻿using Shared.DTO.Product;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Shared.DTO.CategoryIntroduce;
+using Shared.DTO.CateProduct;
+using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Admin_Wolmart.UI.Services
@@ -33,5 +36,49 @@ namespace Admin_Wolmart.UI.Services
             }
             return null;
         }
+
+        public async Task<ApiResponse<ProductResponseDto>> GetListProductAsync(int pageNumber = 1, int pageSize = 10, decimal? minPrice = null, decimal? maxPrice = null, Guid? categoryId = null, string? keyword = null, int? type = null)
+        {
+            // Tạo URL gốc cho API
+            var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = pageNumber.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+
+            if (categoryId.HasValue)
+            {
+                queryParameters["categoryId"] = categoryId.Value.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                queryParameters["keyword"] = keyword;
+            }
+
+
+            // Sử dụng QueryHelpers để tạo chuỗi truy vấn
+            var query = QueryHelpers.AddQueryString("/api/Product/GetListProduct", queryParameters);
+
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<ProductResponseDto>>();
+                return result;
+            }
+
+            return null;
+        }
+
+        public async Task<bool> UpdateProductStatusAsync(Guid id, bool status)
+        {
+            var updateStatus = new UpdateCateIntroDtoStatus { Status = status };
+            var query = $"/api/Product/UpdateProductStatus/{id}?Status={status}";
+            var response = await _httpClient.PutAsJsonAsync(query, updateStatus);
+
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }

@@ -1,0 +1,380 @@
+﻿@page "/quan-ly-san-pham"
+
+@inject ProductServices _productServices
+@inject CateProductServices _cateProductServices
+
+@rendermode InteractiveServer
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="title-header option-title d-sm-flex d-block">
+                            <h5>Quản lý sản phẩm</h5>
+                        </div>
+                        <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
+                            <div class="icon-box-content">
+                                <select class="js-example-basic-single w-100 sort_categories search_input cursor" @onchange="OnCategoryChanged" name="state" required>
+
+                                    @if (cateProducts != null && cateProducts.Any())
+                                    {
+                                        <option class="cursor" value="">Chọn danh mục</option>
+                                        @foreach (var item in cateProducts)
+                                        {
+                                            @if (item.Status == true)
+                                            {
+                                                <option value="@item.Id">@item.Name</option>
+
+                                                @if (item.CategoriesObjs != null && item.CategoriesObjs.Any())
+                                                {
+                                                    @foreach (var res in item.CategoriesObjs)
+                                                    {
+                                                        @if(res.Status == true)
+                                                        {
+                                                            <option value="@res.Id">@res.Name</option>
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <form @onsubmit="HandleSearch" class="search_box">
+                                <input type="text" class="search_input" placeholder="Tìm kiếm bài viết..." @bind="keyword">
+                                <button type="submit" class="search_button">
+                                    <i class="fa-solid fa-magnifying-glass fs-6"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="table all-package theme-table table-product" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>Ảnh</th>
+                                            <th>Tên</th>
+                                            <th>Danh mục</th>
+                                            <th>Trang thái</th>
+                                            <th>Ngày</th>
+                                            <th>Giá</th>
+                                            <th>Nổi bật</th>
+                                            <th>Lượt mua</th>
+                                            <th>Tồn kho</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (isLoading)
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="loading-container">
+                                                        <div class="loading"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if (products != null && products.Any())
+                                        {
+                                            @foreach (var item in products)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="table-image">
+                                                            <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" class="img-fluid"
+                                                                 alt="product" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                        </div>
+                                                    </td>
+
+                                                    <td>@item.Name</td>
+
+                                                    <td class="status-close">
+                                                        <span>@item.CategoryName</span>
+                                                    </td>
+
+                                                    @if (item.Status == true)
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+
+                                                    }
+
+                                                    <td>@item.CreatedAt.ToString("dd-MM-yyyy")</td>
+
+                                                    <td class="td-price">
+                                                        <ins class="new-price" style="text-decoration: none;">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol text-danger">đ</span></ins>
+                                                    </td>
+
+                                                    @if (item.IsHot == true)
+                                                    {
+                                                        <td>Có</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>Không</td>
+                                                    }
+
+                                                    <td>@item.BestSeller</td>
+
+                                                    @if (item.StockQuantity == 0)
+                                                    {
+                                                        <td class="status-danger">
+                                                            <span>Hết hàng</span>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>@item.StockQuantity</td>
+                                                    }
+
+                                                    <td>
+                                                        <ul>
+
+                                                            <li>
+                                                                <a href="javascript:void(0)">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                   data-bs-target="#exampleModalToggle">
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
+                                                    </div>
+                                                    <span>Không có sản phẩm nào !</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    @if (totalPages > 1)
+                    {
+                        <nav class="custome-pagination mt-5">
+                            <ul class="pagination justify-content-center custom_pagination_ul">
+                                <li class="page-item custom_lef @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                        <i class="fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    var pageNumber = i;
+
+                                    <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
+                                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                    </li>
+                                }
+
+                                <li class="page-item custom_left @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                        <i class="fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private IEnumerable<ProductDto> products;
+    private IEnumerable<CateProductDto> cateProducts;
+
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages;
+    private int totalCount;
+    private int? type;
+
+    private Guid? categoryId = null;
+    private decimal? minPrice = null;
+    private decimal? maxPrice = null;
+    private string? keyword = null;
+
+    private bool isLoading = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("c", out var cId))
+        {
+            categoryId = string.IsNullOrEmpty(cId) ? (Guid?)null : new Guid(cId);
+
+            var categoryResponse = await _cateProductServices.GetCategoryProductByCategoryId(categoryId.Value);
+            if (categoryResponse != null && categoryResponse.Success)
+            {
+                var category = categoryResponse.Data;
+            }
+        }
+
+        if (query.TryGetValue("keyword", out var searchKeyword))
+        {
+            keyword = searchKeyword;
+        }
+
+        if (query.TryGetValue("pageNumber", out var page))
+        {
+            int.TryParse(page, out currentPage);
+        }
+
+        await LoadListProducts();
+        await LoadCategories();
+    }
+
+    private async Task LoadCategories()
+    {
+        cateProducts = await _cateProductServices.GetAllCategoryProductsAsync();
+    }
+
+    private async Task LoadListProducts()
+    {
+        isLoading = true;
+
+        var response = await _productServices.GetListProductAsync(currentPage, pageSize, minPrice, maxPrice, categoryId, keyword, type);
+        if (response != null && response.Success)
+        {
+            products = response.Data.Products;
+            totalCount = response.Data.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        }
+        else
+        {
+            products = new List<ProductDto>();
+        }
+
+        await Task.Delay(1000);
+        isLoading = false;
+    }
+
+    private async Task ChangePage(int page)
+    {
+        // Chỉ cập nhật nếu page khác currentPage
+        if (page != currentPage)
+        {
+            currentPage = page;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await UpdateUrlAndLoadProducts();
+        }
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse(e.Value.ToString());
+
+        currentPage = 1;
+        await UpdateUrlAndLoadProducts();
+    }
+
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value?.ToString();
+        categoryId = string.IsNullOrEmpty(selectedValue) ? (Guid?)null : Guid.Parse(selectedValue);
+
+        currentPage = 1;
+        await UpdateUrlAndLoadProducts();
+    }
+
+    private async Task HandleSearch()
+    {
+        currentPage = 1;
+        await UpdateUrlAndLoadProducts();
+
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _productServices.UpdateProductStatusAsync(id, status);
+
+        if (isSuccess)
+        {
+            await LoadListProducts();
+        }
+    }
+
+    private async Task UpdateUrlAndLoadProducts()
+    {
+        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
+        var queryParameters = new Dictionary<string, string>
+        {
+            ["pageNumber"] = currentPage.ToString(),
+            ["pageSize"] = pageSize.ToString()
+        };
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            queryParameters["keyword"] = keyword;
+        }
+
+        if (categoryId.HasValue)
+        {
+            queryParameters["categoryId"] = categoryId.Value.ToString();
+        }
+
+        // Tạo URL query string
+        var newUrl = QueryHelpers.AddQueryString("/quan-ly-san-pham", queryParameters!);
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+
+        // Tải lại danh sách sản phẩm
+        await LoadListProducts();
+    }
+}
