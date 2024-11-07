@@ -120,7 +120,7 @@
                                                     <td>@item.CreatedAt.ToString("dd-MM-yyyy")</td>
 
                                                     <td class="td-price">
-                                                        <ins class="new-price" style="text-decoration: none;">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol text-danger">đ</span></ins>
+                                                        <ins class="new-price text-danger" style="text-decoration: none;">@((item.Price - item.Discount).ToString("N0")) <span class="currency-symbol">đ</span></ins>
                                                     </td>
 
                                                     @if (item.IsHot == true)
@@ -155,8 +155,7 @@
                                                             </li>
 
                                                             <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle">
+                                                                <a href="javascript:void(0)" @onclick="() => DeleteProduct(item.Id)">
                                                                     <i class="ri-delete-bin-line"></i>
                                                                 </a>
                                                             </li>
@@ -232,7 +231,6 @@
     private string? keyword = null;
 
     private bool isLoading = false;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -346,6 +344,16 @@
         bool isSuccess = await _productServices.UpdateProductStatusAsync(id, status);
 
         if (isSuccess)
+        {
+            await LoadListProducts();
+        }
+    }
+
+    private async Task DeleteProduct(Guid id)
+    {
+        bool isDeleted = await _productServices.DeleteProductByIdAsync(id);
+
+        if (isDeleted)
         {
             await LoadListProducts();
         }
