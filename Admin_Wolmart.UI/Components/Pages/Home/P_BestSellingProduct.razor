@@ -1,6 +1,6 @@
 ﻿@inject ProductServices _productServices
 
-@code{
+@code {
     private IEnumerable<ProductDto> productBestSeller;
 
     private int bestSeller = 1;
@@ -40,7 +40,7 @@
                                             w-image
                                             w-image table border-0">
                         <tbody>
-                            @if(productBestSeller != null &&  productBestSeller.Any())
+                            @if (productBestSeller != null && productBestSeller.Any())
                             {
                                 @foreach (var item in productBestSeller)
                                 {
@@ -70,7 +70,17 @@
                                         <td>
                                             <div class="product-detail-box">
                                                 <h6>Số lượng Kho</h6>
-                                                <h5>@item.StockQuantity</h5>
+                                                @if (item.StockQuantity == 0)
+                                                {
+                                                    <div class="status-danger">
+                                                        <span>Hết hàng</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+
+                                                    <h5>@item.StockQuantity</h5>
+                                                }
                                             </div>
                                         </td>
 

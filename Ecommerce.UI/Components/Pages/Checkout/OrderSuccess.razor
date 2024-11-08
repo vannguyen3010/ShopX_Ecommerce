@@ -84,7 +84,7 @@
                                         <td class="product-details d-flex align-items-center">
                                             <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)" alt="product" class="img-fluid product-image" style="width: 80px; height: auto;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
                                             <div class="product-info" style="margin-left: 10px;" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
-                                                <a onclick="window.location.href='/san-pham/@item.NameSlug/@item.Id';" class="no_wrap cursor">@item.ProductName</a>&nbsp;<br>
+                                                <a class="no_wrap cursor">@item.ProductName</a>&nbsp;<br>
                                                 Số lượng: <a href="#"> x @item.Quantity</a>
                                             </div>
                                         </td>
