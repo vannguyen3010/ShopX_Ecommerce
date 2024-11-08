@@ -113,7 +113,7 @@
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.Desc</td>
 
-                                                    <td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">
                                                         <ul>
                                                             <li>
                                                                 <a href="javascript:void(0)" @onclick="() => GetBannerProductPopupByid(item.Id)">
