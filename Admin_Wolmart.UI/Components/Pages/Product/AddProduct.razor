@@ -1,12 +1,13 @@
 ﻿@page "/them-san-pham"
 
+@inject CateProductServices _cateProductServices
+@inject ProductServices _productServices
+
 @rendermode InteractiveServer
 
 <link href="css/product.css" rel="stylesheet" />
 
 <div class="page-body">
-
-    <!-- New Product Add Start -->
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
@@ -18,7 +19,7 @@
                                     <h5>Thêm sản phẩm</h5>
                                 </div>
 
-                                <form class="theme-form theme-form-2 mega-form">
+                                <form class="theme-form theme-form-2 mega-form" @onsubmit="HandleSubmit">
                                     <div class="mb-4 row align-items-center">
                                         <label class="form-label-title col-sm-3 mb-0">
                                             Tên SP
@@ -26,7 +27,7 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <input class="form-control" type="text"
-                                                   placeholder="Nhập tên SP" required>
+                                                   placeholder="Nhập tên SP" @bind="newProduct.Name" required>
                                         </div>
                                     </div>
 
@@ -36,10 +37,29 @@
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-sm-9">
-                                            <select class="js-example-basic-single w-100" name="state">
-                                                <option disabled>Static Menu</option>
-                                                <option>Simple</option>
-                                                <option>Classified</option>
+                                            <select class="js-example-basic-single w-100" name="state" @bind="newProduct.CategoryId">
+                                                @if (cateProducts != null && cateProducts.Any())
+                                                {
+                                                    <option class="cursor" value="">Chọn danh mục</option>
+                                                    @foreach (var item in cateProducts)
+                                                    {
+                                                        @if (item.Status == true)
+                                                        {
+                                                            <option value="@item.Id">@item.Name</option>
+
+                                                            @if (item.CategoriesObjs != null && item.CategoriesObjs.Any())
+                                                            {
+                                                                @foreach (var res in item.CategoriesObjs)
+                                                                {
+                                                                    @if (res.Status == true)
+                                                                    {
+                                                                        <option value="@res.Id">@res.Name</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             </select>
                                         </div>
                                     </div>
@@ -50,7 +70,7 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <input class="form-control" type="text"
-                                                   placeholder="Nhập giá gốc">
+                                                   placeholder="Nhập giá gốc" @bind="newProduct.Price">
                                         </div>
                                     </div>
 
@@ -60,7 +80,7 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <input class="form-control" type="text"
-                                                   placeholder="Nhập giá giảm">
+                                                   placeholder="Nhập giá giảm" @bind="newProduct.Discount">
                                         </div>
                                     </div>
 
@@ -71,18 +91,17 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <input class="form-control" type="text"
-                                                   placeholder="Nhập số lượng hàng" required>
+                                                   placeholder="Nhập số lượng hàng" @bind="newProduct.StockQuantity" required>
                                         </div>
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
-                                        <label class="form-label-title col-sm-3 mb-0">
-                                            Nổi bật
-                                            <span class="text-danger">*</span>
-                                        </label>
+                                        <label class="col-sm-3 col-form-label form-label-title">Nổi bật</label>
                                         <div class="col-sm-9">
-                                            <input class="form-control" type="text"
-                                                   placeholder="Product Name" required>
+                                            <label class="switch">
+                                                <input type="checkbox" @bind="@newProduct.IsHot" />
+                                                <span class="slider round"></span>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -92,13 +111,13 @@
                                             <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-sm-9">
-                                            <select class="js-example-basic-single w-100" name="state">
+                                            <select class="js-example-basic-single w-100" name="state" @bind="newProduct.Rating">
                                                 <option>Chọn số sao</option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
                                             </select>
                                         </div>
                                     </div>
@@ -108,7 +127,7 @@
                                             Miêu tả SP
                                         </label>
                                         <div class="col-sm-9">
-                                            <textarea class="form-control" rows="3"></textarea>
+                                            <textarea class="form-control" @bind="newProduct.Description" rows="3"></textarea>
                                         </div>
                                     </div>
 
@@ -117,47 +136,58 @@
                                             Mô tả SP
                                         </label>
                                         <div class="col-sm-9">
-                                            <textarea class="form-control" rows="3"></textarea>
+                                            <textarea class="form-control" rows="3" @bind="newProduct.Detail"></textarea>
                                         </div>
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-sm-3 col-form-label form-label-title">Ảnh SP chính</label>
                                         <div class="table-image" style="width: 200px;">
-                                            <img src="" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                            <img src="@imagePreviewUrl" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
                                         </div>
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-3 col-form-label form-label-title d-none d-lg-block"></label>
-                                        <InputFile class="table-image col-6 mx-2" accept=".jpg,.jpeg,.png" required />
+                                        <InputFile class="table-image col-6 mx-2" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" required />
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-3 col-form-label form-label-title d-none d-lg-block"></label>
-                                        <InputFile class="table-image col-6 mx-2" accept=".jpg,.jpeg,.png" required />
+                                        <InputFile class="table-image col-6 mx-2" accept=".jpg,.jpeg,.png" multiple OnChange="OnSecondaryFilesSelected" />
                                     </div>
                                     <div class="mb-4 row align-items-center">
                                         <div class="col-sm-3 form-label-title">Ảnh SP phụ</div>
                                         <div class="col-sm-9">
                                             <div class="dropdown icon-dropdown">
                                                 <ul class="dropdown-menu d-block" style="position: unset !important;">
-                                                    <li class="p-relative">
-                                                        <a class="dropdown-item p-relative">
-                                                            <img src="img_dev/watch.jpg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                        <button class="btn btn_close">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </li>
+                                                    @foreach (var image in secondaryImagePreviewUrls)
+                                                    {
+                                                        <li class="p-relative">
+                                                            <a class="dropdown-item p-relative">
+                                                                <img src="@image"
+                                                                     class="img-fluid" alt="">
+                                                            </a>
+                                                            <button class="btn btn_close" @onclick="() => RemoveSecondaryImage(image)">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </li>
+                                                    }
+                                                   
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Thêm</button>
+                                           @if (ShowLoadingButton)
+                                        {
+                                            <ButtonLoad></ButtonLoad>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-primary">Thêm</button>
+                                        }
                                     </div>
 
                                 </form>
@@ -169,3 +199,79 @@
         </div>
     </div>
 </div>
+
+@code{
+    private CreateProductDto newProduct = new CreateProductDto();
+    private IEnumerable<CateProductDto> cateProducts;
+
+    private string imagePreviewUrl = "/img_dev/datanull.png";
+    private List<string> secondaryImagePreviewUrls = new();
+
+    private IBrowserFile selectedFile;
+    private List<IBrowserFile> secondaryFiles = new();
+    private string message;
+    public bool ShowLoadingButton { get; set; } = false;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategories();
+    }
+
+    private async Task LoadCategories()
+    {
+        cateProducts = await _cateProductServices.GetAllCategoryProductsAsync();
+    }
+    private async Task HandleSubmit()
+    {
+        ShowLoadingButton = true;
+        var success = await _productServices.CreateProduct(newProduct, selectedFile, secondaryFiles);
+        if (success)
+        {
+            newProduct = new CreateProductDto();
+            imagePreviewUrl = "/img_dev/datanull.png";
+            message = "Tạo bài viết thành công";
+        }
+        else
+        {
+            message = "Tạo bài viết thất bại";
+        }
+        await Task.Delay(1000);
+        ShowLoadingButton = false;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+        var buffer = new byte[selectedFile.Size];
+        await selectedFile.OpenReadStream(10485760).ReadAsync(buffer);
+        imagePreviewUrl = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    }
+
+    private async Task OnSecondaryFilesSelected(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            // Thêm file vào danh sách
+            secondaryFiles.Add(file);
+
+            // Tạo preview cho từng ảnh
+            var buffer = new byte[file.Size];
+            await file.OpenReadStream(10485760).ReadAsync(buffer); // Giới hạn 10MB
+
+            var previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+            secondaryImagePreviewUrls.Add(previewUrl);
+        }
+    }
+
+    private void RemoveSecondaryImage(string imageUrl)
+    {
+        var index = secondaryImagePreviewUrls.IndexOf(imageUrl);
+        if (index != -1)
+        {
+            secondaryImagePreviewUrls.RemoveAt(index);
+            secondaryFiles.RemoveAt(index);
+        }
+    }
+
+}
