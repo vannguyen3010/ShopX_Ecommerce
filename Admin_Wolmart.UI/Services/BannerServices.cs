@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Shared;
 using Shared.DTO.Banner;
-using Shared.DTO.CategoryIntroduce;
-using Shared.DTO.Introduce;
 using Shared.DTO.Response;
 using System.Net.Http.Headers;
 

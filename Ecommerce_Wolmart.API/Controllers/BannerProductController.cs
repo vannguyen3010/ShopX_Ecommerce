@@ -199,6 +199,17 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
+                if (updateBannerDto.File != null)
+                {
+                    bannerEntity.File = updateBannerDto.File;
+                    bannerEntity.FileExtension = Path.GetExtension(updateBannerDto.File.FileName);
+                    bannerEntity.FileSizeInBytes = updateBannerDto.File.Length;
+                    bannerEntity.FileName = updateBannerDto.File.FileName;
+                    bannerEntity.FilePath = await SaveFileAndGetUrl(updateBannerDto.File, bannerEntity.FileName, bannerEntity.FileExtension);
+                }
+
+                bannerEntity.Position = MapBannerPosition(updateBannerDto.Position);
+
                 _mapper.Map(updateBannerDto, bannerEntity);
 
                 _repository.BannerProduct.UpdateBannerProduct(bannerEntity);
@@ -216,7 +227,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateBannerProductStatus/{id}")]
-        public async Task<IActionResult> UpdateBannerProductStatus(Guid id, [FromForm] UpdateBannerProductStatusDto request)
+        public async Task<IActionResult> UpdateBannerProductStatus(Guid id, [FromQuery] UpdateBannerProductStatusDto request)
         {
             try
             {
@@ -316,6 +327,16 @@ namespace Ecommerce_Wolmart.API.Controllers
                 }
             }
 
+        }
+
+        private BannerProductWithPopupPosition MapBannerPosition(BannerProductWithPopupPosition position)
+        {
+            return position switch
+            {
+                BannerProductWithPopupPosition.Product => BannerProductWithPopupPosition.Product,
+                BannerProductWithPopupPosition.Popup => BannerProductWithPopupPosition.Popup,
+                _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
+            };
         }
     }
 }

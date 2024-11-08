@@ -12,13 +12,13 @@ namespace Entities.Models
         public string Desc { get; set; }
         public bool Status { get; set; }
 
-        [NotMapped] // Sẽ ko lưu ảnh vào Db
+        [NotMapped]
         public IFormFile File { get; set; }
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
         public string? FileDescription { get; set; }
-        public string FileExtension { get; set; }
-        public long FileSizeInBytes { get; set; }
-        public string FilePath { get; set; }
+        public string? FileExtension { get; set; }
+        public long? FileSizeInBytes { get; set; }
+        public string? FilePath { get; set; }
         [Required]
         public BannerProductWithPopupPosition Position { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
