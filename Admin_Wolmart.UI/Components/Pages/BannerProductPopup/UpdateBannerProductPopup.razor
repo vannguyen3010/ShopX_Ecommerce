@@ -1,0 +1,140 @@
+﻿@page "/cap-nhat-banner-product-popup/{id:guid}"
+
+@inject BannerProductServices _bannerProductServices
+
+@rendermode InteractiveServer
+
+
+@if (banner != null)
+{
+
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-8 m-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header-2">
+                                        <h5>Chi tiết Banner</h5>
+                                    </div>
+
+                                    <form class="theme-form theme-form-2 mega-form">
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">
+                                                Title
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"
+                                                       @bind="banner.Title">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">
+                                                Mô tả
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"
+                                                       @bind="banner.Desc">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">Ảnh</label>
+                                            <div class="table-image" style="width: 200px;">
+                                                <img src="@(string.IsNullOrEmpty(banner.FilePath) ? "/Img_Dev/banner.png" : banner.FilePath)" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-3 col-form-label form-label-title"></label>
+                                            <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" />
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">Danh mục</label>
+                                            <div class="col-sm-9">
+                                                <select class="js-example-basic-single w-100" @bind="banner.Position">
+                                                    <option value="@(BannerProductWithPopupPosition.Product)">Product</option>
+                                                    <option value="@(BannerProductWithPopupPosition.Popup)">Popup</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                @if (ShowLoadingButton)
+                                {
+                                    <ButtonLoad></ButtonLoad>
+                                }
+                                else
+                                {
+
+                                    <button type="button" class="btn btn-primary" @onclick="HandleUpdateBanner">Cập nhật</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code{
+    [Parameter]
+    public Guid id { get; set; }
+    private BannerProductDto banner;
+
+    private IBrowserFile? firstImage;
+
+    public bool ShowLoadingButton { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetBannerById();
+    }
+    private async Task GetBannerById()
+    {
+        var response = await _bannerProductServices.GetBannerProductByIdAsync(id);
+
+        if (response != null && response.Success)
+        {
+            banner = response.Data;
+        }
+    }
+
+    private async Task HandleUpdateBanner()
+    {
+        ShowLoadingButton = true;
+
+        IFormFile formFile = firstImage != null ? new CustomFormFile(firstImage) : null;
+
+        var updateBanner = new UpdateBannerProductDto
+            {
+                Title = banner.Title,
+                Desc = banner.Desc,
+                Position = banner.Position,
+                File = formFile
+            };
+        var success = await _bannerProductServices.UpdateBannerAsync(id, updateBanner, firstImage);
+        if (success)
+        {
+            NavigationManager.NavigateTo("/quan-ly-banner");
+        }
+
+        await Task.Delay(1000);
+        ShowLoadingButton = false;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        firstImage = e.File;
+    }
+
+}

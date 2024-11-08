@@ -8,8 +8,8 @@ namespace Shared.DTO.BannerProduct
         [Required]
         public string Title { get; set; }
         public string Desc { get; set; }
-        [Required]
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
+        public BannerProductWithPopupPosition Position { get; set; }
     }
     public class UpdateBannerProductStatusDto
     {

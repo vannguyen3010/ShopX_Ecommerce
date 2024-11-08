@@ -23,6 +23,7 @@ builder.Services.AddScoped<CateIntroduceServices>();
 builder.Services.AddScoped<IntroduceServices>();
 builder.Services.AddScoped<ContactServices>();
 builder.Services.AddScoped<BannerServices>();
+builder.Services.AddScoped<BannerProductServices>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
