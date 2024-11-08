@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.WebUtilities;
 using Shared.DTO.CategoryIntroduce;
-using Shared.DTO.CateProduct;
 using Shared.DTO.Product;
 using Shared.DTO.Response;
+using System.Net.Http.Headers;
 
 namespace Admin_Wolmart.UI.Services
 {
@@ -86,6 +87,50 @@ namespace Admin_Wolmart.UI.Services
 
             return response.IsSuccessStatusCode;
 
+        }
+
+        public async Task<bool> CreateProduct(CreateProductDto request, IBrowserFile? file, List<IBrowserFile>? selectedSecondFile)
+        {
+            var content = new MultipartFormDataContent();
+
+            // Thêm các trường khác vào form-data
+            content.Add(new StringContent(request.Name), "Name");
+            content.Add(new StringContent(request.Description), "Description");
+            content.Add(new StringContent(request.Detail), "Detail");
+            content.Add(new StringContent(request.Price.ToString()), "Price");
+            content.Add(new StringContent(request.Discount.ToString()), "Discount");
+            content.Add(new StringContent(request.StockQuantity.ToString()), "StockQuantity");
+            content.Add(new StringContent(request.Rating.ToString()), "Rating");
+            content.Add(new StringContent(request.IsHot.ToString()), "IsHot");
+            content.Add(new StringContent(request.CategoryId.ToString()), "CategoryId");
+
+            // Thêm ảnh chính
+            if (file != null)
+            {
+                var fileContent = new StreamContent(file.OpenReadStream(10485760)); // 10MB limit
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                content.Add(fileContent, "ImageFile", file.Name);
+            }
+
+            // Thêm các ảnh phụ
+            if (selectedSecondFile != null)
+            {
+                int index = 0;
+                foreach (var secondFile in selectedSecondFile)
+                {
+                    //var fileSecondContent = new StreamContent(secondFile.OpenReadStream(10485760));
+                    //fileSecondContent.Headers.ContentType = new MediaTypeHeaderValue(secondFile.ContentType);
+                    //content.Add(fileSecondContent, "ImageObjectList", secondFile.Name);
+                    var fileSecondContent = new StreamContent(secondFile.OpenReadStream(10485760)); // 10MB limit
+                    fileSecondContent.Headers.ContentType = new MediaTypeHeaderValue(secondFile.ContentType);
+                    content.Add(fileSecondContent, $"ImageObjectList[{index}]", secondFile.Name ?? $"file_{index}");
+                    index++;
+                }
+            }
+
+            // Gửi request
+            var response = await _httpClient.PostAsync("/api/Product/CreateProduct", content);
+            return response.IsSuccessStatusCode;
         }
     }
 }
