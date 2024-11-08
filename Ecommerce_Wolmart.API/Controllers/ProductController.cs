@@ -445,42 +445,22 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Tạo key cache duy nhất cho từng sản phẩm theo id
-                string cacheKey = $"BestSellingProducts_{bestSeller}";
-
-                if (!_cache.TryGetValue(cacheKey, out IEnumerable<ProductDto> cachedBestSellingProducts))
+                var bestSellingProducts = await _repository.Product.GetBestSellingProductsAsync(bestSeller, trackChanges: false);
+                if (bestSellingProducts == null || !bestSellingProducts.Any())
                 {
-                    var bestSellingProducts = await _repository.Product.GetBestSellingProductsAsync(bestSeller, trackChanges: false);
-                    if (bestSellingProducts == null || !bestSellingProducts.Any())
+                    return NotFound(new ApiResponse<object>
                     {
-                        return NotFound(new ApiResponse<object>
-                        {
-                            Success = false,
-                            Message = "Không tìm thấy sản phẩm bán chạy.",
-                            Data = null
-                        });
-                    }
-
-                    cachedBestSellingProducts = _mapper.Map<IEnumerable<ProductDto>>(bestSellingProducts);
-
-                    // Cấu hình cache để hết hạn sau 10 phút
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromMinutes(10))
-                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(30));
-
-                    // Lưu dữ liệu vào cache
-                    _cache.Set(cacheKey, cachedBestSellingProducts, cacheOptions);
-                }
-                else
-                {
-                    _logger.LogInfo($"Cache hit for best-selling products with count: {bestSeller}");
+                        Success = false,
+                        Message = "Không tìm thấy sản phẩm bán chạy.",
+                        Data = null
+                    });
                 }
 
                 return Ok(new ApiResponse<IEnumerable<ProductDto>>
                 {
                     Success = true,
                     Message = "Best-selling products retrieved successfully.",
-                    Data = cachedBestSellingProducts
+                    Data = _mapper.Map<IEnumerable<ProductDto>>(bestSellingProducts)
                 });
             }
             catch (Exception ex)
@@ -497,83 +477,65 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Tạo key cache duy nhất cho từng sản phẩm theo id
-                string cacheKey = $"Product_{id}";
+                var product = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
 
-                if (!_cache.TryGetValue(cacheKey, out ApiProductResponse<ProductDto, IEnumerable<ProductDto>> cachedResponse))
+                if (product == null)
                 {
-                    var product = await _repository.Product.GetProductByIdAsync(id, trackChanges: false);
-
-                    if (product == null)
+                    _logger.LogError($"Product with id {id} not found.");
+                    return NotFound(new ApiProductResponse<Object, Object>
                     {
-                        _logger.LogError($"Product with id {id} not found.");
-                        return NotFound(new ApiProductResponse<Object, Object>
-                        {
-                            Success = false,
-                            Message = $"Product with id {id} not found.",
-                            Data = null,
-                            Data2nd = null
-                        });
-                    }
-
-                    var category = await _repository.CateProduct.GetCategoryProductByIdAsync(product.CategoryId, trackChanges: false);
-
-                    if (category == null)
-                    {
-                        _logger.LogError($"Category for product with id {id} not found.");
-                        return NotFound(new ApiProductResponse<Object, Object>
-                        {
-                            Success = false,
-                            Message = $"Category for product with id {id} not found.",
-                            Data = null,
-                            Data2nd = null
-                        });
-                    }
-
-                    //Kiểm tra danh mục có cấp cha không nếu có
-                    CateProductDto parentCategoryDto = null;
-                    if (category.ParentCategoryId != null)
-                    {
-                        var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync((Guid)category.ParentCategoryId, trackChanges: false);
-                        if (parentCategory != null)
-                        {
-                            parentCategoryDto = _mapper.Map<CateProductDto>(parentCategory);
-                        }
-                    }
-
-                    //Ánh xạ sản phẩm sang DTO để trả về client
-                    var productDto = _mapper.Map<ProductDto>(product);
-
-                    // Ánh xạ danh mục cha vào DTO sản phẩm
-                    productDto.ParentCategory = parentCategoryDto;
-
-                    // Lấy danh sách sản phẩm liên quan (ví dụ: cùng danh mục)
-                    var relatedProducts = await _repository.Product.GetRelatedProductsAsync(id, product.CategoryId, trackChanges: true);
-
-                    // Ánh xạ danh sách sản phẩm liên quan sang DTO
-                    var relatedProductsDto = _mapper.Map<IEnumerable<ProductDto>>(relatedProducts);
-
-                    // Tạo phản hồi và lưu vào cache
-                    cachedResponse = new ApiProductResponse<ProductDto, IEnumerable<ProductDto>>
-                    {
-                        Success = true,
-                        Message = "Product retrieved successfully.",
-                        Data = productDto,
-                        Data2nd = relatedProductsDto
-                    };
-
-                    var cacheOptions = new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromMinutes(10)) // Gia hạn nếu được truy cập
-                        .SetAbsoluteExpiration(TimeSpan.FromHours(1));  // Cache hết hạn sau 1 giờ
-
-                    _cache.Set(cacheKey, cachedResponse, cacheOptions);
-                }
-                else
-                {
-                    _logger.LogInfo($"Cache hit for product with id: {id}");
+                        Success = false,
+                        Message = $"Product with id {id} not found.",
+                        Data = null,
+                        Data2nd = null
+                    });
                 }
 
-                return Ok(cachedResponse);
+                var category = await _repository.CateProduct.GetCategoryProductByIdAsync(product.CategoryId, trackChanges: false);
+
+                if (category == null)
+                {
+                    _logger.LogError($"Category for product with id {id} not found.");
+                    return NotFound(new ApiProductResponse<Object, Object>
+                    {
+                        Success = false,
+                        Message = $"Category for product with id {id} not found.",
+                        Data = null,
+                        Data2nd = null
+                    });
+                }
+
+                //Kiểm tra danh mục có cấp cha không nếu có
+                CateProductDto parentCategoryDto = null;
+                if (category.ParentCategoryId != null)
+                {
+                    var parentCategory = await _repository.CateProduct.GetCategoryProductByIdAsync((Guid)category.ParentCategoryId, trackChanges: false);
+                    if (parentCategory != null)
+                    {
+                        parentCategoryDto = _mapper.Map<CateProductDto>(parentCategory);
+                    }
+                }
+
+                //Ánh xạ sản phẩm sang DTO để trả về client
+                var productDto = _mapper.Map<ProductDto>(product);
+
+                // Ánh xạ danh mục cha vào DTO sản phẩm
+                productDto.ParentCategory = parentCategoryDto;
+
+                // Lấy danh sách sản phẩm liên quan (ví dụ: cùng danh mục)
+                var relatedProducts = await _repository.Product.GetRelatedProductsAsync(id, product.CategoryId, trackChanges: true);
+
+                var relatedProductsDto = _mapper.Map<IEnumerable<ProductDto>>(relatedProducts);
+
+                // Tạo phản hồi và lưu vào cache
+                return Ok (new ApiProductResponse<ProductDto, IEnumerable<ProductDto>>
+                {
+                    Success = true,
+                    Message = "Product retrieved successfully.",
+                    Data = productDto,
+                    Data2nd = relatedProductsDto
+                });
+
             }
             catch (Exception ex)
             {
