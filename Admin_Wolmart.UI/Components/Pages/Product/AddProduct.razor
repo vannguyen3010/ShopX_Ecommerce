@@ -2,6 +2,8 @@
 
 @rendermode InteractiveServer
 
+<link href="css/product.css" rel="stylesheet" />
+
 <div class="page-body">
 
     <!-- New Product Add Start -->
@@ -31,6 +33,7 @@
                                     <div class="mb-4 row align-items-center">
                                         <label class="col-sm-3 col-form-label form-label-title">
                                             Danh mục SP
+                                            <span class="text-danger">*</span>
                                         </label>
                                         <div class="col-sm-9">
                                             <select class="js-example-basic-single w-100" name="state">
@@ -119,82 +122,34 @@
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
-                                        <label class="col-sm-3 col-form-label form-label-title">Ảnh chính</label>
+                                        <label class="col-sm-3 col-form-label form-label-title">Ảnh SP chính</label>
                                         <div class="table-image" style="width: 200px;">
                                             <img src="" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
                                         </div>
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
-                                        <label class="col-3 col-form-label form-label-title"></label>
+                                        <label class="col-3 col-form-label form-label-title d-none d-lg-block"></label>
                                         <InputFile class="table-image col-6 mx-2" accept=".jpg,.jpeg,.png" required />
                                     </div>
 
                                     <div class="mb-4 row align-items-center">
-                                        <div class="col-sm-3 form-label-title"> Ảnh phụ</div>
+                                        <label class="col-3 col-form-label form-label-title d-none d-lg-block"></label>
+                                        <InputFile class="table-image col-6 mx-2" accept=".jpg,.jpeg,.png" required />
+                                    </div>
+                                    <div class="mb-4 row align-items-center">
+                                        <div class="col-sm-3 form-label-title">Ảnh SP phụ</div>
                                         <div class="col-sm-9">
                                             <div class="dropdown icon-dropdown">
-                                                <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" required style="font-family: 'Public Sans';" />
-                                                <ul class="dropdown-menu d-block">
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/vegetable.svg"
+                                                <ul class="dropdown-menu d-block" style="position: unset !important;">
+                                                    <li class="p-relative">
+                                                        <a class="dropdown-item p-relative">
+                                                            <img src="img_dev/watch.jpg"
                                                                  class="img-fluid" alt="">
                                                         </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/cup.svg"
-                                                                 class="blur-up lazyload" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/meats.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/breakfast.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/frozen.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/biscuit.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/grocery.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/drink.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/milk.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <img src="../assets/svg/1/pet.svg"
-                                                                 class="img-fluid" alt="">
-                                                        </a>
+                                                        <button class="btn btn_close">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
                                                     </li>
                                                 </ul>
                                             </div>
