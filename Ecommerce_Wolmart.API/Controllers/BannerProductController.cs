@@ -35,7 +35,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             try
             {
                 ValidateFileUpload(createBannerDto);
-                // Kiểm tra xem đối tượng createBannerDto gửi từ client có hợp lệ không
+                
                 if (createBannerDto == null)
                 {
                     _logger.LogError("BannerProduct object sent from client is null.");
@@ -74,7 +74,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                     bannerProductEntity.FileSizeInBytes = createBannerDto.File.Length;
                 }
 
-                // tạo danh mục vào cơ sở dữ liệu
+                bannerProductEntity.FileName = createBannerDto.Title;
+                bannerProductEntity.FileDescription = createBannerDto.Title;
+
                 await _repository.BannerProduct.CreateBannerProductAsync(bannerProductEntity);
 
                 return Ok(new ApiResponse<BannerProductDto>

@@ -1,5 +1,5 @@
-﻿@page "/them-banner"
-@inject BannerServices _bannerServices
+﻿@page "/them-banner-product-popup"
+@inject BannerProductServices _bannerProductServices
 
 @rendermode InteractiveServer
 
@@ -39,10 +39,8 @@
                                         <label class="col-sm-3 col-form-label form-label-title">Danh mục</label>
                                         <div class="col-sm-9">
                                             <select class="js-example-basic-single w-100" @bind="banner.Position">
-                                                <option value="@(BannerPosition.Top)">Top</option>
-                                                <option value="@(BannerPosition.Right)">Right</option>
-                                                <option value="@(BannerPosition.Left)">Left</option>
-                                                <option value="@(BannerPosition.Bottom)">Bottom</option>
+                                                <option value="@(BannerProductWithPopupPosition.Product)">Product</option>
+                                                <option value="@(BannerProductWithPopupPosition.Popup)">Popup</option>
                                             </select>
                                         </div>
                                     </div>
@@ -58,22 +56,18 @@
                                         <label class="col-3 col-form-label form-label-title"></label>
                                         <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" />
                                     </div>
-
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="col-sm-3 col-form-label form-label-title">Ảnh</label>
-                                        <div class="table-image" style="width: 200px;">
-                                            <img src="@imageSecondPreviewUrl" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-4 row align-items-center">
-                                        <label class="col-3 col-form-label form-label-title"></label>
-                                        <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSecondSelected" />
-                                    </div>
-
                                     <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Thêm</button>
+                                        @if (ShowLoadingButton)
+                                        {
+                                            <ButtonLoad></ButtonLoad>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-primary">Thêm</button>
+                                        }
                                     </div>
+                                  
+
                                     @if (!string.IsNullOrEmpty(message))
                                     {
                                         <div class="alert alert-success mt-4">@message</div>
@@ -91,31 +85,34 @@
 </div>
 
 @code{
-    private CreateBannerDto banner = new CreateBannerDto();
+    private CreateBannerProductDto banner = new CreateBannerProductDto();
 
     private string imagePreviewUrl = "/img_dev/datanull.png";
-    private string imageSecondPreviewUrl = "/img_dev/datanull.png";
 
     private IBrowserFile? selectedFile;
     private IBrowserFile? selectedSecondFile;
 
     private string message;
+    public bool ShowLoadingButton { get; set; } = false;
+
 
     private async Task HandleSubmit()
     {
-
-        var success = await _bannerServices.CreateBannerAsync(banner, selectedFile, selectedSecondFile);
+        ShowLoadingButton = true;
+        var success = await _bannerProductServices.CreateBannerProductAsync(banner, selectedFile);
         if (success)
         {
-            banner = new CreateBannerDto();
+            banner = new CreateBannerProductDto();
             imagePreviewUrl = "/img_dev/datanull.png";
-            imageSecondPreviewUrl = "/img_dev/datanull.png";
             message = "Tạo thành công";
         }
         else
         {
             message = "Tạo bài viết thất bại";
         }
+
+        await Task.Delay(1000);
+        ShowLoadingButton = false;
     }
 
     private async Task OnFileSelected(InputFileChangeEventArgs e)
@@ -124,13 +121,5 @@
         var buffer = new byte[selectedFile.Size];
         await selectedFile.OpenReadStream(10485760).ReadAsync(buffer);
         imagePreviewUrl = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
-    }
-
-    private async Task OnFileSecondSelected(InputFileChangeEventArgs e)
-    {
-        selectedSecondFile = e.File;
-        var buffer = new byte[selectedSecondFile.Size];
-        await selectedSecondFile.OpenReadStream(10485760).ReadAsync(buffer);
-        imageSecondPreviewUrl = $"data:{selectedSecondFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
     }
 }
