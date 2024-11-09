@@ -77,7 +77,6 @@ namespace Repository
 
             var cateProductQuery = _dbContext.CateProducts.AsQueryable();
 
-            //Lọc theo keyword nếu có
             if (!string.IsNullOrEmpty(keyword))
             {
                 string lowerCaseName = keyword.ToLower();
@@ -90,6 +89,7 @@ namespace Repository
             //Phân trang
             var categories = await cateProductQuery
                 .Include(x => x.Products)
+                .Include(x => x.CategoriesObjs)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

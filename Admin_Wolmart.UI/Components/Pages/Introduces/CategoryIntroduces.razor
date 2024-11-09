@@ -12,7 +12,7 @@
                 <div class="card card-table">
                     <div class="card-body">
                         <div class="title-header option-title">
-                            <h5>Tất cả Danh mục bài viết</h5>
+                            <h5>Danh mục bài viết</h5>
                             <form class="d-inline-flex">
                                 <a href="add-new-category.html"
                                    class="align-items-center btn btn-theme d-flex">
@@ -165,6 +165,11 @@
             int.TryParse(page, out currentPage);
         }
 
+        if (query.TryGetValue("keyword", out var key))
+        {
+            keyword = key.ToString();
+        }
+
         await LoadListCategoriesIntroduces();
     }
 
@@ -268,12 +273,10 @@
             queryParameters["keyword"] = keyword;
         }
 
-        // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("danh-muc-gioi-thieu", queryParameters!);
 
         NavigationManager.NavigateTo(newUrl, forceLoad: false);
 
-        // Tải lại danh sách sản phẩm
         await LoadListCategoriesIntroduces();
     }
 }

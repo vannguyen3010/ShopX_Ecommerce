@@ -276,10 +276,8 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Lấy tất cả danh mục
                 var (categories, totalCount) = await _repository.CateProduct.GetAllCategoryProductPagitionAsync(pageNumber, pageSize, keyword);
 
-                // Ánh xạ các danh mục cha và con với AutoMapper
                 var parentCategories = categories
                     .Where(c => c.ParentCategoryId == null)
                     .ToList();
