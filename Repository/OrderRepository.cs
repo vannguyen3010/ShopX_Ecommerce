@@ -1,6 +1,9 @@
 ﻿using Contracts;
+using Entities.Identity;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Repository
 {
@@ -138,6 +141,38 @@ namespace Repository
             await _dbContext.SaveChangesAsync();
         }
 
-      
+        public async Task<(IEnumerable<Order> Orders, int Total)> GetOrdersListAsync(int pageNumber, int pageSize, int? type = null, string? orderCode = null)
+        {
+            IQueryable<Order> ordersQuery = _dbContext.Orders
+              .AsNoTracking()
+              .Include(o => o.CartItems)
+              .ThenInclude(x => x.Product);
+
+            if (!string.IsNullOrEmpty(orderCode))
+            {
+                string lowerCaseName = orderCode.ToLower();
+
+                ordersQuery = ordersQuery.Where(x => x.OrderCode.ToLower().Contains(lowerCaseName));
+            }
+
+            if (type == 1)
+            {
+                ordersQuery = ordersQuery.Where(x => x.OrderStatus);
+            }
+            else if (type == 2)
+            {
+                ordersQuery = ordersQuery.Where(x => !x.OrderStatus);
+            }
+
+            var totalOrders = await ordersQuery.CountAsync();
+
+            // Thực hiện phân trang
+            var orders = await ordersQuery
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (orders, totalOrders);
+        }
     }
 }

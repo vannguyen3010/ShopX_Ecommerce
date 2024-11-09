@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using EmailService;
+using Entities.Identity;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
@@ -9,6 +10,7 @@ using Shared.DTO.Response;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -224,6 +226,51 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     Success = false,
                     Message = "Đã xảy ra lỗi nội bộ.",
+                    Data = null
+                });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetOrdersList")]
+        public async Task<IActionResult> GetOrdersList([FromQuery] int? type = null, [FromQuery] string? orderCode = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+
+                var (orders, totalCount) = await _repository.Order.GetOrdersListAsync(pageNumber, pageSize, type, orderCode);
+
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy đơn hàng nào cho người dùng này.",
+                        Data = null
+                    });
+                }
+
+                var orderDtos = _mapper.Map<IEnumerable<OrderDto>>(orders);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Products retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        orders = orderDtos
+                    }
+                });
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Đã xảy ra lỗi khi lấy danh sách đơn hàng: {ex.Message}");
+                return StatusCode(500, new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = "Đã xảy ra lỗi khi xử lý yêu cầu.",
                     Data = null
                 });
             }
@@ -513,30 +560,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
 
-        //private string GeneratePaymentQR(string bankName, string accountNumber, int totalAmount, string orderCode)
-        //{
-        //    // Nội dung của mã QR chứa thông tin thanh toán
-        //    string qrContent = $"Bank: {bankName}\nAccount: {accountNumber}\nAmount: {totalAmount}\nOrderCode: {orderCode}";
-
-        //    using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
-        //    {
-        //        // Tạo mã QR từ nội dung
-        //        QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrContent, QRCodeGenerator.ECCLevel.Q);
-        //        var qrCode = new QRCode(qrCodeData);
-        //        using (Bitmap qrCodeImage = qrCode.GetGraphic(20))
-        //        {
-        //            // Chuyển mã QR thành chuỗi Base64 để có thể trả về cho client
-        //            using (MemoryStream ms = new MemoryStream())
-        //            {
-        //                qrCodeImage.Save(ms, ImageFormat.Png);
-        //                byte[] byteImage = ms.ToArray();
-        //                return Convert.ToBase64String(byteImage);
-        //            }
-        //        }
-        //    }
-        //}
-
-        // Phương thức tạo mã đơn hàng
         private string GenerateOrderCode()
         {
             var random = new Random();

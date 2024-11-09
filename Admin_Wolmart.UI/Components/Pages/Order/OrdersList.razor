@@ -1,0 +1,68 @@
+﻿@page "/danh-sach-don-hang"
+
+@rendermode InteractiveServer
+
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="title-header option-title">
+                            <h5>Currency Rates</h5>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="user-table invoice-table trans-table table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn.</th>
+                                            <th>Invoice</th>
+                                            <th>Date</th>
+                                            <th>Shipping</th>
+                                            <th>Amount</th>
+                                            <th>Tax</th>
+                                            <th>Total</th>
+                                            <th>Options</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>514984</td>
+                                            <td>01-05-2021</td>
+                                            <td>3.62</td>
+                                            <td>816</td>
+                                            <td>65.38</td>
+                                            <td>884.64</td>
+                                            <td>
+                                                <ul class="option-list">
+                                                    <li>
+                                                        <a href="order-detail.html">
+                                                            <span class="ri-eye-line"></span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0)">
+                                                            <span class="lnr lnr-pencil"></span>
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="javascript:void(0)">
+                                                            <span class="lnr lnr-trash"></span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Pagination Box End -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
