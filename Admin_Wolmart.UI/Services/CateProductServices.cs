@@ -80,7 +80,7 @@ namespace Admin_Wolmart.UI.Services
 
         public async Task<bool> DeleteCategoryProductAsync(Guid id)
         {
-            var response = await _httpClient.DeleteAsync($"/api/CateProduct/DeleteCategoryProduct/{id}");
+            var response = await _httpClient.DeleteAsync($"/api/CateProduct/DeleteCategoryProduct?id={id}");
 
             return response.IsSuccessStatusCode;
 
