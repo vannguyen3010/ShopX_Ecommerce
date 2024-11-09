@@ -132,5 +132,8 @@ namespace Admin_Wolmart.UI.Services
             var response = await _httpClient.PostAsync("/api/Product/CreateProduct", content);
             return response.IsSuccessStatusCode;
         }
+
+
+
     }
 }

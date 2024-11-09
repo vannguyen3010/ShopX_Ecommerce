@@ -112,7 +112,7 @@
                                         </label>
                                         <div class="col-sm-9">
                                             <select class="js-example-basic-single w-100" name="state" @bind="newProduct.Rating">
-                                                <option>Chọn số sao</option>
+                                                <option selected>Chọn số sao</option>
                                                 <option value="1">1</option>
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
@@ -212,6 +212,7 @@
     private string message;
     public bool ShowLoadingButton { get; set; } = false;
 
+    private string inputFileKey = Guid.NewGuid().ToString();
 
     protected override async Task OnInitializedAsync()
     {
@@ -230,6 +231,13 @@
         {
             newProduct = new CreateProductDto();
             imagePreviewUrl = "/img_dev/datanull.png";
+
+            secondaryImagePreviewUrls.Clear();
+            secondaryFiles.Clear();
+            selectedFile = null;
+
+            inputFileKey = Guid.NewGuid().ToString();
+
             message = "Tạo bài viết thành công";
         }
         else
@@ -248,20 +256,56 @@
         imagePreviewUrl = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
     }
 
+
+    // private async Task OnSecondaryFilesSelected(InputFileChangeEventArgs e)
+    // {
+    //     foreach (var file in e.GetMultipleFiles())
+    //     {
+    //         if (file.Size > 10485760) // Giới hạn 10MB
+    //         {
+    //             message = $"File {file.Name} vượt quá giới hạn 10MB.";
+    //             continue;
+    //         }
+
+    //         // Thêm file vào danh sách
+    //         secondaryFiles.Add(file);
+
+    //         // Tạo preview cho từng ảnh
+    //         using var stream = file.OpenReadStream(10485760); // Giới hạn 10MB
+    //         var buffer = new byte[file.Size];
+    //         await stream.ReadAsync(buffer);
+
+    //         var previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
+    //         secondaryImagePreviewUrls.Add(previewUrl);
+    //     }
+    // }
     private async Task OnSecondaryFilesSelected(InputFileChangeEventArgs e)
     {
+        // Danh sách tạm thời để lưu các file và ảnh preview
+        List<IBrowserFile> tempSecondaryFiles = new();
+        List<string> tempImagePreviewUrls = new();
+
         foreach (var file in e.GetMultipleFiles())
         {
-            // Thêm file vào danh sách
-            secondaryFiles.Add(file);
+            // Kiểm tra kích thước file (giới hạn 10MB ở đây)
+            if (file.Size > 10485760)
+            {
+                message = "Kích thước tệp vượt quá 10MB!";
+                return;
+            }
+
+            tempSecondaryFiles.Add(file);
 
             // Tạo preview cho từng ảnh
             var buffer = new byte[file.Size];
-            await file.OpenReadStream(10485760).ReadAsync(buffer); // Giới hạn 10MB
-
+            await file.OpenReadStream(10485760).ReadAsync(buffer);
             var previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
-            secondaryImagePreviewUrls.Add(previewUrl);
+            tempImagePreviewUrls.Add(previewUrl);
         }
+
+        // Cập nhật danh sách file và ảnh preview sau khi xử lý xong
+        secondaryFiles.AddRange(tempSecondaryFiles);
+        secondaryImagePreviewUrls.AddRange(tempImagePreviewUrls);
     }
 
     private void RemoveSecondaryImage(string imageUrl)
