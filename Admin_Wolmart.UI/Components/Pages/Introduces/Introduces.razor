@@ -219,14 +219,11 @@
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
 
-        if (query.TryGetValue("c", out var cId))
+        if (query.TryGetValue("categoryId", out var category))
         {
-            categoryId = string.IsNullOrEmpty(cId) ? (Guid?)null : new Guid(cId);
-
-            var categoryResponse = await _introduceServices.GetCateIntroduceByCategoryIdAsync(categoryId.Value);
-            if (categoryResponse != null && categoryResponse.Success)
+            if (Guid.TryParse(category, out var parsedCategoryId))
             {
-                var category = categoryResponse.Data;
+                categoryId = parsedCategoryId;
             }
         }
 
@@ -239,6 +236,7 @@
         {
             keyword = searchKeyword;
         }
+
 
         await LoadListIntroduces();
         await LoadListCategoriesIntroduces();

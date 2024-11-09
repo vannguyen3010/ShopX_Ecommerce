@@ -59,7 +59,14 @@
                                     </div>
 
                                     <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary">Thêm</button>
+                                        @if (ShowLoadingButton)
+                                        {
+                                            <ButtonLoad></ButtonLoad>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-primary">Thêm</button>
+                                        }
                                     </div>
                                     @if (!string.IsNullOrEmpty(message))
                                     {
@@ -104,6 +111,8 @@
         {
             message = "Tạo bài viết thất bại";
         }
+
+        await Task.Delay(1000);
         ShowLoadingButton = false;
     }
 

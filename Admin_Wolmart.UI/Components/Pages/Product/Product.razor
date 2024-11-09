@@ -20,7 +20,7 @@
 
                                     @if (cateProducts != null && cateProducts.Any())
                                     {
-                                        <option class="cursor" value="">Chọn danh mục</option>
+                                        <option class="cursor" value="">Tất cả</option>
                                         @foreach (var item in cateProducts)
                                         {
                                             @if (item.Status == true)
@@ -237,25 +237,23 @@
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var query = QueryHelpers.ParseQuery(uri.Query);
 
-        if (query.TryGetValue("c", out var cId))
-        {
-            categoryId = string.IsNullOrEmpty(cId) ? (Guid?)null : new Guid(cId);
-
-            var categoryResponse = await _cateProductServices.GetCategoryProductByCategoryId(categoryId.Value);
-            if (categoryResponse != null && categoryResponse.Success)
-            {
-                var category = categoryResponse.Data;
-            }
-        }
-
-        if (query.TryGetValue("keyword", out var searchKeyword))
-        {
-            keyword = searchKeyword;
-        }
 
         if (query.TryGetValue("pageNumber", out var page))
         {
             int.TryParse(page, out currentPage);
+        }
+
+        if (query.TryGetValue("categoryId", out var category))
+        {
+            if (Guid.TryParse(category, out var parsedCategoryId))
+            {
+                categoryId = parsedCategoryId;
+            }
+        }
+
+        if (query.TryGetValue("keyword", out var key))
+        {
+            keyword = key.ToString();
         }
 
         await LoadListProducts();
@@ -377,6 +375,8 @@
         {
             queryParameters["categoryId"] = categoryId.Value.ToString();
         }
+
+
 
         // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("/quan-ly-san-pham", queryParameters!);
