@@ -376,8 +376,6 @@
             queryParameters["categoryId"] = categoryId.Value.ToString();
         }
 
-
-
         // Tạo URL query string
         var newUrl = QueryHelpers.AddQueryString("/quan-ly-san-pham", queryParameters!);
         NavigationManager.NavigateTo(newUrl, forceLoad: false);
