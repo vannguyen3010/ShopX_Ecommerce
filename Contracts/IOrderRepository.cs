@@ -16,6 +16,7 @@ namespace Contracts
         Task AddOrderItemsAsync(IEnumerable<OrderItem> orderItems);
         Task<Order> SearchOrdersByCodeAsync(string orderCode, bool trackChanges);
         Task<(IEnumerable<Order> Orders, int Total)> GetAllOrdersByUserIdAsync(string userId, string keyword, int pageNumber, int pageSize);
+        Task<(IEnumerable<Order> Orders, int Total)> GetOrdersListAsync(int pageNumber, int pageSize, int? type = null, string? orderCode = null);
         Task<IEnumerable<Order>> GetOrdersByDateAsync(DateTime fromDate, bool trackChanges);
         Task SaveAsync();
     }
