@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Shared.DTO.Address;
+using Shared.DTO.CategoryIntroduce;
 using Shared.DTO.Order;
 using Shared.DTO.Response;
 
@@ -65,6 +66,17 @@ namespace Admin_Wolmart.UI.Services
             {
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse<OrderResponse>>();
                 return result;
+            }
+            return null;
+        }
+
+        public async Task<ApiResponse<OrderDto>> GetOrderByIdAsync(Guid orderId)
+        {
+            var response = await _httpClient.GetAsync($"/api/Order/GetOrderById/{orderId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var res = await response.Content.ReadFromJsonAsync<ApiResponse<OrderDto>>();
+                return res;
             }
             return null;
         }

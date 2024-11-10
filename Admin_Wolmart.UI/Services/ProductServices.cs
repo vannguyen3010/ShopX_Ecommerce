@@ -15,6 +15,7 @@ namespace Admin_Wolmart.UI.Services
         {
             _httpClient = httpClient;
         }
+
         public async Task<ApiResponse<ProductResponseDto>> GetAllProductsPagination(int pageNumber, int pageSize)
         {
             var response = await _httpClient.GetAsync($"/api/Product/GetAllProductsPagination?pageNumber={pageNumber}&pageSize={pageSize}");
@@ -132,8 +133,6 @@ namespace Admin_Wolmart.UI.Services
             var response = await _httpClient.PostAsync("/api/Product/CreateProduct", content);
             return response.IsSuccessStatusCode;
         }
-
-
 
     }
 }
