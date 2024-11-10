@@ -233,7 +233,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetOrdersList")]
-        public async Task<IActionResult> GetOrdersList([FromQuery] int? type = null, [FromQuery] string? orderCode = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetOrdersList([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] int? type = null, [FromQuery] string? orderCode = null) // type = 0, 1, 2 (All order, true, false)
         {
             try
             {

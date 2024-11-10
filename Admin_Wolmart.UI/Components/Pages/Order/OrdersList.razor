@@ -1,68 +1,302 @@
 ﻿@page "/danh-sach-don-hang"
 
+@inject OrderServices _orderServices
+
 @rendermode InteractiveServer
+
 
 <div class="page-body">
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
-                <div class="card">
+                <div class="card card-table">
                     <div class="card-body">
-                        <div class="title-header option-title">
-                            <h5>Currency Rates</h5>
+                        <div class="title-header option-title d-sm-flex d-block">
+                            <h5>Danh sách đon hàng</h5>
+                          
+                        </div>
+                        <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
+                            <div class="icon-box-content">
+                                <select class="js-example-basic-single w-100 sort_categories search_input cursor" @onchange="OnCategoryChanged" name="state" required>
+                                    <option value="0">Tất cả</option>
+                                    <option value="1">Đã xử lý</option>
+                                    <option value="2">Chưa xử lý</option>
+                                </select>
+                            </div>
+                            <form @onsubmit="HandleSearch" class="search_box">
+                                <input type="text" class="search_input" placeholder="Tìm kiếm bài viết..." @bind="orderCode">
+                                <button type="submit" class="search_button">
+                                    <i class="fa-solid fa-magnifying-glass fs-6"></i>
+                                </button>
+                            </form>
                         </div>
                         <div>
                             <div class="table-responsive">
-                                <table class="user-table invoice-table trans-table table">
+                                <table class="table all-package theme-table table-product" id="table_id">
                                     <thead>
                                         <tr>
-                                            <th>Mã đơn.</th>
-                                            <th>Invoice</th>
-                                            <th>Date</th>
-                                            <th>Shipping</th>
-                                            <th>Amount</th>
-                                            <th>Tax</th>
-                                            <th>Total</th>
-                                            <th>Options</th>
+                                            <th>Mã đơn</th>
+                                            <th>Ngày</th>
+                                            <th>Trang thái</th>
+                                            <th>Ngân hàng</th>
+                                            <th>Vận chuyển</th>
+                                            <th>Tổng tiền</th>
+                                            <th>Hành động</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        <tr>
-                                            <td>514984</td>
-                                            <td>01-05-2021</td>
-                                            <td>3.62</td>
-                                            <td>816</td>
-                                            <td>65.38</td>
-                                            <td>884.64</td>
-                                            <td>
-                                                <ul class="option-list">
-                                                    <li>
-                                                        <a href="order-detail.html">
-                                                            <span class="ri-eye-line"></span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:void(0)">
-                                                            <span class="lnr lnr-pencil"></span>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="javascript:void(0)">
-                                                            <span class="lnr lnr-trash"></span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </td>
-                                        </tr>
+                                        @if (isLoading)
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="loading-container">
+                                                        <div class="loading"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if(listOrders != null && listOrders.Any())
+                                        {
+                                            @foreach (var item in listOrders)
+                                            {
+                                                <tr>
+                                                    <td>#@item.OrderCode</td>
+
+                                                    <td>@item.OrderDate.ToString("dd-MM-yyyy")</td>
+
+                                                    @if(item.OrderStatus == true)
+                                                    {
+
+                                                        <td class="status-close">
+                                                            <span>Đã xử lý</span>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="status-danger">
+                                                            <span>Chưa xử lý</span>
+                                                        </td>
+                                                    }
+
+                                                    <td>@item.BankName</td>
+
+                                                    <td>@item.ShippingCost.ToString("N0") <span class="currency-symbol text-danger">đ</span></td>
+
+                                                    <td>@item.TotalAmount.ToString("N0")  <span class="currency-symbol text-danger">đ</span></td>
+
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <a href="order-detail.html">
+                                                                    <i class="ri-eye-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a href="javascript:void(0)">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                   data-bs-target="#exampleModalToggle">
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
+                                                    </div>
+                                                    <span>Không có đơn hàng nào !</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                     
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    <!-- Pagination Box End -->
+                    @if (totalPages > 1)
+                    {
+                        <nav class="custome-pagination mt-5">
+                            <ul class="pagination justify-content-center custom_pagination_ul">
+                                <li class="page-item custom_lef @(currentPage == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="PreviousPage" aria-label="Previous" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                        <i class="fa-solid fa-angles-left"></i>
+                                    </a>
+                                </li>
+                                @for (int i = 1; i <= totalPages; i++)
+                                {
+                                    var pageNumber = i;
+
+                                    <li class="page-item custom_left_item @(pageNumber == currentPage ? "active" : "")" style="z-index: 0">
+                                        <a class="page-link" href="javascript:void(0)" @onclick="(() => ChangePage(pageNumber))">@pageNumber</a>
+                                    </li>
+                                }
+
+                                <li class="page-item custom_left @(currentPage == totalPages ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" @onclick="NextPage" aria-label="Next">
+                                        <i class="fa-solid fa-angles-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    }
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@code{
+    private IEnumerable<OrderDto> listOrders;
+
+    private int currentPage = 1;
+    private int pageSize = 20;
+    private int totalPages;
+    private int totalCount;
+    private int? type = null;
+    private string? orderCode = null;
+
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+
+        if (query.TryGetValue("pageNumber", out var page))
+        {
+            int.TryParse(page, out currentPage);
+        }
+
+        if (query.TryGetValue("orderCode", out var key))
+        {
+            orderCode = key.ToString();
+        }
+
+        await LoadListOrders();
+    }
+
+    private async Task LoadListOrders()
+    {
+        isLoading = true;
+        var response = await _orderServices.GetListOrdersAsync(currentPage, pageSize, type, orderCode);
+
+        if (response != null && response.Success)
+        {
+            listOrders = response.Data.Orders;
+            totalCount = response.Data.TotalCount;
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        }
+        else
+        {
+            listOrders = new List<OrderDto>();
+        }
+
+        await Task.Delay(1000);
+        isLoading = false;
+    }
+
+    private async Task ChangePage(int page)
+    {
+        // Chỉ cập nhật nếu page khác currentPage
+        if (page != currentPage)
+        {
+            currentPage = page;
+            await UpdateUrlAndLoadOrder();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await UpdateUrlAndLoadOrder();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await UpdateUrlAndLoadOrder();
+        }
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        pageSize = int.Parse(e.Value.ToString());
+
+        currentPage = 1;
+        await UpdateUrlAndLoadOrder();
+    }
+
+    private async Task OnCategoryChanged(ChangeEventArgs e)
+    {
+        var selectedValue = e.Value?.ToString();
+        if (string.IsNullOrEmpty(selectedValue) || selectedValue == "0")
+        {
+            type = null; // Giá trị "Tất cả"
+        }
+        else
+        {
+            type = int.Parse(selectedValue);
+        }
+
+
+        currentPage = 1;
+        await UpdateUrlAndLoadOrder();
+    }
+
+    private async Task HandleSearch()
+    {
+        orderCode = orderCode?.Trim();
+        currentPage = 1;
+        await UpdateUrlAndLoadOrder();
+
+    }
+
+    private async Task UpdateUrlAndLoadOrder()
+    {
+        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
+        var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = currentPage.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+            
+
+        if (!string.IsNullOrEmpty(orderCode))
+        {
+            queryParameters["orderCode"] = orderCode;
+        }
+
+        if (type.HasValue)
+        {
+            queryParameters["type"] = type.Value.ToString();
+        }
+
+        // Tạo URL query string
+        var newUrl = QueryHelpers.AddQueryString("/danh-sach-don-hang", queryParameters!);
+        NavigationManager.NavigateTo(newUrl, forceLoad: false);
+
+        // Tải lại danh sách sản phẩm
+        await LoadListOrders();
+    }
+}

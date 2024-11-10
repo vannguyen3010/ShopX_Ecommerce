@@ -1,4 +1,5 @@
-﻿using Shared.DTO.Address;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using Shared.DTO.Address;
 using Shared.DTO.Order;
 using Shared.DTO.Response;
 
@@ -35,6 +36,35 @@ namespace Admin_Wolmart.UI.Services
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<OrderDto>>>();
+            }
+            return null;
+        }
+
+        public async Task<ApiResponse<OrderResponse>> GetListOrdersAsync(int pageNumber = 1, int pageSize = 10, int? type = null, string? orderCode = null)
+        {
+            var queryParameters = new Dictionary<string, string>
+            {
+                ["pageNumber"] = pageNumber.ToString(),
+                ["pageSize"] = pageSize.ToString()
+            };
+
+            if (!string.IsNullOrEmpty(orderCode))
+            {
+                queryParameters["orderCode"] = orderCode;
+            }
+
+            if (type.HasValue)
+            {
+                queryParameters["type"] = type.Value.ToString();
+            }
+
+            var query = QueryHelpers.AddQueryString("/api/Order/GetOrdersList", queryParameters);
+
+            var response = await _httpClient.GetAsync(query);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ApiResponse<OrderResponse>>();
+                return result;
             }
             return null;
         }
