@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-using Shared.DTO.Banner;
+using Shared.DTO.CategoryIntroduce;
+using Shared.DTO.Introduce;
 using Shared.DTO.Payment;
 using Shared.DTO.Response;
 using System.Net.Http.Headers;
@@ -61,6 +62,39 @@ namespace Admin_Wolmart.UI.Services
 
             // Gửi request
             var response = await _httpClient.PostAsync("/api/PaymentMethod/CreatePaymentMethod", content);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<ApiResponse<PaymentMethodDto>> GetPaymentByIdAsync(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"/api/PaymentMethod/GetPaymentMethodById/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var category = await response.Content.ReadFromJsonAsync<ApiResponse<PaymentMethodDto>>();
+                return category;
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdatePaymentAsync(Guid id, UpdatePaymentDto request, IBrowserFile? file)
+        {
+            var content = new MultipartFormDataContent();
+
+            // Thêm các trường khác vào form-data
+            content.Add(new StringContent(request.PaymentType ?? ""), "PaymentType");
+            content.Add(new StringContent(request.BankName ?? ""), "BankName");
+            content.Add(new StringContent(request.AccountNumber), "AccountNumber");
+            content.Add(new StringContent(request.Note), "Note");
+
+            // Đọc và thêm file vào form-data
+            if (file != null)
+            {
+                var fileContent = new StreamContent(file.OpenReadStream(10485760)); // 10MB limit
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                content.Add(fileContent, "File", file.Name);
+            }
+
+            var response = await _httpClient.PutAsync($"/api/PaymentMethod/UpdatePaymentMethod/{id}", content);
             return response.IsSuccessStatusCode;
         }
     }
