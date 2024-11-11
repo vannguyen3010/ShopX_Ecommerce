@@ -125,13 +125,17 @@
 
                                                 <h4> Cập nhật đơn hàng</h4>
                                                 <div class="delivery-sec">
-                                                   <ul>
+                                                    <ul>
                                                         <li>
-                                                            @if(order.OrderStatus == true)
+                                                            @if (order.OrderStatus == true)
                                                             {
-                                                                <label class="switch">
-                                                                    <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(order.Id, false))">
+                                                                <label class="switch m-0 d-none">
+                                                                    <input type="checkbox" checked>
                                                                     <span class="slider round"></span>
+                                                                </label>
+
+                                                                <label class="mx-2">
+                                                                    <span class="cucces_detail_true">Đã xử lý</span>
                                                                 </label>
                                                             }
                                                             else
@@ -140,10 +144,14 @@
                                                                     <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(order.Id, true))">
                                                                     <span class="slider round"></span>
                                                                 </label>
+                                                                <label class="mx-2">
+                                                                    <span class="cucces_detail_false">Chưa xử lý</span>
+                                                                </label>
                                                             }
 
+
                                                         </li>
-                                                   </ul>
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -158,6 +166,30 @@
     </div>
 }
 
+
+<style>
+    .cucces_detail_true {
+        background-color: rgba(47, 135, 51, 0.15);
+        color: #2f8733;
+        padding: 5px 10px;
+        text-transform: capitalize;
+        display: inline-block;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    .cucces_detail_false {
+        background-color: rgba(226, 36, 84, 0.15);
+        color: #e22454;
+        padding: 5px 10px;
+        text-transform: capitalize;
+        display: inline-block;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 400;
+    }
+</style>
 
 @code {
     [Parameter]

@@ -375,10 +375,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                     });
                 }
 
-                // Cập nhật trạng thái đơn hàng
-                order.OrderStatus = updateOrderDto.OrderStatus; // Cập nhật thành đã duyệt (true tương đương với 1)
+                order.OrderStatus = updateOrderDto.OrderStatus;
 
-                _repository.Order.UpdateOrderAsync(order);
+                await _repository.Order.UpdateOrderAsync(order);
                 await _repository.Order.SaveAsync();
 
                 return NoContent();
