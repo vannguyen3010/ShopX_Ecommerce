@@ -1,0 +1,135 @@
+﻿@page "/cap-nhat-phuong-thuc-thanh-toan/{id:guid}"
+
+@inject PaymentServices _paymentServices
+
+@rendermode InteractiveServer
+
+@if (payment != null)
+{
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-8 m-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header-2">
+                                        <h5>Thêm phương thức thanh toán</h5>
+                                    </div>
+
+                                    <form class="theme-form theme-form-2 mega-form">
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Loại thanh toán</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text" @bind="payment.PaymentType">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Tên ngân hàng</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text" @bind="payment.BankName">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Số tài khoản</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text" @bind="payment.AccountNumber">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Lưu ý</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="3" @bind="payment.Note"></textarea>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-sm-3 col-form-label form-label-title">Ảnh</label>
+                                            <div class="table-image" style="width: 200px;">
+                                                <img src="@(string.IsNullOrEmpty(payment.FilePath) ? "/Img_Dev/banner.png" : payment.FilePath)" class="img-fluid" alt="image" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" />
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="col-3 col-form-label form-label-title"></label>
+                                            <InputFile class="table-image col-6" accept=".jpg,.jpeg,.png" OnChange="OnFileSelected" required />
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            @if (ShowLoadingButton)
+                                            {
+                                                <ButtonLoad></ButtonLoad>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="btn btn-primary buttonload" @onclick="UpdatePaymentHandle">Thêm</button>
+                                            }
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code{
+    [Parameter]
+    public Guid id { get; set; }
+
+    private PaymentMethodDto payment;
+
+    private IBrowserFile? selectedFile;
+    public bool ShowLoadingButton { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCategoryById();
+    }
+
+    private async Task GetCategoryById()
+    {
+        var response = await _paymentServices.GetPaymentByIdAsync(id);
+
+        if (response != null && response.Success)
+        {
+            payment = response.Data;
+        }
+    }
+    private async Task UpdatePaymentHandle()
+    {
+        ShowLoadingButton = true;
+
+        IFormFile formFile = selectedFile != null ? new CustomFormFile(selectedFile) : null;
+
+        var updateIntroduceDto = new UpdatePaymentDto
+            {
+                PaymentType = payment.PaymentType,
+                BankName = payment.BankName,
+                AccountNumber = payment.AccountNumber,
+                Note = payment.Note,
+                File = formFile
+            };
+        var success = await _paymentServices.UpdatePaymentAsync(id, updateIntroduceDto, selectedFile);
+        if (success)
+        {
+            NavigationManager.NavigateTo("/quan-ly-ngan-hang", forceLoad: true);
+        }
+
+        await Task.Delay(1000);
+        ShowLoadingButton = false;
+    }
+
+    private async Task OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+}

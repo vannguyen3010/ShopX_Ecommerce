@@ -9,7 +9,6 @@ namespace Shared.DTO.Payment
         public string BankName { get; set; }
         public string AccountNumber { get; set; }
         public string Note { get; set; }
-        [Required]
         public IFormFile File { get; set; }
     }
 
