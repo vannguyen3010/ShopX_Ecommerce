@@ -1,9 +1,7 @@
-﻿using Shared.DTO.Banner;
-using Shared.DTO.Response;
+﻿using Microsoft.AspNetCore.Components.Forms;
 using Shared;
 using Shared.DTO.BannerProduct;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+using Shared.DTO.Response;
 using System.Net.Http.Headers;
 
 namespace Admin_Wolmart.UI.Services

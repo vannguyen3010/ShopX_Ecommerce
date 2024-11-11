@@ -132,3 +132,17 @@ input:checked + .slider:before {
     padding: 5px;
     border-radius: 5px;
 }
+.buttonload {
+    background-color: #039184;
+    border: none;
+    color: white;
+    padding: 9px 23px;
+    font-size: 16px;
+    margin: 25px;
+    border-radius: 30px;
+}
+
+    .buttonload i {
+        margin-left: -12px;
+        margin-right: 8px;
+    }
