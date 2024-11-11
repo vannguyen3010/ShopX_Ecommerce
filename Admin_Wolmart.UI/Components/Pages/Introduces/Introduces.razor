@@ -137,10 +137,18 @@
                                                             </li>
 
                                                             <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle" @onclick="() => DeleteIntroduce(item.id)">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
+                                                              
+                                                                @if (IsLoading(item.id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+
+                                                                    <a href="javascript:void(0)" @onclick="() => DeleteIntroduce(item.id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -213,6 +221,7 @@
     private int? type = null;
 
     private bool isLoading = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -316,12 +325,22 @@
 
     private async Task DeleteIntroduce(Guid id)
     {
+        LoadingStates[id] = true;
         bool isDeleted = await _introduceServices.DeleteIntroduceAsync(id);
 
         if (isDeleted)
         {
             await LoadListIntroduces();
         }
+
+
+        await Task.Delay(1000);
+        LoadingStates[id] = false;
+    }
+
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
     }
 
     private async Task UpdateStatus(Guid id, bool status)

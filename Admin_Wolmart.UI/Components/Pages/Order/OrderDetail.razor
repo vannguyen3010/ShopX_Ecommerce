@@ -21,7 +21,7 @@
                                     <ul>
                                         <li>@order.OrderDate</li>
                                         <li>@totalCart Sản phẩm</li>
-                                        <li>Tông tiền hàng @order.TotalAmount.ToString("N0")  <span class="currency-symbol">đ</span></li>
+                                        <li>Tổng tiền hàng @order.TotalAmount.ToString("N0")  <span class="currency-symbol">đ</span></li>
                                     </ul>
                                 </div>
                             </div>
@@ -36,15 +36,15 @@
                                                         <th class="text-end" colspan="2">
                                                             <a href="javascript:void(0)"
                                                                class="theme-color">
-                                                              @*   Edit
-                                                                Items *@
+                                                                @*   Edit
+                                                            Items *@
                                                             </a>
                                                         </th>
                                                     </tr>
                                                 </thead>
 
                                                 <tbody>
-                                                    @if(order.OrderItems != null && order.OrderItems.Any())
+                                                    @if (order.OrderItems != null && order.OrderItems.Any())
                                                     {
                                                         @foreach (var item in order.OrderItems)
                                                         {
@@ -53,11 +53,11 @@
                                                                 <td>
                                                                     <a href="javascript:void(0)">
                                                                         <img src="@(string.IsNullOrEmpty(item.ImageFilePath) ? "/Img_Dev/banner.png" : item.ImageFilePath)"
-                                                                             class="img-fluid blur-up lazyload" alt="order" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';">
+                                                                             class="img-fluid blur-up lazyload" alt="order" onerror="this.onerror=null;this.src='/Img_Dev/banner.png';" style="width: unset!important;">
                                                                     </a>
                                                                 </td>
                                                                 <td>
-                                                                    <p>@item.ProductName</p>
+                                                                    <p class="no_wrap_1">@item.ProductName</p>
                                                                     <h5>@item.CategoryName</h5>
                                                                 </td>
                                                                 <td>
@@ -88,7 +88,7 @@
                                                             <h5>Phí vận chuyển :</h5>
                                                         </td>
                                                         <td>
-                                                            <h4>@order.ShippingCost</h4>
+                                                            <h4>@order.ShippingCost.ToString("N0")<span class="currency-symbol text-danger">đ</span> </h4>
                                                         </td>
                                                     </tr>
                                                     <tr class="table-order">
@@ -96,7 +96,7 @@
                                                             <h4 class="theme-color fw-bold">Tổng giá :</h4>
                                                         </td>
                                                         <td>
-                                                            <h4 class="theme-color fw-bold">@order.TotalAmount.ToString("N0")<span class="currency-symbol text-danger">đ</span> </h4>
+                                                            <h4 class="theme-color fw-bold">@order.TotalAmount.ToString("N0")<span class="currency-symbol">đ</span> </h4>
                                                         </td>
                                                     </tr>
                                                 </tfoot>
@@ -107,34 +107,43 @@
                                     <div class="col-xl-4">
                                         <div class="order-success">
                                             <div class="row g-4">
-                                                <h4>summery</h4>
+                                                <h4>Thông tin</h4>
                                                 <ul class="order-details">
-                                                    <li>Order ID: 5563853658932</li>
-                                                    <li>Order Date: October 22, 2018</li>
-                                                    <li>Order Total: $907.28</li>
-                                                </ul>
-
-                                                <h4>shipping address</h4>
-                                                <ul class="order-details">
-                                                    <li>Gerg Harvell</li>
-                                                    <li>568, Suite Ave.</li>
-                                                    <li>Austrlia, 235153 Contact No. 48465465465</li>
+                                                    <li>Tên: @order.UserName</li>
+                                                    <li>Phone: @order.PhoneNumber</li>
+                                                    <li>Email: @order.Email</li>
+                                                    <li>Ngân hàng: @order.BankName</li>
+                                                    <li>Địa chỉ: @order.AddressLine</li>
                                                 </ul>
 
                                                 <div class="payment-mode">
-                                                    <h4>payment method</h4>
+                                                    <h4>Nội dung</h4>
                                                     <p>
-                                                        Pay on Delivery (Cash/Card). Cash on delivery (COD)
-                                                        available. Card/Net banking acceptance subject to device
-                                                        availability.
+                                                        @order.Note
                                                     </p>
                                                 </div>
 
+                                                <h4> Cập nhật đơn hàng</h4>
                                                 <div class="delivery-sec">
-                                                    <h3>
-                                                        expected date of delivery: <span>october 22, 2018</span>
-                                                    </h3>
-                                                    <a href="order-tracking.html">track order</a>
+                                                   <ul>
+                                                        <li>
+                                                            @if(order.OrderStatus == true)
+                                                            {
+                                                                <label class="switch">
+                                                                    <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(order.Id, false))">
+                                                                    <span class="slider round"></span>
+                                                                </label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="switch">
+                                                                    <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(order.Id, true))">
+                                                                    <span class="slider round"></span>
+                                                                </label>
+                                                            }
+
+                                                        </li>
+                                                   </ul>
                                                 </div>
                                             </div>
                                         </div>
@@ -150,7 +159,7 @@
 }
 
 
-@code{
+@code {
     [Parameter]
     public Guid id { get; set; }
 
@@ -172,6 +181,11 @@
             order = response.Data;
             totalCart = response.Data.OrderItems.Count();
         }
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _orderServices.UpdateOrderStatusAsync(id, status);
     }
 
 }

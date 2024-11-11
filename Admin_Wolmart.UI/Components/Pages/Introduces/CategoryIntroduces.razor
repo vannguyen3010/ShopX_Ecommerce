@@ -88,10 +88,16 @@
                                                             </li>   
 
                                                             <li class="@(item.Status ? "" : "table_row_disabled")">
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle" @onclick="() => DeleteCategory(item.Id)">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
+                                                                @if (IsLoading(item.Id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="javascript:void(0)" @onclick="() => DeleteCategory(item.Id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -154,6 +160,7 @@
     private int totalCount;
 
     private bool isModalOpen = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -180,12 +187,21 @@
 
     private async Task DeleteCategory(Guid id)
     {
+        LoadingStates[id] = true;
         bool isDeleted = await _cateIntroduceServices.DeleteCategoryIntroduceAsync(id);
 
         if (isDeleted)
         {
             await LoadListCategoriesIntroduces();
         }
+
+        await Task.Delay(1000);
+        LoadingStates[id] = false;
+    }
+
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
     }
 
     private async Task LoadListCategoriesIntroduces()
@@ -258,10 +274,8 @@
         }
     }
 
-    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
     private async Task UpdateUrlAndLoadCategories()
     {
-        // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc
         var queryParameters = new Dictionary<string, string>
             {
                 ["pageNumber"] = currentPage.ToString(),

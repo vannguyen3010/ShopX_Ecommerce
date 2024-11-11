@@ -120,10 +120,18 @@
                                                             </li>
 
                                                             <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle" @onclick="() => DeleteBanner(item.Id)">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
+                                                                @if (IsLoading(item.Id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                       data-bs-target="#exampleModalToggle" @onclick="() => DeleteBanner(item.Id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -156,7 +164,7 @@
     private IEnumerable<BannerDto> listBanner;
 
     private bool isLoading = true;
-    public bool ShowLoadingButton { get; set; } = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -203,7 +211,7 @@
 
     private async Task DeleteBanner(Guid id)
     {
-        isLoading = true;
+        LoadingStates[id] = true;
 
         bool isDeleted = await _bannerServices.DeleteBannerAsync(id);
 
@@ -211,8 +219,14 @@
         {
             await LoadListBanner();
         }
+
         await Task.Delay(1000);
-        isLoading = false;
+        LoadingStates[id] = false;
+    }
+
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
     }
 
     private async Task GetBannerByid(Guid id)

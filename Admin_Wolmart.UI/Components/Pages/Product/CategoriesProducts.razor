@@ -136,10 +136,18 @@
                                                             </li>
 
                                                             <li>
-                                                                <a href="javascript:void(0)" @onclick="() => DeleteCategory(item.Id)">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
+                                                                @if (IsLoading(item.Id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="javascript:void(0)" @onclick="() => DeleteCategory(item.Id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
                                                             </li>
+                                                           
                                                         </ul>
                                                     </td>
                                                 </tr>
@@ -197,9 +205,16 @@
                                                                     </li>
 
                                                                     <li>
-                                                                        <a href="javascript:void(0)" @onclick="() => DeleteCategory(subItem.Id)">
-                                                                            <i class="ri-delete-bin-line"></i>
-                                                                        </a>
+                                                                        @if (IsLoading(item.Id))
+                                                                        {
+                                                                            <IconLoad></IconLoad>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <a href="javascript:void(0)" @onclick="() => DeleteCategory(subItem.Id)">
+                                                                                <i class="ri-delete-bin-line"></i>
+                                                                            </a>
+                                                                        }
                                                                     </li>
                                                                 </ul>
                                                             </td>
@@ -260,6 +275,7 @@
     private int totalCount;
 
     private bool isLoading = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -345,12 +361,20 @@
 
     private async Task DeleteCategory(Guid id)
     {
+        LoadingStates[id] = true;
         bool isDeleted = await _cateProductServices.DeleteCategoryProductAsync(id);
 
         if (isDeleted)
         {
             await LoadListCategoriesProducts();
         }
+
+        await Task.Delay(1000);
+        LoadingStates[id] = false;
+    }
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
     }
 
     private async Task GetIntroductOrUpdate(Guid id)
