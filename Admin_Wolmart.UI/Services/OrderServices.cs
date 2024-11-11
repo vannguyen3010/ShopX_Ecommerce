@@ -80,5 +80,22 @@ namespace Admin_Wolmart.UI.Services
             }
             return null;
         }
+
+        public async Task<bool> UpdateOrderStatusAsync(Guid id, bool OrderStatus)
+        {
+            var updateStatus = new UpdateOrderDto { OrderStatus = OrderStatus };
+            var query = $"/api/Order/UpdateOrderStatus/{id}?OrderStatus={OrderStatus}";
+            var response = await _httpClient.PutAsJsonAsync(query, updateStatus);
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteOrderAsync(Guid id)
+        {
+            var response = await _httpClient.DeleteAsync($"/api/Order/DeleteOrder/{id}");
+
+            return response.IsSuccessStatusCode;
+
+        }
     }
 }

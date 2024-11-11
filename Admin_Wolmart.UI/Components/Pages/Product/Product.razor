@@ -16,7 +16,7 @@
                         </div>
                         <div class="icon-box icon-box-side icon-box-light d-flex align-items-center justify-content-between mb-5">
                             <div class="icon-box-content">
-                                <select class="js-example-basic-single w-100 sort_categories search_input cursor" @onchange="OnCategoryChanged" name="state" required>
+                                <select class="js-example-basic-single w-100 sort_categories search_input cursor" target="_self" @onchange="OnCategoryChanged" name="state" required>
 
                                     @if (cateProducts != null && cateProducts.Any())
                                     {
@@ -155,9 +155,16 @@
                                                             </li>
 
                                                             <li>
-                                                                <a href="javascript:void(0)" @onclick="() => DeleteProduct(item.Id)">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
+                                                                @if (IsLoading(item.Id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="javascript:void(0)" @onclick="() => DeleteProduct(item.Id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -231,6 +238,7 @@
     private string? keyword = null;
 
     private bool isLoading = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -349,12 +357,22 @@
 
     private async Task DeleteProduct(Guid id)
     {
+        LoadingStates[id] = true;
+
         bool isDeleted = await _productServices.DeleteProductByIdAsync(id);
 
         if (isDeleted)
         {
             await LoadListProducts();
         }
+
+        await Task.Delay(1000);
+        LoadingStates[id] = false;
+    }
+
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
     }
 
     private async Task UpdateUrlAndLoadProducts()

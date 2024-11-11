@@ -3,7 +3,21 @@
 @inject OrderServices _orderServices
 
 @rendermode InteractiveServer
+<style>
+    .buttonload {
+        color: #0da487;
+        background-color: #fff;
+        border: none;
+        padding: 0px 15px;
+        font-size: 16px;
+        border-radius: 30px;
+    }
 
+        .buttonload i {
+            margin-left: -12px;
+            margin-right: 8px;
+        }
+</style>
 
 <div class="page-body">
     <div class="container-fluid">
@@ -37,10 +51,10 @@
                                         <tr>
                                             <th>Mã đơn</th>
                                             <th>Ngày</th>
-                                            <th>Trang thái</th>
                                             <th>Ngân hàng</th>
                                             <th>Vận chuyển</th>
                                             <th>Tổng tiền</th>
+                                            <th>Trang thái</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
@@ -65,7 +79,13 @@
 
                                                     <td>@item.OrderDate.ToString("dd-MM-yyyy")</td>
 
-                                                    @if(item.OrderStatus == true)
+                                                    <td>@item.BankName</td>
+
+                                                    <td>@item.ShippingCost.ToString("N0") <span class="currency-symbol text-danger">đ</span></td>
+
+                                                    <td>@item.TotalAmount.ToString("N0")  <span class="currency-symbol text-danger">đ</span></td>
+
+                                                    @if (item.OrderStatus == true)
                                                     {
 
                                                         <td class="status-close">
@@ -79,31 +99,42 @@
                                                         </td>
                                                     }
 
-                                                    <td>@item.BankName</td>
-
-                                                    <td>@item.ShippingCost.ToString("N0") <span class="currency-symbol text-danger">đ</span></td>
-
-                                                    <td>@item.TotalAmount.ToString("N0")  <span class="currency-symbol text-danger">đ</span></td>
-
                                                     <td>
                                                         <ul>
+                                                            <li>
+                                                                @if (item.OrderStatus == true)
+                                                                {
+                                                                    <label class="switch mb-0">
+                                                                        <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label class="switch mb-0">
+                                                                        <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                        <span class="slider round"></span>
+                                                                    </label>
+                                                                }
+
+                                                            </li>
                                                             <li>
                                                                 <a href="javascript:void(0)" @onclick="() => GetOrdersDetail(item.Id)">
                                                                     <i class="ri-eye-line"></i>
                                                                 </a>
                                                             </li>
-
                                                             <li>
-                                                                <a href="javascript:void(0)">
-                                                                    <i class="ri-pencil-line"></i>
-                                                                </a>
-                                                            </li>
-
-                                                            <li>
-                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                   data-bs-target="#exampleModalToggle">
-                                                                    <i class="ri-delete-bin-line"></i>
-                                                                </a>
+                                                                @if (IsLoading(item.Id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="javascript:void(0)" @onclick="() => DeleteOrder(item.Id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
+                                                             
                                                             </li>
                                                         </ul>
                                                     </td>
@@ -150,6 +181,8 @@
                                         <i class="fa-solid fa-angles-right"></i>
                                     </a>
                                 </li>
+
+                             
                             </ul>
                         </nav>
 
@@ -171,6 +204,8 @@
     private string? orderCode = null;
 
     private bool isLoading = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -275,6 +310,35 @@
     private async Task GetOrdersDetail(Guid id)
     {
         NavigationManager.NavigateTo($"/chi-tiet-don-hang/{id}", forceLoad: true);
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _orderServices.UpdateOrderStatusAsync(id, status);
+        if (isSuccess)
+        {
+            await LoadListOrders();
+        }
+    }
+
+    private async Task DeleteOrder(Guid id)
+    {
+        LoadingStates[id] = true;
+
+        bool isDeleted = await _orderServices.DeleteOrderAsync(id);
+
+        if (isDeleted)
+        {
+            await LoadListOrders();
+        }
+
+        await Task.Delay(1000);
+        LoadingStates[id] = false;
+    }
+
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
     }
 
     private async Task UpdateUrlAndLoadOrder()
