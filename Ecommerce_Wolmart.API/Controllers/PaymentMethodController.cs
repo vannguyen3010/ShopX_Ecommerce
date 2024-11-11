@@ -75,6 +75,9 @@ namespace Ecommerce_Wolmart.API.Controllers
                     paymentEntity.FileSizeInBytes = createpaymentDto.File.Length;
                 }
 
+                paymentEntity.FileName = createpaymentDto.BankName;
+                paymentEntity.FileDescription = createpaymentDto.BankName;
+
                 // tạo danh mục vào cơ sở dữ liệu
                 await _repository.PaymentMethod.CreatePaymentMethod(paymentEntity);
 

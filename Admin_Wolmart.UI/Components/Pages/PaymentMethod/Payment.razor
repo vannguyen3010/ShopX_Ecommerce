@@ -14,8 +14,7 @@
                         <div class="title-header option-title">
                             <h5>Danh sách ngân hàng</h5>
                             <form class="d-inline-flex">
-                                <a href="add-new-category.html"
-                                   class="align-items-center btn btn-theme d-flex">
+                                <a class="align-items-center btn btn-theme d-flex" onclick="window.location.href='/them-phuong-thuc-thanh-toan'">
                                     <i data-feather="plus-square"></i>Thêm mới
                                 </a>
                             </form>
@@ -92,7 +91,7 @@
                                                         <ul>
 
                                                             <li>
-                                                                <a href="javascript:void(0)">
+                                                                <a href="javascript:void(0)" @onclick="() => GetPaymentById(item.Id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>
@@ -190,6 +189,11 @@
     private bool IsLoading(Guid id)
     {
         return LoadingStates.ContainsKey(id) && LoadingStates[id];
+    }
+
+    private async Task GetPaymentById(Guid id)
+    {
+        NavigationManager.NavigateTo($"/them-phuong-thuc-thanh-toan/{id}", forceLoad: true);
     }
 
 }

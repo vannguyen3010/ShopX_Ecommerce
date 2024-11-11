@@ -7,11 +7,8 @@ namespace Shared.DTO.Payment
     {
         public string PaymentType { get; set; }// Tên phương thức thanh toán (VD: COD, QR code)
         public string BankName { get; set; }// Tên ngân hàng
-        public string AccountNumber { get; set; } // Số tài khoản ngân hàng
-        public string Note { get; set; }
-        [Required]
+        public string AccountNumber { get; set; }
+        public string Note { get; set; } // Số tài khoản ngân hàng
         public IFormFile File { get; set; }
-        public string FileName { get; set; }
-        public string? FileDescription { get; set; }
     }
 }
