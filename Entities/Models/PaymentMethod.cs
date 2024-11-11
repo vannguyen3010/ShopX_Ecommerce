@@ -10,14 +10,15 @@ namespace Entities.Models
         public string BankName { get; set; }
         public string AccountNumber { get; set; }
         public string Note { get; set; }
+        public bool Status { get; set; }
 
-        [NotMapped] // Sẽ ko lưu ảnh vào Db
+        [NotMapped]
         public IFormFile File { get; set; }
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
         public string? FileDescription { get; set; }
-        public string FileExtension { get; set; }
-        public long FileSizeInBytes { get; set; }
-        public string FilePath { get; set; }
+        public string? FileExtension { get; set; }
+        public long? FileSizeInBytes { get; set; }
+        public string? FilePath { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }

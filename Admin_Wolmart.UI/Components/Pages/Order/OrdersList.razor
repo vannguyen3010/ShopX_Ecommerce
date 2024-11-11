@@ -104,8 +104,8 @@
                                                             <li>
                                                                 @if (item.OrderStatus == true)
                                                                 {
-                                                                    <label class="switch mb-0">
-                                                                        <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                    <label class="switch mb-0 d-none">
+                                                                        <input type="checkbox" checked disabled>
                                                                         <span class="slider round"></span>
                                                                     </label>
                                                                 }

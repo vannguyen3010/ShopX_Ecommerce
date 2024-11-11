@@ -1,0 +1,195 @@
+﻿@page "/quan-ly-ngan-hang"
+
+@inject PaymentServices _paymentServices
+
+@rendermode InteractiveServer
+
+<div class="page-body">
+    <!-- All User Table Start -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="title-header option-title">
+                            <h5>Danh sách ngân hàng</h5>
+                            <form class="d-inline-flex">
+                                <a href="add-new-category.html"
+                                   class="align-items-center btn btn-theme d-flex">
+                                    <i data-feather="plus-square"></i>Thêm mới
+                                </a>
+                            </form>
+                        </div>
+
+                        <div class="table-responsive category-table">
+                            <div>
+                                <table class="table all-package theme-table" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>Ảnh</th>
+                                            <th>Tên ngân hàng</th>
+                                            <th>Số tài khoản</th>
+                                            <th>Ngày</th>
+                                            <th>Trang thái</th>
+                                            <th>Lưu ý</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (isLoading)
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="loading-container">
+                                                        <div class="loading"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else if(listPayment != null && listPayment.Any())
+                                        {
+                                            @foreach (var item in listPayment)
+                                            {
+                                                <tr>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">
+                                                        <div class="table-image">
+                                                            <img src="@(string.IsNullOrEmpty(item.FilePath) ? "/Img_Dev/banner.png" : item.FilePath)" class="img-fluid"
+                                                                 alt="image">
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.BankName</td>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.AccountNumber</td>
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.CreatedAt.ToString("dd-MM-yyyy")</td>
+
+                                                    @if (item.Status == true)
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+
+                                                    }
+
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.Note</td>
+
+                                                    <td>
+                                                        <ul>
+
+                                                            <li>
+                                                                <a href="javascript:void(0)">
+                                                                    <i class="ri-pencil-line"></i>
+                                                                </a>
+                                                            </li>
+
+                                                            <li>
+                                                                @if (IsLoading(item.Id))
+                                                                {
+                                                                    <IconLoad></IconLoad>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a href="javascript:void(0)" @onclick="() => DeletePayment(item.Id)">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                }
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
+                                                    </div>
+                                                    <span>Không có bài viết nào !</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    private IEnumerable<PaymentMethodDto> listPayment;
+
+    private bool isLoading = false;
+    private Dictionary<Guid, bool> LoadingStates = new Dictionary<Guid, bool>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListOrders();
+    }
+
+    private async Task LoadListOrders()
+    {
+        isLoading = true;
+        var response = await _paymentServices.GetAllPaymentMethodAsync();
+
+        if (response != null && response.Success)
+        {
+            listPayment = response.Data;
+        }
+        else
+        {
+            listPayment = new List<PaymentMethodDto>();
+        }
+
+        isLoading = false;
+    }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _paymentServices.UpdatePaymentStatusAsync(id, status);
+
+        if (isSuccess)
+        {
+            await LoadListOrders();
+        }
+    }
+
+    private async Task DeletePayment(Guid id)
+    {
+        LoadingStates[id] = true;
+        bool isDeleted = await _paymentServices.DeletePaymentAsync(id);
+
+        if (isDeleted)
+        {
+            await LoadListOrders();
+        }
+
+        LoadingStates[id] = false;
+    }
+
+    private bool IsLoading(Guid id)
+    {
+        return LoadingStates.ContainsKey(id) && LoadingStates[id];
+    }
+
+}

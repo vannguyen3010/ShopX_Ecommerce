@@ -9,6 +9,7 @@ namespace Shared.DTO.Payment
         public string PaymentType { get; set; }
         public string BankName { get; set; }
         public string AccountNumber { get; set; }
+        public bool Status { get; set; }
         public string Note { get; set; }
         public string FilePath { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;

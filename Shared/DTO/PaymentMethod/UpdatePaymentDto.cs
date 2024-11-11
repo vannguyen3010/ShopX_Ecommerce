@@ -5,11 +5,16 @@ namespace Shared.DTO.Payment
 {
     public class UpdatePaymentDto
     {
-        public string PaymentType { get; set; }// Tên phương thức thanh toán (VD: COD, QR code)
-        public string BankName { get; set; }// Tên ngân hàng
-        public string AccountNumber { get; set; } // Số tài khoản ngân hàng
+        public string PaymentType { get; set; }
+        public string BankName { get; set; }
+        public string AccountNumber { get; set; }
         public string Note { get; set; }
         [Required]
         public IFormFile File { get; set; }
+    }
+
+    public class UpdatePaymentStatusDto
+    {
+        public bool Status { get; set; }
     }
 }

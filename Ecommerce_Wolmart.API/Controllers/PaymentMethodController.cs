@@ -227,6 +227,43 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("UpdatePaymentMethodStatus/{Id}")]
+        public async Task<IActionResult> UpdatePaymentMethodStatus(Guid Id, [FromQuery] UpdatePaymentStatusDto request)
+        {
+            try
+            {
+                var existingPaymentMethod = await _repository.PaymentMethod.GetPaymentMethodByIdAsync(Id, trackChanges: false);
+                if (existingPaymentMethod == null)
+                {
+                    _logger.LogError($"Payment method with id: {Id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Payment method with id: {id}, hasn't been found in db!",
+                        Data = null
+                    });
+                }
+                
+                _mapper.Map(request, existingPaymentMethod);
+
+                existingPaymentMethod.UpdatedAt = DateTime.UtcNow;
+                request.Status = true;
+
+                _repository.PaymentMethod.UpdatePaymentMethod(existingPaymentMethod);
+                _repository.SaveAsync();
+
+                return NoContent();
+
+            }
+            catch (Exception)
+            {
+
+                _logger.LogError("Error updating payment method.");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpDelete]
         [Route("DeletePaymentMethod/{Id}")]
         public async Task<IActionResult> DeletePaymentMethod(Guid Id)
