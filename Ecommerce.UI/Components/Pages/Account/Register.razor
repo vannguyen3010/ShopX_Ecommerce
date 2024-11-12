@@ -19,7 +19,7 @@
                     <div class="tab-content w-100 row">
                         <EditForm Model="registerDto" OnValidSubmit="HandleRegister" id="form-register" FormName="form-register">
                             <DataAnnotationsValidator />
-                            <div class="d-flex row g-3">
+                           @*  <div class="d-flex row g-3">
                                 <div class="form-group mb-5 col-6">
                                     <label>Họ *</label>
                                     <InputText @bind-Value="registerDto.LastName" type="text" class="form-control" />
@@ -30,7 +30,7 @@
                                     <InputText @bind-Value="registerDto.FirstName" type="text" class="form-control" />
                                     <ValidationMessage class="text-danger" For="@(() => registerDto.FirstName)" />
                                 </div>
-                            </div>
+                            </div> *@
                             <div class="form-group mb-5">
                                 <label>Tên *</label>
                                 <InputText @bind-Value="registerDto.UserName" type="text" class="form-control" />

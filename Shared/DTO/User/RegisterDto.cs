@@ -4,13 +4,8 @@ namespace Shared.DTO.User
 {
     public class RegisterDto
     {
-        [Required(ErrorMessage = "FirstName is required.")]
-        public string? FirstName { get; set; }
 
-        [Required(ErrorMessage = "LastName is required.")]
-        public string? LastName { get; set; }
-
-        [Required(ErrorMessage = "UserName is required.")]
+        [Required(ErrorMessage = "Nhập Họ và tên.")]
         public string? UserName { get; set; }
 
         [Required(ErrorMessage = "Email is required.")]

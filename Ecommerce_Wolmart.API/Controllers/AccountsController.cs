@@ -8,6 +8,7 @@ using Entities.Models.Address;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Shared;
 using Shared.DTO.Address;
 using Shared.DTO.Response;
 using Shared.DTO.User;
@@ -125,8 +126,13 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
+            // Kiểm tra xem người dùng có phải là User, Admin hoặc SuperAdmin không
+            bool isUser = await _userManager.IsInRoleAsync(user, RoleEnum.User.ToString());
+            bool isAdmin = await _userManager.IsInRoleAsync(user, RoleEnum.Admin.ToString());
+            bool isSuperAdmin = await _userManager.IsInRoleAsync(user, RoleEnum.SuperAdmin.ToString());
+
             // Kiểm tra xem người dùng có phải là User không
-            if (!await _userManager.IsInRoleAsync(user, "User"))
+            if (!isUser && !isAdmin && !isSuperAdmin)
             {
                 return NotFound(new ApiResponse<Object>
                 {

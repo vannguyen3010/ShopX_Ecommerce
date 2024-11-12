@@ -28,6 +28,7 @@ namespace Repository
         private ICheckoutRepository _checkout;
         private ISocialMediaInfoRepository _socialMediaInfo;
         private IAccountRepository _accountRepository;
+        private IRoleRepository _roleRepository;
 
         public RepositoryManager(RepositoryContext repositoryContext)
         {
@@ -292,6 +293,8 @@ namespace Repository
                 return _accountRepository;
             }
         }
+
+        public IRoleRepository RoleRepository => _roleRepository;
 
         public void SaveAsync() => _repoContext.SaveChanges();
     }

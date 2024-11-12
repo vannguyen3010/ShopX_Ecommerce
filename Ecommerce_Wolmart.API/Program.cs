@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Ecommerce_Wolmart.API.Extensions;
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using InventrySystem.Extensions;
@@ -60,6 +61,13 @@ builder.Services.AddControllers()
 builder.Services.AddHttpContextAccessor(); // Khi link vào ảnh thì sẽ tạo ra url ảnh https://localhost:1234/images/image.png
 
 var app = builder.Build();
+
+// Gọi SeedData để thêm tài khoản và role khi ứng dụng khởi động
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await SeedData.SeedAync(services); // Seed dữ liệu khi ứng dụng khởi động
+}
 
 app.UseHttpsRedirection();
 
