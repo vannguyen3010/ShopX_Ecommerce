@@ -247,7 +247,10 @@
                                                 <option value="default" selected="selected">--------</option>
                                                 @foreach (var item in paymentMethods)
                                                 {
-                                                    <option value="@item.Id">@item.BankName</option>
+                                                    @if (item.Status == true)
+                                                    {
+                                                        <option value="@item.Id">@item.BankName</option>
+                                                    }
                                                 }
                                             </select>
                                         }
@@ -319,12 +322,6 @@
 
                                 <div class="form-group place-order pt-6">
                                     <button class="btn btn-dark btn-block btn-rounded" @onclick="HandleCreateOrder">Đặt hàng</button>
-                                    @if (message != null)
-                                    {
-                                        <div class="alert alert-danger">
-                                            @message
-                                        </div>
-                                    }
                                 </div>
                             </div>
                         </div>
@@ -546,7 +543,7 @@
 
         var orderResult = await OrderServices.CreateOrderAsync(orderModel);
 
-        if (orderResult.Success && orderResult.Data != null) 
+        if (orderResult.Success && orderResult.Data != null)
         {
             message = "Đặt hàng thành công!";
 

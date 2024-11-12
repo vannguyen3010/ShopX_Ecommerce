@@ -218,6 +218,11 @@
     private async Task UpdateStatus(Guid id, bool status)
     {
         bool isSuccess = await _orderServices.UpdateOrderStatusAsync(id, status);
+
+        if(isSuccess)
+        {
+            NavigationManager.NavigateTo($"/chi-tiet-don-hang/{id}", forceLoad: true);
+        }
     }
 
 }
