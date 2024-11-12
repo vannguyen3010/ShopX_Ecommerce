@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20241112084141_add email address SocialMediaInfo")]
+    partial class addemailaddressSocialMediaInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,7 +103,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "a2bd32c0-d75e-4966-8274-758e273da3fb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "596fffb7-230a-4bcc-bd16-168e6ac3ed3f",
+                            ConcurrencyStamp = "c8929236-6306-44d8-8642-f992a4d2bc4a",
                             Email = "user@example.com",
                             EmailConfirmed = true,
                             FirstName = "John",
@@ -108,7 +111,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@EXAMPLE.COM",
                             NormalizedUserName = "USER@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEN0CyNrPbNJnnZvpvyNZjkQfKWmtw0hXrbSgKedvhUaqZ5TjXDUwZRlqesAFjN1Ccg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHjGmLocsT+l8+bEcX7wk887pkVudzjV2kNpg+C6KNOTBJ08w6nxoaxlGyldv1ScPw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -118,7 +121,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "d7930984-3648-45c8-b33e-7b902e1166b4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e0409e8b-dc21-4232-9815-d2884ec53871",
+                            ConcurrencyStamp = "3f924194-9bcc-4bf4-a4de-a19db9f30add",
                             Email = "user2@example.com",
                             EmailConfirmed = true,
                             FirstName = "John2",
@@ -126,7 +129,7 @@ namespace Ecommerce_Wolmart.API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER2@EXAMPLE.COM",
                             NormalizedUserName = "USER2@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEO8ThlltYPpCdxEOVrwRq539TX1ixj+SBmsLXpdLdAe+m59JoRIjWl+VDC+JdytqVg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK0kRsnepHEOttDUxV2Esvp8M69JeRcOJenPlr5oHBcPRx4+TCrbkm/ieD8Qmz7NUA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
