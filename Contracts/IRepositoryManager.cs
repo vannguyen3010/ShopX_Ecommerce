@@ -22,7 +22,8 @@
         ICheckoutRepository Checkout { get; }
         ISocialMediaInfoRepository SocialMediaInfo { get; }
         IAccountRepository AccountRepository { get; }
-        
+        IRoleRepository RoleRepository { get; }
+
         void SaveAsync();
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20241112184259_Update Table USer remove lastName FirstName")]
+    partial class UpdateTableUSerremovelastNameFirstName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,13 +97,13 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "7b72a55e-0189-4665-87ab-b8c4a44e00f0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c61ed3ab-7d0f-49ff-bee4-c77108105381",
+                            ConcurrencyStamp = "5310a746-5fc9-4f7f-b00a-24e45cf14bfa",
                             Email = "superadmin@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "SUPERADMIN@GMAIL.COM",
                             NormalizedUserName = "NGUOIDEV",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKGEYttHmJoTEQDzbxsGVwuUSQ10y0gfBKKzBBt6xje5/tbDuRPWUJhKPMxkp4zEmQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBuN9G2CMUPf6Mdg0jaAnbkbsdqAS18lVCryVcpV6pzA1Jl0vMzn2sHfNAqg0N/8CA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -1456,24 +1459,24 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6bfaa43e-a428-4d85-b0b8-735dd0fb77f7",
+                            Id = "c2f6d6b4-bf01-48b7-adcb-023ce74362c6",
                             Name = "SuperAdmin",
-                            NormalizedName = "SuperAdmin",
-                            DateCreated = new DateTime(2024, 11, 12, 19, 13, 56, 680, DateTimeKind.Utc).AddTicks(4509)
+                            NormalizedName = "SUPERADMIN",
+                            DateCreated = new DateTime(2024, 11, 12, 18, 42, 57, 800, DateTimeKind.Utc).AddTicks(3986)
                         },
                         new
                         {
-                            Id = "e12975fe-3d25-45c4-afe1-fd696cad6baa",
+                            Id = "bbfdaab2-3d1b-4618-a91d-5b46f70483fa",
                             Name = "Admin",
-                            NormalizedName = "Admin",
-                            DateCreated = new DateTime(2024, 11, 12, 19, 13, 56, 680, DateTimeKind.Utc).AddTicks(4513)
+                            NormalizedName = "ADMIN",
+                            DateCreated = new DateTime(2024, 11, 12, 18, 42, 57, 800, DateTimeKind.Utc).AddTicks(4006)
                         },
                         new
                         {
-                            Id = "983f108c-0217-49b5-8582-6299dc82a0b2",
+                            Id = "92ebff93-c8f1-43d6-b667-9df2f8a14585",
                             Name = "User",
-                            NormalizedName = "User",
-                            DateCreated = new DateTime(2024, 11, 12, 19, 13, 56, 680, DateTimeKind.Utc).AddTicks(4517)
+                            NormalizedName = "USER",
+                            DateCreated = new DateTime(2024, 11, 12, 18, 42, 57, 800, DateTimeKind.Utc).AddTicks(4010)
                         });
                 });
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace Ecommerce_Wolmart.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20241112174922_Role")]
+    partial class Role
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,6 +43,12 @@ namespace Ecommerce_Wolmart.API.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -94,17 +103,19 @@ namespace Ecommerce_Wolmart.API.Migrations
                         {
                             Id = "7b72a55e-0189-4665-87ab-b8c4a44e00f0",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c61ed3ab-7d0f-49ff-bee4-c77108105381",
-                            Email = "superadmin@gmail.com",
+                            ConcurrencyStamp = "a860d029-2365-48a6-8526-6d73e7fd325c",
+                            Email = "superadmin@example.com",
                             EmailConfirmed = true,
+                            FirstName = "NguyenDev",
+                            LastName = "Nguoi",
                             LockoutEnabled = false,
-                            NormalizedEmail = "SUPERADMIN@GMAIL.COM",
-                            NormalizedUserName = "NGUOIDEV",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKGEYttHmJoTEQDzbxsGVwuUSQ10y0gfBKKzBBt6xje5/tbDuRPWUJhKPMxkp4zEmQ==",
+                            NormalizedEmail = "SUPERADMIN@EXAMPLE.COM",
+                            NormalizedUserName = "SUPERADMIN@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEmY4LwtpgvNh48tT6voQiXKLqPKHHNWEFsiNnyblkn4GKoXc4aRR19T3X2NGV1SgA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
-                            UserName = "NguoiDev"
+                            UserName = "superadmin@example.com"
                         });
                 });
 
@@ -1456,24 +1467,24 @@ namespace Ecommerce_Wolmart.API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6bfaa43e-a428-4d85-b0b8-735dd0fb77f7",
+                            Id = "868e190a-a98b-4034-b2dd-1beb591d454b",
                             Name = "SuperAdmin",
-                            NormalizedName = "SuperAdmin",
-                            DateCreated = new DateTime(2024, 11, 12, 19, 13, 56, 680, DateTimeKind.Utc).AddTicks(4509)
+                            NormalizedName = "SUPERADMIN",
+                            DateCreated = new DateTime(2024, 11, 12, 17, 49, 21, 393, DateTimeKind.Utc).AddTicks(9917)
                         },
                         new
                         {
-                            Id = "e12975fe-3d25-45c4-afe1-fd696cad6baa",
+                            Id = "d16bf389-95ff-4be2-b4a4-bd39db1e093f",
                             Name = "Admin",
-                            NormalizedName = "Admin",
-                            DateCreated = new DateTime(2024, 11, 12, 19, 13, 56, 680, DateTimeKind.Utc).AddTicks(4513)
+                            NormalizedName = "ADMIN",
+                            DateCreated = new DateTime(2024, 11, 12, 17, 49, 21, 393, DateTimeKind.Utc).AddTicks(9932)
                         },
                         new
                         {
-                            Id = "983f108c-0217-49b5-8582-6299dc82a0b2",
+                            Id = "ac6c2dbc-dd4a-4a5d-97ba-3a9db7dd2f62",
                             Name = "User",
-                            NormalizedName = "User",
-                            DateCreated = new DateTime(2024, 11, 12, 19, 13, 56, 680, DateTimeKind.Utc).AddTicks(4517)
+                            NormalizedName = "USER",
+                            DateCreated = new DateTime(2024, 11, 12, 17, 49, 21, 393, DateTimeKind.Utc).AddTicks(9939)
                         });
                 });
 
