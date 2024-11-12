@@ -2,10 +2,13 @@
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using InventrySystem.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 using NLog;
 using Repository;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +25,7 @@ builder.Services.ConfigureJWT(builder.Configuration);
 builder.Services.AddScoped<JwtHandler>();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureSwagger();
-builder.Services.AddAuthentication();
+
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromHours(2));
@@ -62,7 +65,6 @@ app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
 
-app.UseAuthorization();
 
 app.UseSwagger();
 
@@ -77,6 +79,10 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/Img_Repository"
     // https://localhost:1234/Images
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
