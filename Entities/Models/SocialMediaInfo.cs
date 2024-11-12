@@ -10,13 +10,14 @@ namespace Entities.Models
         public string ZaloLink { get; set; }
         public string TikTokLink { get; set; }
         public string Description { get; set; }
-        [NotMapped] // Sẽ ko lưu ảnh vào Db
-        public IFormFile LogoUrl { get; set; }
-        public string FileName { get; set; }
+        public string PhoneNumber { get; set; }
+        [NotMapped]
+        public IFormFile File { get; set; }
+        public string? FileName { get; set; }
         public string? FileDescription { get; set; }
-        public string FileExtension { get; set; }
-        public long FileSizeInBytes { get; set; }
-        public string FilePath { get; set; }
+        public string? FileExtension { get; set; }
+        public long? FileSizeInBytes { get; set; }
+        public string? FilePath { get; set; }
         public int ViewCount { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;

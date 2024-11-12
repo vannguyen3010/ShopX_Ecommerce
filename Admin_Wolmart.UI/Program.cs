@@ -25,6 +25,7 @@ builder.Services.AddScoped<ContactServices>();
 builder.Services.AddScoped<BannerServices>();
 builder.Services.AddScoped<BannerProductServices>();
 builder.Services.AddScoped<PaymentServices>();
+builder.Services.AddScoped<ProfileServices>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

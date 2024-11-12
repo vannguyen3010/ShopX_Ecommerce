@@ -52,14 +52,14 @@ namespace Ecommerce_Wolmart.API.Controllers
                 socialInfoEntity.ViewCount += 1;
 
                 // Xử lý tập tin hình ảnh
-                if (socialMediaInfoDto.LogoUrl != null)
+                if (socialMediaInfoDto.File != null)
                 {
-                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(socialMediaInfoDto.LogoUrl.FileName)}";
-                    var fileExtension = Path.GetExtension(socialMediaInfoDto.LogoUrl.FileName);
-                    socialInfoEntity.FilePath = await SaveFileAndGetUrl(socialMediaInfoDto.LogoUrl, fileName, fileExtension);
+                    string fileName = $"{Guid.NewGuid()}{Path.GetExtension(socialMediaInfoDto.File.FileName)}";
+                    var fileExtension = Path.GetExtension(socialMediaInfoDto.File.FileName);
+                    socialInfoEntity.FilePath = await SaveFileAndGetUrl(socialMediaInfoDto.File, fileName, fileExtension);
                     socialInfoEntity.FileName = fileName;
                     socialInfoEntity.FileExtension = fileExtension;
-                    socialInfoEntity.FileSizeInBytes = socialMediaInfoDto.LogoUrl.Length;
+                    socialInfoEntity.FileSizeInBytes = socialMediaInfoDto.File.Length;
                 }
 
                 // tạo danh mục vào cơ sở dữ liệu
@@ -76,6 +76,43 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
 
                 _logger.LogError($"Something went wrong inside Banner action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetSocialMediaInfo/{id}")]
+        public async Task<IActionResult> GetSocialMediaInfo(Guid id)
+        {
+            try
+            {
+                var profile = await _repository.SocialMediaInfo.GetSocialMediaInfoAsync(id, trackChanges: false);
+                if (profile == null)
+                {
+                    _logger.LogError($"Banner with id: {id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<BannerDto>
+                    {
+                        Success = false,
+                        Message = "Banner not found.",
+                        Data = null
+                    });
+                }
+
+                // Chuyển đổi banner thành BannerDto
+                var profileDto = _mapper.Map<SocialMediaInfoDto>(profile);
+
+
+                return Ok(new ApiResponse<SocialMediaInfoDto>
+                {
+                    Success = true,
+                    Message = "Banner retrieved successfully.",
+                    Data = profileDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetBrandById action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -97,20 +134,20 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
+
                 _mapper.Map(socialMediaInfoDto, existingInfo);
 
-                if (socialMediaInfoDto.LogoUrl != null)
+                if (socialMediaInfoDto.File != null)
                 {
-                    existingInfo.LogoUrl = socialMediaInfoDto.LogoUrl;
-                    existingInfo.FileExtension = Path.GetExtension(socialMediaInfoDto.LogoUrl.FileName);
-                    existingInfo.FileSizeInBytes = socialMediaInfoDto.LogoUrl.Length;
-                    existingInfo.FileName = socialMediaInfoDto.LogoUrl.FileName;
-                    existingInfo.FileDescription = socialMediaInfoDto.FileDescription;
-                    existingInfo.FilePath = await SaveFileAndGetUrl(socialMediaInfoDto.LogoUrl, existingInfo.FileName, existingInfo.FileExtension);
+                    existingInfo.File = socialMediaInfoDto.File;
+                    existingInfo.FileExtension = Path.GetExtension(socialMediaInfoDto.File.FileName);
+                    existingInfo.FileSizeInBytes = socialMediaInfoDto.File.Length;
+                    existingInfo.FileName = socialMediaInfoDto.File.FileName;
+                    existingInfo.FilePath = await SaveFileAndGetUrl(socialMediaInfoDto.File, existingInfo.FileName, existingInfo.FileExtension);
                 }
 
                 await _repository.SocialMediaInfo.UpdateSocialMediaInfoAsync(existingInfo);
-                return Ok(_mapper.Map<SocialMediaInfoDto>(existingInfo));
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -124,16 +161,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-            if (request.LogoUrl != null)
+            if (request.File != null)
             {
                 //// Kiểm tra phần mở rộng tệp
-                if (allowedExtensions.Contains(Path.GetExtension(request.LogoUrl.FileName)) == false)
+                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");
                 }
 
                 //// Kiểm tra kích thước tệp
-                if (request.LogoUrl.Length > 10485760)// Tệp lớn hơn 10MB
+                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
                 {
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }
@@ -144,16 +181,16 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
 
-            if (request.LogoUrl != null)
+            if (request.File != null)
             {
                 //// Kiểm tra phần mở rộng tệp
-                if (allowedExtensions.Contains(Path.GetExtension(request.LogoUrl.FileName)) == false)
+                if (allowedExtensions.Contains(Path.GetExtension(request.File.FileName)) == false)
                 {
                     ModelState.AddModelError("File", "Unsupported file extension");
                 }
 
                 //// Kiểm tra kích thước tệp
-                if (request.LogoUrl.Length > 10485760)// Tệp lớn hơn 10MB
+                if (request.File.Length > 10485760)// Tệp lớn hơn 10MB
                 {
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }
