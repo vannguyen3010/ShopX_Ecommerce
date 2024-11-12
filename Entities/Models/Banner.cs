@@ -20,8 +20,8 @@ namespace Entities.Models
         public long? FileSizeInBytes { get; set; }
         public string? FilePath { get; set; }
 
-        [NotMapped] // Sẽ không lưu ảnh vào Db
-        public IFormFile? SecondFile { get; set; } // Trường ảnh thứ hai
+        [NotMapped]
+        public IFormFile? SecondFile { get; set; }
         public string? SecondFileName { get; set; }
         public string? SecondFileExtension { get; set; }
         public long? SecondFileSizeInBytes { get; set; }

@@ -43,12 +43,30 @@
                                             </div>
                                         </div>
 
-                                           <div class="mb-4 row align-items-center">
+                                        <div class="mb-4 row align-items-center">
                                             <label class="form-label-title col-sm-2 mb-0">
                                                 Số điện thoại
                                             </label>
                                             <div class="col-sm-10">
                                                     <input class="form-control" type="text" @bind="profile.PhoneNumber">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-2 mb-0">
+                                                Email
+                                            </label>
+                                            <div class="col-sm-10">
+                                                    <input class="form-control" type="email" @bind="profile.Email">
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-2 mb-0">
+                                                Đia chỉ
+                                            </label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" type="text" @bind="profile.Address">
                                             </div>
                                         </div>
 
@@ -137,12 +155,14 @@
                 TikTokLink = profile.TikTokLink,
                 PhoneNumber = profile.PhoneNumber,
                 Description = profile.Description,
+                Email = profile.Email,
+                Address = profile.Address,
                 File = formFile
             };
         var success = await _profileServices.UpdateProfileAsync(id, updateBanner, firstImage);
         if (success)
         {
-            NavigationManager.NavigateTo("/quan-ly-banner");
+            NavigationManager.NavigateTo($"/thiet-lap-ho-so/{id}", forceLoad: true);
         }
 
         await Task.Delay(1000);

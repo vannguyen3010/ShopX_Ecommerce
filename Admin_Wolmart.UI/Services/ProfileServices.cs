@@ -38,6 +38,8 @@ namespace Admin_Wolmart.UI.Services
             content.Add(new StringContent(request.TikTokLink), "TikTokLink");
             content.Add(new StringContent(request.Description), "Description");
             content.Add(new StringContent(request.PhoneNumber), "PhoneNumber");
+            content.Add(new StringContent(request.Email), "Email");
+            content.Add(new StringContent(request.Address), "Address");
 
             // Đọc và thêm file vào form-data
             if (file != null)
