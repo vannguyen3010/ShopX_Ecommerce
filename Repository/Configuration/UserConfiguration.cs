@@ -20,8 +20,6 @@ namespace Repository.Configuration
                     EmailConfirmed = true,
                     PasswordHash = new PasswordHasher<User>().HashPassword(null, "SuperAdmin.123"),
                     SecurityStamp = string.Empty,
-                    //FirstName = "NguyenDev",
-                    //LastName = "Nguoi"
                 }
             );
         }

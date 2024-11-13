@@ -222,6 +222,8 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
 
     private IEnumerable<ProductDto> products;
     private IEnumerable<CateProductDto> cateProducts;
@@ -264,8 +266,17 @@
             keyword = key.ToString();
         }
 
+        await CheckUserAuthentication();
         await LoadListProducts();
         await LoadCategories();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task LoadCategories()

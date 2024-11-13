@@ -87,6 +87,9 @@
 
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     [Parameter]
     public Guid id { get; set; }
     private BannerProductDto banner;
@@ -97,8 +100,18 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CheckUserAuthentication();
         await GetBannerById();
     }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
+    }
+
     private async Task GetBannerById()
     {
         var response = await _bannerProductServices.GetBannerProductByIdAsync(id);

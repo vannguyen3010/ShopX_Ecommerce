@@ -54,8 +54,23 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private CreateCategoryIntroDto newCategories = new CreateCategoryIntroDto();
     public bool ShowLoadingButton { get; set; } = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await CheckUserAuthentication();
+    }
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
+    }
 
     private async Task SubmitCategory()
     {

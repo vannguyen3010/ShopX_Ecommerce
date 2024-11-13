@@ -105,6 +105,9 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
     private CreateIntroduceDto introduce = new CreateIntroduceDto();
 
@@ -121,7 +124,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CheckUserAuthentication();
         await LoadListCategoriesIntroduces();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task LoadListCategoriesIntroduces()

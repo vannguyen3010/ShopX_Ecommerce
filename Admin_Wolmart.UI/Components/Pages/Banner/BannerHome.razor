@@ -161,6 +161,9 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private IEnumerable<BannerDto> listBanner;
 
     private bool isLoading = true;
@@ -168,7 +171,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CheckUserAuthentication();
         await LoadListBanner();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task LoadListBanner(BannerPosition? position = null)
