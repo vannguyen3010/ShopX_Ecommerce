@@ -99,6 +99,9 @@
 </div>
 
 @code{
+    [CascadingParameter] 
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private CreateBannerDto banner = new CreateBannerDto();
 
     private string imagePreviewUrl = "/img_dev/datanull.png";
@@ -109,6 +112,18 @@
 
     private string message;
     public bool ShowLoadingButton { get; set; } = false;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await CheckUserAuthentication();
+    }
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
+    }
 
     private async Task HandleSubmit()
     {

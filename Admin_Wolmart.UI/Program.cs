@@ -4,9 +4,11 @@ using Blazored.LocalStorage;
 using Blazored.Toast;
 using Microsoft.Extensions.Options;
 using Sitko.Blazor.CKEditor;
+using Syncfusion.Blazor;
+using Syncfusion.Licensing;
 
 var builder = WebApplication.CreateBuilder(args);
-
+SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCdkxyWmFZfVpgdl9DY1ZVQ2Y/P1ZhSXxXdkJjXH5adXdRTmZUUkM=\r\n");
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 builder.Services.AddScoped(sp =>
@@ -52,7 +54,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
-
+//builder.Services.AddSyncfusionBlazor();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

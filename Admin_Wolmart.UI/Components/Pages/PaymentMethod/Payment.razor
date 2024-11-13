@@ -136,6 +136,9 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private IEnumerable<PaymentMethodDto> listPayment;
 
     private bool isLoading = false;
@@ -143,7 +146,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CheckUserAuthentication();
         await LoadListOrders();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task LoadListOrders()

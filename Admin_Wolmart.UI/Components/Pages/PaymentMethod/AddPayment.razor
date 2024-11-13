@@ -87,6 +87,9 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private CreatePaymentDto newPayment = new CreatePaymentDto();
 
     private string imagePreviewUrl = "/img_dev/datanull.png";
@@ -94,6 +97,17 @@
     private bool ShowLoadingButton { get; set; } = false;
     private string message;
 
+    protected async override Task OnInitializedAsync()
+    {
+        await CheckUserAuthentication();
+    }
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
+    }
 
     private async Task HandleSubmit()
     {

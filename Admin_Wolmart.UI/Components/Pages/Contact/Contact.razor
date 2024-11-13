@@ -276,6 +276,9 @@
 }
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private IEnumerable<ContactDto> listContact;
     private ContactDto contact;
 
@@ -298,7 +301,16 @@
             int.TryParse(page, out currentPage);
         }
 
+        await CheckUserAuthentication();
         await LoadListContact();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task LoadListContact()

@@ -194,6 +194,9 @@
 </div>
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private IEnumerable<OrderDto> listOrders;
 
     private int currentPage = 1;
@@ -223,7 +226,16 @@
             orderCode = key.ToString();
         }
 
+        await CheckUserAuthentication();
         await LoadListOrders();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task LoadListOrders()

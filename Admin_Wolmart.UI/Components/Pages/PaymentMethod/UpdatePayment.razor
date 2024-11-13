@@ -82,6 +82,9 @@
 }
 
 @code{
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthenticationState { get; set; }
+
     [Parameter]
     public Guid id { get; set; }
 
@@ -92,7 +95,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await CheckUserAuthentication();
         await GetCategoryById();
+    }
+
+    private async Task CheckUserAuthentication()
+    {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
+            NavigationManager.NavigateTo("/account/login");
     }
 
     private async Task GetCategoryById()
