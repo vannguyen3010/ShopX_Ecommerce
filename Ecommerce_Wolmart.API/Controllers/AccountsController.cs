@@ -128,11 +128,117 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             // Kiểm tra xem người dùng có phải là User, Admin hoặc SuperAdmin không
             bool isUser = await _userManager.IsInRoleAsync(user, RoleEnum.User.ToString());
+
+            // Kiểm tra xem người dùng có phải là User không
+            if (!isUser)
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Tài khoản này không có quyền truy cập.",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra mật khẩu
+            if (!await _userManager.CheckPasswordAsync(user, loginDto.Password!))
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại.",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra xác nhận email
+            if (user.EmailConfirmed == false)
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Email cần phải xác nhận.",
+                    Data = null
+                });
+            }
+
+            // Tạo JWT Token
+            var token = await _jwtHandler.GenerateToken(user);
+
+            // Kiểm tra và xử lý Refresh Token
+            var refreshToken = await _repository.AccountRepository.GetByUserIdAsync(user.Id);
+            if (refreshToken == null)
+            {
+                // Nếu chưa có Refresh Token, tạo mới
+                refreshToken = new RefreshToken
+                {
+                    RefreshTokens = GenerateRefreshToken(),
+                    Expiration = DateTime.UtcNow.AddDays(7),
+                    IsUsed = false,
+                    IsRevoked = false,
+                    UserId = user.Id
+                };
+
+                // Thêm Refresh Token vào cơ sở dữ liệu
+                await _repository.AccountRepository.AddAsync(refreshToken);
+            }
+            else
+            {
+                // Nếu đã có Refresh Token, cập nhật lại thông tin
+                refreshToken.RefreshTokens = GenerateRefreshToken();
+                refreshToken.Expiration = DateTime.UtcNow.AddDays(7);
+                refreshToken.IsUsed = false;
+
+                // Cập nhật Refresh Token trong cơ sở dữ liệu
+                await _repository.AccountRepository.UpdateAsync(refreshToken);
+            }
+
+            // Đặt lại số lần đăng nhập không thành công
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            // Trả về kết quả
+            return Ok(new RefreshTokenResponseDto
+            {
+                IsAuthSuccessful = true,
+                Token = token,
+                RefreshTokens = refreshToken.RefreshTokens,
+                UserId = user.Id
+            });
+        }
+
+        [HttpPost]
+        [Route("LoginAdmin")]
+        public async Task<IActionResult> LoginAdmin([FromBody] LoginDto loginDto)
+        {
+            // Kiểm tra Email và Mật khẩu
+            if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Kiểm tra Email và Mật khẩu!",
+                    Data = null
+                });
+            }
+
+            // Tìm người dùng theo email
+            var user = await _userManager.FindByEmailAsync(loginDto.Email!);
+            if (user == null)
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Email chưa đăng ký!",
+                    Data = null
+                });
+            }
+
+            // Kiểm tra xem người dùng có phải là Admin hoặc SuperAdmin không
             bool isAdmin = await _userManager.IsInRoleAsync(user, RoleEnum.Admin.ToString());
             bool isSuperAdmin = await _userManager.IsInRoleAsync(user, RoleEnum.SuperAdmin.ToString());
 
             // Kiểm tra xem người dùng có phải là User không
-            if (!isUser && !isAdmin && !isSuperAdmin)
+            if (!isAdmin && !isSuperAdmin)
             {
                 return NotFound(new ApiResponse<Object>
                 {

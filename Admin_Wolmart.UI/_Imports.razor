@@ -13,6 +13,7 @@
 @using Admin_Wolmart.UI.Shared
 @using Admin_Wolmart.UI.Services
 
+@using Syncfusion.Blazor.Popups
 @using global::Shared.DTO.Product
 @using global::Shared.DTO.User
 @using global::Shared.DTO.Order
@@ -36,3 +37,4 @@
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService localStorage
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider AuthStateProvider

@@ -25,6 +25,7 @@
     <PackageReference Include="QRCoder" Version="1.6.0" />
     <PackageReference Include="Sitko.Blazor.CKEditor" Version="4.2.1" />
     <PackageReference Include="Syncfusion.Blazor.Popups" Version="27.1.58" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.0" />
   </ItemGroup>
 
   <ItemGroup>

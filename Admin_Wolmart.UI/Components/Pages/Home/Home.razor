@@ -37,7 +37,8 @@
 @code{
     [CascadingParameter] 
     public Task<AuthenticationState>? AuthenticationState { get; set; }
-    protected async override Task OnInitializedAsync()
+
+    protected async override Task OnParametersSetAsync()
     {
         await CheckUserAuthentication();
     }

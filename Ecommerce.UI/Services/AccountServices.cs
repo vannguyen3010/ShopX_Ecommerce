@@ -24,7 +24,6 @@ namespace Ecommerce.UI.Services
                 return new RegisterResponseDto { IsSuccessfulRegistration = true };
             }
 
-            // Nếu không thành công, đọc lỗi từ response
             var errorResponse = await response.Content.ReadFromJsonAsync<RegisterResponseDto>();
             return new RegisterResponseDto
             {
