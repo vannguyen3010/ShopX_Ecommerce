@@ -23,5 +23,18 @@ namespace Admin_Wolmart.UI.Services
             }
             return null;
         }
+
+        public async Task<AuthResponseDto> LoginAsync(LoginDto request)
+        {
+            var result = await _httpClient.PostAsJsonAsync($"/api/Accounts/LoginAdmin", request);
+            if (!result.IsSuccessStatusCode)
+            {
+                return new AuthResponseDto
+                {
+                    IsAuthSuccessful = false,
+                };
+            }
+            return await result.Content.ReadFromJsonAsync<AuthResponseDto>()!;
+        }
     }
 }

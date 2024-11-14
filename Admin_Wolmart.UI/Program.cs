@@ -1,10 +1,10 @@
 ﻿using Admin_Wolmart.UI;
+using Admin_Wolmart.UI.Helpers;
 using Admin_Wolmart.UI.Services;
 using Blazored.LocalStorage;
 using Blazored.Toast;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
-using Sitko.Blazor.CKEditor;
-using Syncfusion.Blazor;
 using Syncfusion.Licensing;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,18 +29,15 @@ builder.Services.AddScoped<BannerProductServices>();
 builder.Services.AddScoped<PaymentServices>();
 builder.Services.AddScoped<ProfileServices>();
 
+
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
+builder.Services.AddScoped<LocalStorageService>();
+builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
-
-//builder.Services.Configure<FormOptions>(options =>
-//{
-//    //options.MultipartBodyLengthLimit = 20 * 1024 * 1024;
-//    options.MultipartBodyLengthLimit = 104857450;
-//});
-
 
 var app = builder.Build();
 
@@ -54,7 +51,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
-//builder.Services.AddSyncfusionBlazor();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
