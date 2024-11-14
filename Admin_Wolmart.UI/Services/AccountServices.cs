@@ -36,5 +36,6 @@ namespace Admin_Wolmart.UI.Services
             }
             return await result.Content.ReadFromJsonAsync<AuthResponseDto>()!;
         }
+
     }
 }
