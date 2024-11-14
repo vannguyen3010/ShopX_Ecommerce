@@ -1,0 +1,111 @@
+﻿@page "/quan-ly-nguoi-dung"
+
+
+@rendermode InteractiveServer
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="title-header option-title d-sm-flex d-block">
+                            <h5>Danh sách người dùng</h5>
+
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="table all-package theme-table table-product" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên</th>
+                                            <th>Email</th>
+                                            <th>Ngày tạo</th>
+                                            <th>Vai trò</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @if (users != null && users.Any())
+                                        {
+                                            @foreach (var item in users)
+                                            {
+                                                <tr>
+                                                    <td>@item.UserName</td>
+
+                                                    <td>@item.Email</td>
+
+                                                    <td>@item.CreateAt.ToString("dd-MM-yyyy")</td>
+
+                                                    @if (item.Roles.Contains("User"))
+                                                    {
+                                                        <td class="status-danger">
+                                                            <span>Người dùng</span>
+                                                        </td>
+                                                    }
+                                                    else if (item.Roles.Contains("Admin"))
+                                                    {
+                                                        <td class="status-close">
+                                                            <span>Quản trị viên</span>
+                                                        </td>
+                                                    }
+
+
+
+                                                    <td>
+                                                        <ul>
+                                                            <li>
+                                                                <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                   data-bs-target="#exampleModalToggle">
+                                                                    <i class="ri-delete-bin-line"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="d-flex justify-content-center">
+                                                        <img src="img_dev/datanull.png" class="img-fluid" alt="Image" />
+                                                    </div>
+                                                    <span>Không có người dùng nào !</span>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private IEnumerable<UserDto> users;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadListUsers();
+    }
+
+    private async Task LoadListUsers()
+    {
+        var response = await _accountServices.GetAllUsers();
+        if (response != null && response.Success && response.Data != null)
+        {
+            users = response.Data.Where(u => u.Roles != null &&
+                                        (u.Roles.Contains("User") || u.Roles.Contains("Admin")))
+                            .ToList();
+        }
+    }
+}

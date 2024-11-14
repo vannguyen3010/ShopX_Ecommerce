@@ -66,6 +66,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             var user = _mapper.Map<User>(registerDto);
 
+
             var result = await _userManager.CreateAsync(user, registerDto.Password!);
 
             if (!result.Succeeded)
