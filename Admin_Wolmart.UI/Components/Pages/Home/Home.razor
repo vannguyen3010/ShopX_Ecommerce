@@ -40,13 +40,22 @@
 
     protected async override Task OnParametersSetAsync()
     {
-        // await CheckUserAuthentication();
+        await CheckUserAuthentication();
     }
+    // private async Task CheckUserAuthentication()
+    // {
+    //     var user = (await AuthenticationState!).User;
+    //     bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+    //     if (!isUserAuthenticated)
+    //         NavigationManager.NavigateTo("/account/login");
+    // }
     private async Task CheckUserAuthentication()
     {
-        var user = (await AuthenticationState!).User;
-        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
-        if (!isUserAuthenticated)
+        var authState = await AuthenticationState!;
+        var user = authState.User;
+        if (!user.Identity!.IsAuthenticated)
+        {
             NavigationManager.NavigateTo("/account/login");
+        }
     }
 }
