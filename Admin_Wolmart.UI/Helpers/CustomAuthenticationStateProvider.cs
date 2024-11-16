@@ -25,6 +25,7 @@ namespace Admin_Wolmart.UI.Helpers
             var deserializeToken = Serializations.DeserializeJsonString<AuthResponseDto>(stringToken);
             if (deserializeToken == null) return new AuthenticationState(anonymous);
 
+
             var getUserClaims = DecryptToken(deserializeToken.Token!);
             if (getUserClaims == null) return new AuthenticationState(anonymous);
 
@@ -37,7 +38,6 @@ namespace Admin_Wolmart.UI.Helpers
             var claimsPrincipal = new ClaimsPrincipal();
             if (userSession.Token != null || userSession.RefreshTokens != null)
             {
-
                 userSession.IsAuthSuccessful = true;
 
                 var serializeSession = Serializations.SerializeObj(userSession);//Serialize đối tượng userSession thành chuỗi JSON.
@@ -54,12 +54,13 @@ namespace Admin_Wolmart.UI.Helpers
                 await localStorageService.SetToken(updatedSession);
 
                 claimsPrincipal = SetClaimPrincipal(getUserClaims);
+                _initialized = true;
             }
             else
             {
                 await localStorageService.RemoveToken();//Nếu không có token hoặc refresh token, xóa token khỏi LocalStorage.
+                _initialized = false;
             }
-            _initialized = true;
             //Gửi thông báo rằng trạng thái xác thực đã thay đổi, cập nhật trạng thái xác thực với claimsPrincipal mới.
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
