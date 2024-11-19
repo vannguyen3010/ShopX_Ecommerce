@@ -1,15 +1,21 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using Shared.DTO.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Admin_Wolmart.UI.Helpers
 {
-    public class CustomAuthenticationStateProvider(LocalStorageService localStorageService) : AuthenticationStateProvider
+    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
-        private bool _initialized = false;
+        private readonly LocalStorageService _localStorageService;
+        private bool _initialized;
 
+        public CustomAuthenticationStateProvider(LocalStorageService localStorageService)
+        {
+            _localStorageService = localStorageService;
+        }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             // Nếu thành phần chưa được khởi tạo, hãy trả về trạng thái ẩn danh.
@@ -17,10 +23,10 @@ namespace Admin_Wolmart.UI.Helpers
             {
                 return new AuthenticationState(anonymous);
             }
-
             // Lấy token từ LocalStorage
-            var stringToken = await localStorageService.GetToken();
+            var stringToken = await _localStorageService.GetToken();
             if (string.IsNullOrEmpty(stringToken)) return new AuthenticationState(anonymous);
+
 
             var deserializeToken = Serializations.DeserializeJsonString<AuthResponseDto>(stringToken);
             if (deserializeToken == null) return new AuthenticationState(anonymous);
@@ -33,39 +39,38 @@ namespace Admin_Wolmart.UI.Helpers
             return new AuthenticationState(claimsPrincipal);
         }
 
+
         public async Task UpdateAuthenticationState(AuthResponseDto userSession)
         {
             var claimsPrincipal = new ClaimsPrincipal();
             if (userSession.Token != null || userSession.RefreshTokens != null)
             {
-                userSession.IsAuthSuccessful = true;
 
                 var serializeSession = Serializations.SerializeObj(userSession);//Serialize đối tượng userSession thành chuỗi JSON.
-                await localStorageService.SetToken(serializeSession);//Lưu trữ chuỗi JSON này vào LocalStorage.
-
+                await _localStorageService.SetToken(serializeSession);//Lưu trữ chuỗi JSON này vào LocalStorage.
 
                 var getUserClaims = DecryptToken(userSession.Token!); //Giải mã token để lấy thông tin người dùng.
                 claimsPrincipal = SetClaimPrincipal(getUserClaims);//Tạo ClaimsPrincipal từ các thông tin người dùng giải mã được.
 
                 userSession.UserId = getUserClaims.Id!;
                 userSession.Role = getUserClaims.Role!;
+                userSession.IsAuthSuccessful = true;
 
                 var updatedSession = Serializations.SerializeObj(userSession);
-                await localStorageService.SetToken(updatedSession);
+                await _localStorageService.SetToken(updatedSession);
 
-                claimsPrincipal = SetClaimPrincipal(getUserClaims);
-                _initialized = true;
+                //claimsPrincipal = SetClaimPrincipal(getUserClaims);
             }
             else
             {
-                await localStorageService.RemoveToken();//Nếu không có token hoặc refresh token, xóa token khỏi LocalStorage.
-                _initialized = false;
+                await _localStorageService.RemoveToken();
             }
-            //Gửi thông báo rằng trạng thái xác thực đã thay đổi, cập nhật trạng thái xác thực với claimsPrincipal mới.
+
+            _initialized = true;
+           
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
 
-        // Helper method to create ClaimsPrincipal from decrypted token information
         public static ClaimsPrincipal SetClaimPrincipal(CustomUserClaims claims)
         {
             if (claims.Email is null) return new ClaimsPrincipal();
@@ -91,10 +96,6 @@ namespace Admin_Wolmart.UI.Helpers
             var name = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
             var email = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
             var role = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
-
-            // Xử lý trường hợp thiếu thông tin bắt buộc
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(userId))
-                throw new Exception("Required claims (Email or NameIdentifier) are missing in the token.");
 
             return new CustomUserClaims(userId, name, email, role);
         }

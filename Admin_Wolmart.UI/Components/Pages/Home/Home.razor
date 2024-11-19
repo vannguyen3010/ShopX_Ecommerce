@@ -1,6 +1,7 @@
 ﻿@page "/dashboard"
 
 <PageTitle>Home</PageTitle>
+
 <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 <link href="css/home.css" rel="stylesheet" />
 
@@ -34,28 +35,18 @@
     </div>
 </div>
 
-@code{
-    [CascadingParameter] 
-    public Task<AuthenticationState>? AuthenticationState { get; set; }
+@code {
+    [CascadingParameter] public Task<AuthenticationState>? AuthenticationState { get; set; }
 
-    protected async override Task OnParametersSetAsync()
+    protected async override Task OnInitializedAsync()
     {
         await CheckUserAuthentication();
     }
-    // private async Task CheckUserAuthentication()
-    // {
-    //     var user = (await AuthenticationState!).User;
-    //     bool isUserAuthenticated = user.Identity!.IsAuthenticated;
-    //     if (!isUserAuthenticated)
-    //         NavigationManager.NavigateTo("/account/login");
-    // }
     private async Task CheckUserAuthentication()
     {
-        var authState = await AuthenticationState!;
-        var user = authState.User;
-        if (!user.Identity!.IsAuthenticated)
-        {
+        var user = (await AuthenticationState!).User;
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (!isUserAuthenticated)
             NavigationManager.NavigateTo("/account/login");
-        }
     }
 }

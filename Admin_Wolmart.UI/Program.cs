@@ -2,6 +2,7 @@
 using Admin_Wolmart.UI.Helpers;
 using Admin_Wolmart.UI.Services;
 using Blazored.LocalStorage;
+using Blazored.SessionStorage;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
@@ -38,6 +39,9 @@ builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
+builder.Services.AddBlazoredSessionStorage();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -47,7 +51,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
