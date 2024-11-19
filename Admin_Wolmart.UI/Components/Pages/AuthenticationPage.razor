@@ -1,13 +1,20 @@
 ﻿@page "/"
 
 @code {
+
     [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; }
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnInitializedAsync()
     {
         var user = (await AuthenticationState).User;
-        if (user.Identity!.IsAuthenticated)
+
+        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
+        if (isUserAuthenticated)
+        {
             NavigationManager.NavigateTo("/dashboard");
+        }
         else
+        {
             NavigationManager.NavigateTo("/account/login");
+        }
     }
 }

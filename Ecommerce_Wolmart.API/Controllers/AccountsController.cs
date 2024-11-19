@@ -306,7 +306,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             await _userManager.ResetAccessFailedCountAsync(user);
 
             // Trả về kết quả
-            return Ok(new RefreshTokenResponseDto
+            return Ok(new AuthResponseDto
             {
                 IsAuthSuccessful = true,
                 Token = token,

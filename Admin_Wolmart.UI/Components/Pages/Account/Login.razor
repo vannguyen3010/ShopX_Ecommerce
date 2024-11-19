@@ -1,11 +1,9 @@
 ﻿@page "/account/login"
-@using Admin_Wolmart.UI.Helpers
 
-@inject AccountServices _accountServices
-
-@layout _P_AuthenticationLayout
+@layout AuthenticationLayout
 
 @rendermode InteractiveServer
+
 <section class="log-in-section section-b-space">
     <a href="" class="logo-login"><img src="./img_dev/Logo/logo.svg" class="img-fluid"></a>
     <div class="container w-100">
@@ -56,50 +54,41 @@
     </div>
 </section>
 
-
-
 @code {
-    [CascadingParameter]
-    public Task<AuthenticationState> AuthenticationState { get; set; }
+    [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; }
 
     public LoginDto User = new();
     public bool ShowLoadingButton { get; set; } = false;
-    private bool _initialized = false;
-
 
     protected async override Task OnInitializedAsync()
     {
-        await CheckUserAuthentication();
+        if (AuthenticationState != null)
+        {
+            await CheckUserAuthentication();
+        }
     }
-
     public async Task HandleLogin()
     {
-        // ShowLoadingButton = true;
         var result = await _accountServices.LoginAsync(User);
 
         if (result.IsAuthSuccessful)
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto()
-            {
-                Token = result.Token,
-                RefreshTokens = result.RefreshTokens
-            });
+                {
+                    Token = result.Token,
+                    RefreshTokens = result.RefreshTokens
+                });
 
-            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
-        // ShowLoadingButton = false;
     }
+
     private async Task CheckUserAuthentication()
     {
-        if (!_initialized) return;
-
-        if (AuthenticationState == null) return;
-
         var user = (await AuthenticationState).User;
         bool isUserAuthenticated = user.Identity!.IsAuthenticated;
         if (isUserAuthenticated)
             NavigationManager.NavigateTo("/dashboard");
     }
-
 }
