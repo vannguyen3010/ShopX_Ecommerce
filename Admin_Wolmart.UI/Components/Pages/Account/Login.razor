@@ -75,12 +75,13 @@
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
             await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto()
-                {
-                    Token = result.Token,
-                    RefreshTokens = result.RefreshTokens
-                });
+            {
+                Token = result.Token,
+                RefreshTokens = result.RefreshTokens,
+                IsAuthSuccessful = result.IsAuthSuccessful,
+            });
 
-            NavigationManager.NavigateTo("/", forceLoad: true);
+            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
         }
     }
 

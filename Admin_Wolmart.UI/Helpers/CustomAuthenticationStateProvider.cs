@@ -1,35 +1,31 @@
-﻿using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Shared.DTO.User;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Admin_Wolmart.UI.Helpers
 {
-    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
+    public class CustomAuthenticationStateProvider(LocalStorageService localStorageService) : AuthenticationStateProvider
     {
         private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
-        private readonly LocalStorageService _localStorageService;
         private bool _initialized;
 
-        public CustomAuthenticationStateProvider(LocalStorageService localStorageService)
-        {
-            _localStorageService = localStorageService;
-        }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             // Nếu thành phần chưa được khởi tạo, hãy trả về trạng thái ẩn danh.
             if (!_initialized)
             {
-                return new AuthenticationState(anonymous);
+                //return new AuthenticationState(anonymous);
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
             // Lấy token từ LocalStorage
-            var stringToken = await _localStorageService.GetToken();
+
+            var stringToken = await localStorageService.GetToken();
             if (string.IsNullOrEmpty(stringToken)) return new AuthenticationState(anonymous);
 
 
             var deserializeToken = Serializations.DeserializeJsonString<AuthResponseDto>(stringToken);
-            if (deserializeToken == null) return new AuthenticationState(anonymous);
+            if (deserializeToken == null || !deserializeToken.IsAuthSuccessful) return new AuthenticationState(anonymous);
 
 
             var getUserClaims = DecryptToken(deserializeToken.Token!);
@@ -39,35 +35,30 @@ namespace Admin_Wolmart.UI.Helpers
             return new AuthenticationState(claimsPrincipal);
         }
 
-
         public async Task UpdateAuthenticationState(AuthResponseDto userSession)
         {
             var claimsPrincipal = new ClaimsPrincipal();
             if (userSession.Token != null || userSession.RefreshTokens != null)
             {
-
                 var serializeSession = Serializations.SerializeObj(userSession);//Serialize đối tượng userSession thành chuỗi JSON.
-                await _localStorageService.SetToken(serializeSession);//Lưu trữ chuỗi JSON này vào LocalStorage.
+                await localStorageService.SetToken(serializeSession);//Lưu trữ chuỗi JSON này vào LocalStorage.
 
                 var getUserClaims = DecryptToken(userSession.Token!); //Giải mã token để lấy thông tin người dùng.
                 claimsPrincipal = SetClaimPrincipal(getUserClaims);//Tạo ClaimsPrincipal từ các thông tin người dùng giải mã được.
 
                 userSession.UserId = getUserClaims.Id!;
                 userSession.Role = getUserClaims.Role!;
-                userSession.IsAuthSuccessful = true;
 
                 var updatedSession = Serializations.SerializeObj(userSession);
-                await _localStorageService.SetToken(updatedSession);
+                await localStorageService.SetToken(updatedSession);
 
-                //claimsPrincipal = SetClaimPrincipal(getUserClaims);
+                claimsPrincipal = SetClaimPrincipal(getUserClaims);
             }
             else
             {
-                await _localStorageService.RemoveToken();
+                await localStorageService.RemoveToken();
             }
 
-            _initialized = true;
-           
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
         }
 
@@ -89,6 +80,8 @@ namespace Admin_Wolmart.UI.Helpers
             if (string.IsNullOrEmpty(jwtToken)) return new CustomUserClaims();
 
             var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(jwtToken)) return new CustomUserClaims();
+
             var token = handler.ReadJwtToken(jwtToken);
 
             // Lấy các claims và kiểm tra null
