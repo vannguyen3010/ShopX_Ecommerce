@@ -5,6 +5,7 @@ using EmailService;
 using Entities.Identity;
 using Entities.Models;
 using Entities.Models.Address;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
         [HttpPost]
         [Route("Register")]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
         {
             if (registerDto == null || !ModelState.IsValid)
@@ -102,6 +104,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("LoginUser")]
+        [AllowAnonymous]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
             // Kiểm tra Email và Mật khẩu
@@ -208,6 +211,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("LoginAdmin")]
         public async Task<IActionResult> LoginAdmin([FromBody] LoginDto loginDto)
         {
@@ -544,6 +548,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllUsers")]
+        [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
             try

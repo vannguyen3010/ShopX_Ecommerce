@@ -1,9 +1,8 @@
 ﻿@page "/chi-tiet-don-hang/{id:guid}"
+@using Microsoft.AspNetCore.Authorization
 
 @inject OrderServices _orderServices
-
 @rendermode InteractiveServer
-
 
 @if (order != null)
 {
@@ -194,7 +193,9 @@
 @code {
     [CascadingParameter]
     public Task<AuthenticationState>? AuthenticationState { get; set; }
-
+    // cả chục vấn đề ???
+    // chấm dứt token
+    // 
     [Parameter]
     public Guid id { get; set; }
 

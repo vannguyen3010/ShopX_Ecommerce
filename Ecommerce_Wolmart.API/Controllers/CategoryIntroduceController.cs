@@ -1,15 +1,10 @@
 ﻿using AutoMapper;
 using Contracts;
-using Ecommerce.UI.Components.Pages.Introduce;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Shared.DTO.CategoryIntroduce;
-using Shared.DTO.CateProduct;
-using Shared.DTO.Introduce;
-using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -37,7 +32,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                if(request == null)
+                if (request == null)
                 {
                     _logger.LogError("CategoryIntroduce object sent from client is null.");
                     return NotFound(new ApiResponse<Object>
@@ -350,7 +345,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                         Data = null
                     });
                 }
-             
+
 
                 _repository.CategoryIntroduce.DeleteCategory(category);
                 _repository.SaveAsync();

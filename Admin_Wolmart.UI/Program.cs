@@ -2,14 +2,11 @@
 using Admin_Wolmart.UI.Helpers;
 using Admin_Wolmart.UI.Services;
 using Blazored.LocalStorage;
-using Blazored.SessionStorage;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
-using Syncfusion.Licensing;
 
 var builder = WebApplication.CreateBuilder(args);
-SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCdkxyWmFZfVpgdl9DY1ZVQ2Y/P1ZhSXxXdkJjXH5adXdRTmZUUkM=\r\n");
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 builder.Services.AddScoped(sp =>
@@ -35,11 +32,11 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStat
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
-builder.Services.AddBlazoredSessionStorage();
 
 builder.Services.AddHttpContextAccessor();
 
