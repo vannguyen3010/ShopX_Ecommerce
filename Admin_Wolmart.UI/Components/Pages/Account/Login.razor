@@ -41,9 +41,17 @@
                             </div>
 
                             <div class="col-12">
-                                <button class="btn btn-animation w-100 justify-content-center" type="submit">
-                                    Đăng nhập
-                                </button>
+                              
+                                @if (ShowLoadingButton)
+                                {
+                                    <LoginLoad></LoginLoad>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-animation w-100 justify-content-center" type="submit">
+                                        Đăng nhập
+                                    </button>
+                                }
                             </div>
                         </EditForm>
                     </div>
@@ -69,20 +77,25 @@
     }
     public async Task HandleLogin()
     {
+        ShowLoadingButton = true;
+
         var result = await _accountServices.LoginAsync(User);
 
         if (result.IsAuthSuccessful)
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
-            await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto()
+
+            await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto
             {
                 Token = result.Token,
                 RefreshTokens = result.RefreshTokens,
                 IsAuthSuccessful = result.IsAuthSuccessful,
             });
 
-            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
+
+        ShowLoadingButton = false;
     }
 
     private async Task CheckUserAuthentication()

@@ -12,13 +12,10 @@ namespace Admin_Wolmart.UI.Helpers
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            // Nếu thành phần chưa được khởi tạo, hãy trả về trạng thái ẩn danh.
             if (!_initialized)
             {
-                //return new AuthenticationState(anonymous);
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                return new AuthenticationState(anonymous);
             }
-            // Lấy token từ LocalStorage
 
             var stringToken = await localStorageService.GetToken();
             if (string.IsNullOrEmpty(stringToken)) return new AuthenticationState(anonymous);
@@ -37,14 +34,16 @@ namespace Admin_Wolmart.UI.Helpers
 
         public async Task UpdateAuthenticationState(AuthResponseDto userSession)
         {
-            var claimsPrincipal = new ClaimsPrincipal();
+            //var claimsPrincipal = new ClaimsPrincipal();
+            ClaimsPrincipal claimsPrincipal = anonymous;
+
             if (userSession.Token != null || userSession.RefreshTokens != null)
             {
-                var serializeSession = Serializations.SerializeObj(userSession);//Serialize đối tượng userSession thành chuỗi JSON.
-                await localStorageService.SetToken(serializeSession);//Lưu trữ chuỗi JSON này vào LocalStorage.
+                var serializeSession = Serializations.SerializeObj(userSession);
+                await localStorageService.SetToken(serializeSession);
 
-                var getUserClaims = DecryptToken(userSession.Token!); //Giải mã token để lấy thông tin người dùng.
-                claimsPrincipal = SetClaimPrincipal(getUserClaims);//Tạo ClaimsPrincipal từ các thông tin người dùng giải mã được.
+                var getUserClaims = DecryptToken(userSession.Token!);
+                claimsPrincipal = SetClaimPrincipal(getUserClaims);
 
                 userSession.UserId = getUserClaims.Id!;
                 userSession.Role = getUserClaims.Role!;
