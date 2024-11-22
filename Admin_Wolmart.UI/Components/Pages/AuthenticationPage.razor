@@ -7,8 +7,7 @@
     {
         var user = (await AuthenticationState).User;
 
-        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
-        if (isUserAuthenticated)
+        if (user.Identity?.IsAuthenticated == true)
         {
             NavigationManager.NavigateTo("/dashboard");
         }
