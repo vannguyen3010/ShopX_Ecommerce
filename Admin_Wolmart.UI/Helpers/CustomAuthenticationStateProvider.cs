@@ -5,57 +5,53 @@ using System.Security.Claims;
 
 namespace Admin_Wolmart.UI.Helpers
 {
-    public class CustomAuthenticationStateProvider(LocalStorageService localStorageService) : AuthenticationStateProvider
+    public class CustomAuthenticationStateProvider(CookieService cookieService) : AuthenticationStateProvider
     {
         private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
-        private bool _initialized;
+        private const string TokenKey = "AuthToken";
 
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            if (!_initialized)
+            var token = cookieService.GetCookie(TokenKey);
+
+            if (string.IsNullOrEmpty(token))
             {
                 return new AuthenticationState(anonymous);
             }
 
-            var stringToken = await localStorageService.GetToken();
-            if (string.IsNullOrEmpty(stringToken)) return new AuthenticationState(anonymous);
+            var userClaims = DecryptToken(token);
+            if (userClaims == null)
+            {
+                return Task.FromResult(new AuthenticationState(anonymous));
+            }
 
-
-            var deserializeToken = Serializations.DeserializeJsonString<AuthResponseDto>(stringToken);
-            if (deserializeToken == null || !deserializeToken.IsAuthSuccessful) return new AuthenticationState(anonymous);
-
-
-            var getUserClaims = DecryptToken(deserializeToken.Token!);
-            if (getUserClaims == null) return new AuthenticationState(anonymous);
-
-            var claimsPrincipal = SetClaimPrincipal(getUserClaims);
-            return new AuthenticationState(claimsPrincipal);
+            var claimsPrincipal = SetClaimPrincipal(userClaims);
+            return Task.FromResult(new AuthenticationState(claimsPrincipal));
         }
 
-        public async Task UpdateAuthenticationState(AuthResponseDto userSession)
+        public Task UpdateAuthenticationState(AuthResponseDto userSession)
         {
-            //var claimsPrincipal = new ClaimsPrincipal();
             ClaimsPrincipal claimsPrincipal = anonymous;
 
-            if (userSession.Token != null || userSession.RefreshTokens != null)
+            if (!string.IsNullOrEmpty(userSession.Token))
             {
-                var serializeSession = Serializations.SerializeObj(userSession);
-                await localStorageService.SetToken(serializeSession);
+                var userClaims = DecryptToken(userSession.Token);
+                if (userClaims != null)
+                {
+                    cookieService.SetCookie(TokenKey, userSession.Token, 120); // Expiry set to 2 hours
+                    claimsPrincipal = SetClaimPrincipal(userClaims);
 
-                var getUserClaims = DecryptToken(userSession.Token!);
-                claimsPrincipal = SetClaimPrincipal(getUserClaims);
-
-                userSession.UserId = getUserClaims.Id!;
-                userSession.Role = getUserClaims.Role!;
-
-                var updatedSession = Serializations.SerializeObj(userSession);
-                await localStorageService.SetToken(updatedSession);
-
-                claimsPrincipal = SetClaimPrincipal(getUserClaims);
+                    userSession.UserId = userClaims.Id!;
+                    userSession.Role = userClaims.Role!;
+                }
+                else
+                {
+                    cookieService.DeleteCookie(TokenKey);
+                }
             }
             else
             {
-                await localStorageService.RemoveToken();
+                cookieService.DeleteCookie(TokenKey);
             }
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
@@ -93,5 +89,4 @@ namespace Admin_Wolmart.UI.Helpers
         }
 
     }
-
 }

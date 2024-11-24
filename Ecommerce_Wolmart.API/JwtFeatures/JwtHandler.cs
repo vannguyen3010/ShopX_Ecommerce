@@ -1,9 +1,11 @@
 ﻿using Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Shared.DTO.User;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Ecommerce_Wolmart.API.JwtFeatures
@@ -27,6 +29,12 @@ namespace Ecommerce_Wolmart.API.JwtFeatures
             var claims = await GetClaims(user);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+            // Tạo Refresh Token
+            string refreshToken = GenerateRefreshToken();
+            int refreshTokenExpiryInDays = Convert.ToInt32(_configuration["JWTSettings:refreshTokenExpiryInDays"]);
+            DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(refreshTokenExpiryInDays);
+
 
             return token;
         }
@@ -69,6 +77,14 @@ namespace Ecommerce_Wolmart.API.JwtFeatures
             return tokenOptions;
         }
 
-
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+            }
+            return Convert.ToBase64String(randomNumber);
+        }
     }
 }
