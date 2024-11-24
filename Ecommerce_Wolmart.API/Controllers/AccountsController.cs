@@ -345,12 +345,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
-            // Đánh dấu refresh token hiện tại là đã sử dụng và thu hồi
-            existingRefreshToken.IsUsed = true;
-            existingRefreshToken.IsRevoked = true;
-            await _repository.AccountRepository.UpdateAsync(existingRefreshToken);
-
-
             // Lấy user dựa trên refresh token
             var user = await _userManager.FindByIdAsync(existingRefreshToken.UserId);
             if (user == null)
@@ -362,18 +356,12 @@ namespace Ecommerce_Wolmart.API.Controllers
                     Data = null
                 });
             }
-            int refreshTokenExpiryInDays = int.Parse(_configuration["JWTSettings:refreshTokenExpiryInDays"]);
 
             // Tạo Token và Refresh Token mới
             var newAccessToken = await _jwtHandler.GenerateToken(user);
-            var newRefreshToken = new RefreshToken
-            {
-                RefreshTokens = GenerateRefreshToken(),
-                Expiration = DateTime.UtcNow.AddDays(refreshTokenExpiryInDays),
-                IsUsed = false,
-                IsRevoked = false,
-                UserId = user.Id
-            };
+
+            // Đánh dấu refresh token là đã sử dụng
+            existingRefreshToken.IsUsed = true;
 
             await _repository.AccountRepository.UpdateAsync(existingRefreshToken);
 
@@ -381,7 +369,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 IsAuthSuccessful = true,
                 Token = newAccessToken,
-                RefreshTokens = newRefreshToken.RefreshTokens
+                RefreshTokens = refreshTokenDto.RefreshTokens
             });
 
         }
