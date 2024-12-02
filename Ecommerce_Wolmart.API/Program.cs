@@ -3,14 +3,10 @@ using Ecommerce_Wolmart.API.Extensions;
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using InventrySystem.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.IdentityModel.Tokens;
 using NLog;
 using Repository;
-using System.Text;
-
 var builder = WebApplication.CreateBuilder(args);
 
 LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
@@ -39,6 +35,7 @@ builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromHours(2));
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+
 builder.Services.AddSingleton(emailConfig);
 
 builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -78,7 +75,7 @@ app.UseSwagger();
 
 app.UseSwaggerUI(s =>
 {
-    s.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory System API v1");
+    s.SwaggerEndpoint("/swagger/v1/swagger.json", "Ecommerce API v1");
     s.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
 });
 app.UseStaticFiles(new StaticFileOptions

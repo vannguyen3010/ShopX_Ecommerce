@@ -5,6 +5,7 @@ using Ecommerce_Wolmart.API.Migrations;
 using Entities.Identity;
 using Entities.Models;
 using Entities.Models.Address;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
@@ -136,6 +137,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllProvinces")]
+        [Authorize]
         public async Task<IActionResult> GetAllProvinces()
         {
             try

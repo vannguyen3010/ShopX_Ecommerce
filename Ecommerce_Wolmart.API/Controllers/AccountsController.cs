@@ -104,7 +104,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("LoginUser")]
-        [AllowAnonymous]
         public async Task<IActionResult> LoginUser([FromBody] LoginDto loginDto)
         {
             // Kiểm tra Email và Mật khẩu
@@ -169,6 +168,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             // Tạo JWT Token
             var token = await _jwtHandler.GenerateToken(user);
 
+
             // Kiểm tra và xử lý Refresh Token
             var refreshToken = await _repository.AccountRepository.GetByUserIdAsync(user.Id);
             if (refreshToken == null)
@@ -200,6 +200,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             // Đặt lại số lần đăng nhập không thành công
             await _userManager.ResetAccessFailedCountAsync(user);
 
+
             // Trả về kết quả
             return Ok(new RefreshTokenResponseDto
             {
@@ -209,6 +210,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 UserId = user.Id
             });
         }
+
 
         [HttpPost]
         [AllowAnonymous]

@@ -70,11 +70,12 @@
 
     protected async override Task OnInitializedAsync()
     {
-        if (AuthenticationState != null)
-        {
-            await CheckUserAuthentication();
-        }
+        // if (AuthenticationState != null)
+        // {
+        //     await CheckUserAuthentication();
+        // }
     }
+
     public async Task HandleLogin()
     {
         ShowLoadingButton = true;
@@ -85,12 +86,12 @@
         {
             var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
 
-            await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto
-            {
-                Token = result.Token,
-                // RefreshTokens = result.RefreshTokens,
-                IsAuthSuccessful = result.IsAuthSuccessful,
-            });
+            // await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto
+            // {
+            //     Token = result.Token,
+            //     // RefreshTokens = result.RefreshTokens,
+            //     IsAuthSuccessful = result.IsAuthSuccessful,
+            // });
 
             NavigationManager.NavigateTo("/", forceLoad: true);
         }

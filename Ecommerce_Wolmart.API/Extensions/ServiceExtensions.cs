@@ -79,6 +79,7 @@ namespace InventrySystem.Extensions
                     ValidAudience = jwtSettings["validAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("securityKey"))
                 };
+
             });
         }
 

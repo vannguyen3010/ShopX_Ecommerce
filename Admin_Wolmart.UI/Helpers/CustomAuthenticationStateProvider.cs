@@ -14,10 +14,6 @@ namespace Admin_Wolmart.UI.Helpers
         {
             var token = cookieService.GetCookie(TokenKey);
 
-            if (string.IsNullOrEmpty(token))
-            {
-                return new AuthenticationState(anonymous);
-            }
 
             var userClaims = DecryptToken(token);
             if (userClaims == null)
@@ -29,33 +25,6 @@ namespace Admin_Wolmart.UI.Helpers
             return Task.FromResult(new AuthenticationState(claimsPrincipal));
         }
 
-        public Task UpdateAuthenticationState(AuthResponseDto userSession)
-        {
-            ClaimsPrincipal claimsPrincipal = anonymous;
-
-            if (!string.IsNullOrEmpty(userSession.Token))
-            {
-                var userClaims = DecryptToken(userSession.Token);
-                if (userClaims != null)
-                {
-                    cookieService.SetCookie(TokenKey, userSession.Token, 120); // Expiry set to 2 hours
-                    claimsPrincipal = SetClaimPrincipal(userClaims);
-
-                    userSession.UserId = userClaims.Id!;
-                    userSession.Role = userClaims.Role!;
-                }
-                else
-                {
-                    cookieService.DeleteCookie(TokenKey);
-                }
-            }
-            else
-            {
-                cookieService.DeleteCookie(TokenKey);
-            }
-
-            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
-        }
 
         public static ClaimsPrincipal SetClaimPrincipal(CustomUserClaims claims)
         {
