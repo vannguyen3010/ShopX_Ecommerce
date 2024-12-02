@@ -251,8 +251,8 @@
     private async Task LoadListCategoryIntroduces()
     {
         cateIntroduces = await BaseServices.GetAllCategoryIntroduces();
-
     }
+
     private async Task LoadListIntroducesIshot()
     {
         introduceIsHot = await IntroduceServices.GetListIntroduceIsHotAsync();
@@ -274,6 +274,7 @@
         }
      
     }
+
     private async Task ChangePage(int page)
     {
         // Chỉ cập nhật nếu page khác currentPage
@@ -317,7 +318,6 @@
         await UpdateUrlAndLoadProducts();
     }
 
-    // Cập nhật URL và gọi API để lấy danh sách sản phẩm
     private async Task UpdateUrlAndLoadProducts()
     {
         // Tạo URL mới với thông tin trang hiện tại, kích thước trang, và giá lọc

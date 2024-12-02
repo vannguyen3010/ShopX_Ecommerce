@@ -6,30 +6,7 @@
 
 <link href="css/contact.css" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="assets/css/style.min.css">
-@code{
-    private CreateContactDto contact = new CreateContactDto();
-    private bool isSuccess = false;
-    private bool isError = false;
-    private string errorMessage = "";
 
-
-    private async Task HandleSubmit()
-    {
-        isSuccess = false;
-        isError = false;
-
-        var result = await ContactServices.CreateContactAsync(contact);
-        if (result)
-        {
-            isSuccess = true;
-        }
-        else
-        {
-            isError = true;
-            errorMessage = "Không thể gửi biểu mẫu. Vui lòng thử lại.";
-        }
-    }
-}
 
 <main class="main">
     <!-- Start of Breadcrumb -->
@@ -146,25 +123,25 @@
                                     <ValidationMessage class="text-danger" For="@(() => contact.Name)" />
                                     <label>Họ và tên</label>
                                     <InputText @bind-Value="contact.Name" type="text" id="username" name="username"
-                                               class="form-control" />
+                                    class="form-control" />
                                 </div>
                                 <div class="form-group">
                                     <ValidationMessage class="text-danger" For="@(() => contact.Email)" />
                                     <label>Địa chỉ Email</label>
                                     <InputText @bind-Value="contact.Email" type="email" id="email_1" name="email_1"
-                                               class="form-control" />
+                                    class="form-control" />
                                 </div>
                                 <div class="form-group">
                                     <ValidationMessage class="text-danger" For="@(() => contact.PhoneNumber)" />
                                     <label>Số điện thoại</label>
                                     <InputText @bind-Value="contact.PhoneNumber"
-                                               class="form-control" />
+                                    class="form-control" />
                                 </div>
                                 <div class="form-group">
                                     <ValidationMessage class="text-danger" For="@(() => contact.Message)" />
                                     <label>Nội dung</label>
                                     <InputTextArea @bind-Value="contact.Message" id="message" name="message" cols="30" rows="5"
-                                              class="form-control"></InputTextArea>
+                                    class="form-control"></InputTextArea>
                                 </div>
                                 <button type="submit" class="btn btn-dark btn-rounded">Gửi</button>
                             </EditForm>
@@ -187,3 +164,33 @@
     </div>
     <!-- End of PageContent -->
 </main>
+
+@code {
+    private CreateContactDto contact = new CreateContactDto();
+    private bool isSuccess = false;
+    private bool isError = false;
+    private string errorMessage = "";
+
+
+    private async Task HandleSubmit()
+    {
+        isSuccess = false;
+        isError = false;
+
+        var result = await ContactServices.CreateContactAsync(contact);
+        if (result)
+        {
+            isSuccess = true;
+            contact.Name = "";
+            contact.Email = "";
+            contact.PhoneNumber = "";
+            contact.Message = "";
+            errorMessage = "Gửi thành công!";
+        }
+        else
+        {
+            isError = false;
+            errorMessage = "Không thể gửi biểu mẫu. Vui lòng thử lại.";
+        }
+    }
+}

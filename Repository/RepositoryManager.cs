@@ -1,7 +1,4 @@
 ﻿using Contracts;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using System;
 
 namespace Repository
 {
