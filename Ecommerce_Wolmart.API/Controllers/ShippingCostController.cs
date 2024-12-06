@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models.Address;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Contact;
 using Shared.DTO.Product;
@@ -73,6 +74,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateShippingCost/{Id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateShippingCost(Guid Id, [FromBody] UpdateCostDto updateCostDto)
         {
             try

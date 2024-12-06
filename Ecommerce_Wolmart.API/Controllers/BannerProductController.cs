@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.DTO.BannerProduct;
@@ -30,6 +31,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateBannerProduct")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> CreateBannerProduct([FromForm] CreateBannerProductDto createBannerDto)
         {
             try
@@ -163,6 +165,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateBannerProduct/{id}")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> UpdateBannerProduct(Guid id, [FromForm] UpdateBannerProductDto updateBannerDto)
         {
             try

@@ -1,16 +1,12 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTO.Banner;
-using Shared;
-using Repository;
-using Microsoft.AspNetCore.Hosting;
-using Shared.DTO.Response;
-using Shared.DTO.BannerProduct;
-using Shared.DTO.Address;
 using Microsoft.Extensions.Caching.Memory;
-using Shared.DTO.Introduce;
+using Shared;
+using Shared.DTO.Banner;
+using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -37,6 +33,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateBanner")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> CreateBanner([FromForm] CreateBannerDto createbannerDto)
         {
             try
@@ -122,7 +119,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             // Left, 2
             // Bottom, 3
             IEnumerable<Banner> banners;
-            if(position.HasValue)
+            if (position.HasValue)
             {
                 banners = await _repository.Banner.GetAllBannersAsync(position.Value);
             }
@@ -178,6 +175,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateBanner/{id}")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> UpdateBanner(Guid id, [FromForm] BannerUpdateDto updateDto)
         {
             try
@@ -262,7 +260,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return BadRequest("Banner not found");
 
             // Xóa tệp tin từ hệ thống tệp (nếu cần)
-            if(!string.IsNullOrEmpty(banner.FilePath))
+            if (!string.IsNullOrEmpty(banner.FilePath))
             {
                 var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Img_Repository/Banner", $"{banner.FileName}{banner.FileExtension}");
 
@@ -276,7 +274,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return Ok();
         }
-        
+
         private void ValidateFileUpload(CreateBannerDto request)
         {
             var allowedExtensions = new string[] { ".jpg", ".jpeg", ".png" };
@@ -295,7 +293,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     ModelState.AddModelError("File", "file size more than 10MB, please upload a smaller size file .");
                 }
             }
-                
+
         }
         private void UpdateFileUpload(BannerUpdateDto request)
         {

@@ -2,6 +2,7 @@
 using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Shared.DTO.CategoryIntroduce;
@@ -28,6 +29,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateCategory")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryIntroDto request)
         {
             try
@@ -211,6 +213,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateCategoryIntroduce/{Id}")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> UpdateCategoryIntroduce(Guid Id, [FromBody] UpdateCateIntroDto introduce)
         {
             try

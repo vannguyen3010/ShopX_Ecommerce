@@ -2,6 +2,7 @@
 using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -41,6 +42,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateProduct")]
+        [Authorize]
         public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto createProductDto)
         {
             ValidateFileUpload(createProductDto);
@@ -689,6 +691,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateProduct/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductDto updateProductDto)
         {
             try

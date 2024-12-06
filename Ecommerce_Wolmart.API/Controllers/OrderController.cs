@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
 using Contracts;
 using EmailService;
-using Entities.Identity;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QRCoder;
 using Shared.DTO.Order;
 using Shared.DTO.Response;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
@@ -233,6 +228,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetOrdersList")]
+        [Authorize]
         public async Task<IActionResult> GetOrdersList([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] int? type = null, [FromQuery] string? orderCode = null) // type = 0, 1, 2 (All order, true, false)
         {
             try
@@ -278,6 +274,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetOrderById/{orderId}")]
+        [Authorize]
         public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             var order = await _repository.Order.GetOrderByIdAsync(orderId, trackChanges: false);
@@ -423,6 +420,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetListOrdersByUserId/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetListOrdersByUserId(string userId, [FromQuery] string keyword = null, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
@@ -567,6 +565,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             return $"OD{orderCode}";
         }
 
-      
+
     }
 }
