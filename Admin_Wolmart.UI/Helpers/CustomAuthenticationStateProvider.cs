@@ -5,14 +5,20 @@ using System.Security.Claims;
 
 namespace Admin_Wolmart.UI.Helpers
 {
-    public class CustomAuthenticationStateProvider(CookieService cookieService) : AuthenticationStateProvider
+    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
         private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
+        private readonly CookieService _cookieService;
         private const string TokenKey = "AuthToken";
+
+        public CustomAuthenticationStateProvider(CookieService cookieService)
+        {
+            _cookieService = cookieService;
+        }
 
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = cookieService.GetCookie(TokenKey);
+            var token = _cookieService.GetCookie(TokenKey);
 
 
             var userClaims = DecryptToken(token);
@@ -23,6 +29,11 @@ namespace Admin_Wolmart.UI.Helpers
 
             var claimsPrincipal = SetClaimPrincipal(userClaims);
             return Task.FromResult(new AuthenticationState(claimsPrincipal));
+        }
+        public void UpdateAuthenticationState(ClaimsPrincipal user)
+        {
+            var authState = Task.FromResult(new AuthenticationState(user));
+            NotifyAuthenticationStateChanged(authState);
         }
 
 
@@ -39,7 +50,7 @@ namespace Admin_Wolmart.UI.Helpers
                 }, "JwtAuth"));
         }
 
-        private static CustomUserClaims DecryptToken(string jwtToken)
+        public static CustomUserClaims DecryptToken(string jwtToken)
         {
             if (string.IsNullOrEmpty(jwtToken)) return new CustomUserClaims();
 

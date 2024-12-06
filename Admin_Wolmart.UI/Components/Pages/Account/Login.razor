@@ -29,7 +29,7 @@
                             <div class="col-12">
                                 <div class="form-floating theme-form-floating log-in-form">
                                     <InputText type="password" class="form-control" @bind-Value="User.Password"
-                                               placeholder="Password" />
+                                    placeholder="Password" />
                                     <ValidationMessage class="text-danger" For="@(() => User.Password)" />
                                 </div>
                             </div>
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="col-12">
-                              
+
                                 @if (ShowLoadingButton)
                                 {
                                     <LoginLoad></LoginLoad>
@@ -84,14 +84,12 @@
 
         if (result.IsAuthSuccessful)
         {
-            var customAuthStateProvider = (CustomAuthenticationStateProvider)AuthStateProvider;
+            _cookieService.SetCookie("AuthToken", result.Token, 60);
 
-            // await customAuthStateProvider.UpdateAuthenticationState(new AuthResponseDto
-            // {
-            //     Token = result.Token,
-            //     // RefreshTokens = result.RefreshTokens,
-            //     IsAuthSuccessful = result.IsAuthSuccessful,
-            // });
+            var userClaims = CustomAuthenticationStateProvider.DecryptToken(result.Token);
+            var claimsPrincipal = CustomAuthenticationStateProvider.SetClaimPrincipal(userClaims);
+
+            _customAuthenticationStateProvider.UpdateAuthenticationState(claimsPrincipal);
 
             NavigationManager.NavigateTo("/", forceLoad: true);
         }
