@@ -213,7 +213,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
 
         [HttpPost]
-        [AllowAnonymous]
         [Route("LoginAdmin")]
         public async Task<IActionResult> LoginAdmin([FromBody] LoginDto loginDto)
         {
@@ -538,6 +537,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllUsers")]
+        //[Authorize(Policy = "SuperAdminOrAdmin")]
         [Authorize]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -568,6 +568,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetUserById/{id}")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> GetUserById(string id)
         {
             try
@@ -598,6 +599,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateUser/{id}")]
+        [Authorize(Policy = "SuperAdminPolicy")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserDto updateUser)
         {
             try
@@ -630,6 +632,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpDelete]
         [Route("DeleteUser/{id}")]
+        [Authorize(Policy = "SuperAdminPolicy")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             try

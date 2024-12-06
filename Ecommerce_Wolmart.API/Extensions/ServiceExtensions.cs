@@ -77,7 +77,8 @@ namespace InventrySystem.Extensions
 
                     ValidIssuer = jwtSettings["validIssuer"],
                     ValidAudience = jwtSettings["validAudience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("securityKey"))
+                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("securityKey"))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
                 };
 
             });
@@ -92,9 +93,33 @@ namespace InventrySystem.Extensions
                     Title = "Inventory System API",
                     Version = "v1"
                 });
+
+                // Thêm cấu hình cho JWT Bearer Token
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
         }
-
 
     }
 }

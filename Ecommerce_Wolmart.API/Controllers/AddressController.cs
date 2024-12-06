@@ -20,6 +20,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class AddressController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -137,7 +138,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllProvinces")]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> GetAllProvinces()
         {
             try

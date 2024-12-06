@@ -3,13 +3,19 @@ using Ecommerce_Wolmart.API.Extensions;
 using Ecommerce_Wolmart.API.JwtFeatures;
 using EmailService;
 using InventrySystem.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 using NLog;
 using Repository;
+using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+
+builder.Services.Configure<JwtSection>(builder.Configuration.GetSection("JwtSection"));
+var jwtSection = builder.Configuration.GetSection(nameof(JwtSection)).Get<JwtSection>();
 
 // Add services to the container.
 builder.Services.ConfigureCors();
@@ -54,6 +60,16 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SuperAdminPolicy", policy => policy.RequireRole("SuperAdmin"));
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
+
+    options.AddPolicy("SuperAdminOrAdmin", policy => policy.RequireRole("Admin", "SuperAdmin"));
+});
+
+
 // Đăng ký IHttpContextAccessor
 builder.Services.AddHttpContextAccessor(); // Khi link vào ảnh thì sẽ tạo ra url ảnh https://localhost:1234/images/image.png
 
@@ -87,6 +103,12 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Authorization Header: {context.Request.Headers["Authorization"]}");
+    await next();
+});
 
 app.MapControllers();
 

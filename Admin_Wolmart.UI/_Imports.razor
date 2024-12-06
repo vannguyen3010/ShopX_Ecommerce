@@ -37,7 +37,8 @@
 @using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavigationManager
-@inject ILocalStorageService localStorage
+@inject CookieService _cookieService
 @inject IJSRuntime JSRuntime
 @inject AccountServices _accountServices
 @inject AuthenticationStateProvider AuthStateProvider
+@inject CustomAuthenticationStateProvider _customAuthenticationStateProvider

@@ -3,7 +3,7 @@
 
 @inject BaseServices BaseServices
 @inject CartServices CartServices
-
+@rendermode InteractiveServer
 <header class="header">
     <div class="header-top">
         <div class="container">
@@ -68,13 +68,18 @@
                 <a onclick="window.location.href='/';" class="logo ml-lg-0 cursor">
                     <img src="img_dev/image/logo/logo.svg" alt="logo" width="144" height="45" />
                 </a>
-                <form @onsubmit="HandleSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
-                    <input @bind="keyword" type="text" class="form-control input_item" placeholder="Tìm kiếm sản phẩm..." required />
+             @*    <form @onsubmit="HandleSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
+                    <input @bind="keyword" type="text" class="form-control input_item" placeholder="Tìm kiếm sản phẩm..." />
+                     <button class="btn btn-search" type="submit">
+                        <i class="w-icon-search"></i>
+                    </button> 
+                </form> *@
+                <form @onsubmit.prevent="HandleSearch" class="input-wrapper header-search hs-expanded hs-round d-none d-md-flex">
+                    <input @bind="keyword" type="text" class="form-control input_item" placeholder="Tìm kiếm sản phẩm..." />
                     <button class="btn btn-search" type="submit">
                         <i class="w-icon-search"></i>
                     </button>
                 </form>
-
 
             </div>
             <div class="header-right ml-4">
@@ -324,7 +329,7 @@
     private IEnumerable<CateProductDto> cateProducts;
     private IEnumerable<CategoryIntroduceDto> cateIntroduces;
 
-    private string? keyword = null;
+    private string? keyword;
     private int currentPage = 1;
     private int pageSize = 10;
 
@@ -340,8 +345,7 @@
         {
             // Gọi để lấy trạng thái xác thực
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            // Cập nhật trạng thái UI của bạn nếu cần thiết
-            StateHasChanged(); // Gọi lại để cập nhật UI
+            StateHasChanged();
         }
     }
     private async Task Logout()
@@ -355,7 +359,8 @@
     {
         if (!string.IsNullOrEmpty(keyword))
         {
-            NavigationManager.NavigateTo($"/san-pham?keyword={Uri.EscapeDataString(keyword)}&pageNumber={currentPage}&pageSize={pageSize}", forceLoad: true);
+            NavigationManager.NavigateTo($"/san-pham?keyword={Uri.EscapeDataString(keyword)}&pageNumber={currentPage}&pageSize={pageSize}", forceLoad: false);
         }
     }
+}
 }

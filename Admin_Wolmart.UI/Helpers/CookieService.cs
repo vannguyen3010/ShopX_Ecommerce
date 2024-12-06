@@ -1,28 +1,42 @@
 ﻿namespace Admin_Wolmart.UI.Helpers
 {
-    public class CookieService(IHttpContextAccessor httpContextAccessor)
+    public class CookieService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
+        public CookieService(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
         public void SetCookie(string key, string value, int expiryInMinutes)
         {
-            var cookieOptions = new CookieOptions
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext != null)
             {
-                HttpOnly = true,
-                Secure = true,
-                Expires = DateTimeOffset.Now.AddMinutes(expiryInMinutes)
-            };
-
-            httpContextAccessor.HttpContext?.Response.Cookies.Append(key, value, cookieOptions);
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Expires = DateTimeOffset.Now.AddMinutes(expiryInMinutes)
+                };
+                httpContext.Response.Cookies.Append(key, value, cookieOptions);
+            }
         }
 
         public string? GetCookie(string key)
         {
-            return httpContextAccessor.HttpContext?.Request.Cookies[key];
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            return httpContext?.Request.Cookies[key];
         }
 
         public void DeleteCookie(string key)
         {
-            httpContextAccessor.HttpContext?.Response.Cookies.Delete(key);
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext != null)
+            {
+                httpContext.Response.Cookies.Delete(key);
+            }
         }
     }
 }

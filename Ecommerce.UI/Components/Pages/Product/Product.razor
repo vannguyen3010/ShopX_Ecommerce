@@ -2,7 +2,6 @@
 
 @inject ProductServices ProductServices
 @rendermode InteractiveServer
-@* @layout InnerPageLayout *@
 
 <link href="assets/css/demo9.min.css" rel="stylesheet" />
 <link href="css/product.css" rel="stylesheet" />
@@ -324,7 +323,7 @@
         await LoadBannerProducts();
         await LoadListCategoryProduct();
     }
-
+  
     private async Task LoadBannerProducts()
     {
         var response = await ProductServices.GetAllBannerPositionProductPopup(BannerProductWithPopupPosition.Product);
@@ -336,16 +335,15 @@
         {
             bannerProducts = new List<BannerProductDto>();
         }
-
     }
 
     private async Task LoadListCategoryProduct()
     {
         cateProducts = await ProductServices.GetAllCategoryProductsHaveProduct();
     }
-
     private async Task LoadListProducts()
     {
+       
         var response = await ProductServices.GetListProductAsync(currentPage, pageSize, minPrice, maxPrice, categoryId, keyword, type);
         if (response != null && response.Success)
         {
@@ -357,6 +355,7 @@
         {
             products = new List<ProductDto>();
         }
+       
     }
 
     private async Task FilterByPrice(decimal? min, decimal? max)
