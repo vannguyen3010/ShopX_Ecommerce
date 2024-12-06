@@ -537,8 +537,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllUsers")]
-        //[Authorize(Policy = "SuperAdminOrAdmin")]
-        [Authorize]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> GetAllUsers()
         {
             try
