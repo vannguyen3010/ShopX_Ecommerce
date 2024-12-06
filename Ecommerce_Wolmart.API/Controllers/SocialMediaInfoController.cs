@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Banner;
@@ -11,6 +12,8 @@ namespace Ecommerce_Wolmart.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+
     public class SocialMediaInfoController : ControllerBase
     {
         private readonly ILoggerManager _logger;

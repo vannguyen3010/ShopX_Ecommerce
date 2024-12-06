@@ -41,7 +41,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
         [HttpPost]
         [Route("Register")]
-        [AllowAnonymous]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
         {
             if (registerDto == null || !ModelState.IsValid)
@@ -211,7 +210,6 @@ namespace Ecommerce_Wolmart.API.Controllers
             });
         }
 
-
         [HttpPost]
         [Route("LoginAdmin")]
         public async Task<IActionResult> LoginAdmin([FromBody] LoginDto loginDto)
@@ -322,6 +320,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("RefreshToken")]
+        [Authorize]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
             if (string.IsNullOrEmpty(refreshTokenDto.RefreshTokens))
@@ -533,7 +532,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             return Ok("Mật khẩu đã được thay đổi thành công.");
         }
-
 
         [HttpGet]
         [Route("GetAllUsers")]

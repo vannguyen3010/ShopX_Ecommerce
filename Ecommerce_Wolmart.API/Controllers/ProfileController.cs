@@ -2,15 +2,10 @@
 using Contracts;
 using Entities.Identity;
 using Entities.Models;
-using Entities.Models.Address;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTO.Address;
-using Shared.DTO.Banner;
-using Shared.DTO.CateProduct;
 using Shared.DTO.ImageProfile;
-using Shared.DTO.Product;
 using Shared.DTO.Response;
 
 namespace Ecommerce_Wolmart.API.Controllers
@@ -38,6 +33,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateProfileUser")]
+        [Authorize]
         public async Task<IActionResult> CreateProfileUser([FromForm] CreateProfileUserDto request)
         {
             try
@@ -102,7 +98,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                     profileEntity.FilePath = await SaveFileAndGetUrl(request.File, fileName, fileExtension);
                     profileEntity.FileName = fileName;
                     profileEntity.FileExtension = fileExtension;
-                    profileEntity.FileSizeInBytes = request.File.Length; 
+                    profileEntity.FileSizeInBytes = request.File.Length;
                 }
 
                 // tạo danh mục vào cơ sở dữ liệu
@@ -187,6 +183,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateProfile/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile(Guid id, [FromForm] UpdateProFileDto request)
         {
             try

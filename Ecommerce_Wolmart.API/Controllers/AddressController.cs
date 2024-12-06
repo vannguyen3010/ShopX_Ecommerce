@@ -20,6 +20,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
 
     public class AddressController : ControllerBase
     {
@@ -138,7 +139,6 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllProvinces")]
-        //[Authorize]
         public async Task<IActionResult> GetAllProvinces()
         {
             try

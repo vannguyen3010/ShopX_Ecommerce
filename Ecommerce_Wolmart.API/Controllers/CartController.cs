@@ -2,6 +2,7 @@
 using Contracts;
 using Entities.Identity;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,8 @@ namespace Ecommerce_Wolmart.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+
     public class CartController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -193,6 +196,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetCart/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetCart(string userId)
         {
             try

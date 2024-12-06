@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -70,6 +71,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetContactById/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetContactById(Guid id)
         {
             try
@@ -122,6 +124,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpGet]
         [Route("GetAllContact")]
+        [Authorize]
         public async Task<IActionResult> GetAllContact(int type = 0, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try

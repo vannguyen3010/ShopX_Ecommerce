@@ -1,20 +1,16 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.Models;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Shared.DTO.CommentProduct;
 using Shared.DTO.Response;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Ecommerce_Wolmart.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CommentProductController : ControllerBase
     {
         private readonly ILoggerManager _logger;
@@ -138,7 +134,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Kiểm tra xem bình luận có tồn tại không
                 var comment = await _repository.CommentProduct.GetCommentByIdAsync(commentId, trackChanges: false);
 
-                if(comment == null)
+                if (comment == null)
                 {
                     _logger.LogError($"Comment with id {commentId} not found.");
                     return NotFound(new ApiResponse<object>
@@ -172,7 +168,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             try
             {
                 var comments = await _repository.CommentProduct.GetAllCommentsByProductIdAsync(productId, trackChanges: false);
-                if(comments == null || !comments.Any())
+                if (comments == null || !comments.Any())
                 {
                     _logger.LogError($"Không tìm thấy bình luận nào trong sản phẩm id {productId}.");
                     return NotFound(new ApiResponse<object>
@@ -257,7 +253,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 // Kiểm tra bình luận có tồn tại không
                 var comment = await _repository.CommentProduct.GetCommentByIdAsync(commentId, trackChanges: false);
-                if(comment == null)
+                if (comment == null)
                 {
                     _logger.LogError($"Comment with id: {commentId} doesn't exist.");
                     return NotFound(new ApiResponse<object>

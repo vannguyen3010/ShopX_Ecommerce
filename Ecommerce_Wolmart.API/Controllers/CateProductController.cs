@@ -2,6 +2,7 @@
 using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -35,6 +36,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateCategoryProduct")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> CreateCategoryProduct([FromForm] CreateCateProductDto createCategoryDto)
         {
             try
@@ -344,6 +346,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateCategoryProduct/{id}")]
+        [Authorize(Policy = "SuperAdminOrAdmin")]
         public async Task<IActionResult> UpdateCategoryProduct(Guid id, [FromForm] UpdateCateProductDto updateCateProduct)
         {
             try

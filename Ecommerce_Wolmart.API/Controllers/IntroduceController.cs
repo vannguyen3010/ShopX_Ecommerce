@@ -2,6 +2,7 @@
 using Contracts;
 using Ecommerce_Wolmart.API.Slug;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.DTO.Introduce;
 using Shared.DTO.Product;
@@ -30,6 +31,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPost]
         [Route("CreateIntroduce")]
+        [Authorize]
         public async Task<IActionResult> CreateIntroduce([FromForm] CreateIntroduceDto createIntroduceDto)
         {
             try
@@ -334,6 +336,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
         [HttpPut]
         [Route("UpdateIntroduce/{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateIntroduce(Guid id, [FromForm] UpdateIntroduceDto updateIntroduceDto)
         {
             try
