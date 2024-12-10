@@ -80,18 +80,11 @@
     {
         ShowLoadingButton = true;
 
-        var result = await _accountServices.LoginAsync(User);
+        var isSuccess = await _accountServices.LoginAsync(User);
 
-        if (result.IsAuthSuccessful)
+        if (isSuccess)
         {
-            _cookieService.SetCookie("AuthToken", result.Token, 60);
-
-            var userClaims = CustomAuthenticationStateProvider.DecryptToken(result.Token);
-            var claimsPrincipal = CustomAuthenticationStateProvider.SetClaimPrincipal(userClaims);
-
-            _customAuthenticationStateProvider.UpdateAuthenticationState(claimsPrincipal);
-
-            NavigationManager.NavigateTo("/", forceLoad: true);
+            NavigationManager.NavigateTo("/");
         }
 
         ShowLoadingButton = false;

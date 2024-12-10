@@ -1,72 +1,63 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-using Shared.DTO.User;
-using System.IdentityModel.Tokens.Jwt;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Admin_Wolmart.UI.Helpers
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly ClaimsPrincipal anonymous = new(new ClaimsIdentity());
-        private readonly CookieService _cookieService;
-        private const string TokenKey = "AuthToken";
+        private readonly ILocalStorageService _localStorage;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CustomAuthenticationStateProvider(CookieService cookieService)
+        public CustomAuthenticationStateProvider(ILocalStorageService localStorage, IHttpContextAccessor httpContextAccessor)
         {
-            _cookieService = cookieService;
+            _localStorage = localStorage;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = _cookieService.GetCookie(TokenKey);
-
-
-            var userClaims = DecryptToken(token);
-            if (userClaims == null)
+            // Lấy token từ cookie
+            var token = _httpContextAccessor.HttpContext.Request.Cookies["accessToken"];
+            if (string.IsNullOrEmpty(token))
             {
-                return Task.FromResult(new AuthenticationState(anonymous));
+                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
 
-            var claimsPrincipal = SetClaimPrincipal(userClaims);
-            return Task.FromResult(new AuthenticationState(claimsPrincipal));
+            // Giải mã token
+            var identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+            var user = new ClaimsPrincipal(identity);
+
+            return new AuthenticationState(user);
         }
-        public void UpdateAuthenticationState(ClaimsPrincipal user)
+
+        private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
-            var authState = Task.FromResult(new AuthenticationState(user));
-            NotifyAuthenticationStateChanged(authState);
+            var claims = new List<Claim>();
+            var payload = jwt.Split('.')[1];
+            var jsonBytes = ParseBase64WithoutPadding(payload);
+            var keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
+
+            if (keyValuePairs != null)
+            {
+                claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()!)));
+            }
+
+            return claims;
         }
 
-
-        public static ClaimsPrincipal SetClaimPrincipal(CustomUserClaims claims)
+        private byte[] ParseBase64WithoutPadding(string base64)
         {
-            if (claims.Email is null) return new ClaimsPrincipal();
-            return new ClaimsPrincipal(new ClaimsIdentity(
-                new List<Claim>
-                {
-                new(ClaimTypes.NameIdentifier, claims.Id!),
-                new(ClaimTypes.Name, claims.Name!),
-                new(ClaimTypes.Email, claims.Email!),
-                new(ClaimTypes.Role, claims.Role!),
-                }, "JwtAuth"));
+            base64 = base64.Replace('-', '+').Replace('_', '/');
+            switch (base64.Length % 4)
+            {
+                case 2: base64 += "=="; break;
+                case 3: base64 += "="; break;
+            }
+
+            return Convert.FromBase64String(base64);
         }
-
-        public static CustomUserClaims DecryptToken(string jwtToken)
-        {
-            if (string.IsNullOrEmpty(jwtToken)) return new CustomUserClaims();
-
-            var handler = new JwtSecurityTokenHandler();
-            if (!handler.CanReadToken(jwtToken)) return new CustomUserClaims();
-
-            var token = handler.ReadJwtToken(jwtToken);
-
-            // Lấy các claims và kiểm tra null
-            var userId = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var name = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-            var email = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-            var role = token.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
-
-            return new CustomUserClaims(userId, name, email, role);
-        }
-
     }
 }
+
