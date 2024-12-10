@@ -77,7 +77,7 @@ namespace Ecommerce_Wolmart.API.JwtFeatures
             return tokenOptions;
         }
 
-        private string GenerateRefreshToken()
+        public string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
             using (var rng = RandomNumberGenerator.Create())
@@ -86,5 +86,6 @@ namespace Ecommerce_Wolmart.API.JwtFeatures
             }
             return Convert.ToBase64String(randomNumber);
         }
+
     }
 }

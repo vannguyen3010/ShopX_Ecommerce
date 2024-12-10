@@ -57,6 +57,34 @@ namespace InventrySystem.Extensions
             .AddDefaultTokenProviders();
         }
 
+        //public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        //{
+        //    var jwtSettings = configuration.GetSection("JwtSettings");
+
+        //    services.AddAuthentication(opt =>
+        //    {
+        //        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    })
+        //    .AddJwtBearer(options =>
+        //    {
+
+        //        options.TokenValidationParameters = new TokenValidationParameters
+        //        {
+        //            ValidateIssuer = true,
+        //            ValidateAudience = true,
+        //            ValidateLifetime = true,
+        //            ValidateIssuerSigningKey = true,
+
+        //            ValidIssuer = jwtSettings["validIssuer"],
+        //            ValidAudience = jwtSettings["validAudience"],
+        //            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("securityKey"))
+        //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
+        //        };
+
+        //    });
+        //}
+
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
@@ -74,11 +102,22 @@ namespace InventrySystem.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-
                     ValidIssuer = jwtSettings["validIssuer"],
                     ValidAudience = jwtSettings["validAudience"],
-                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("securityKey"))
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["securityKey"]))
+                };
+                // Thêm tùy chỉnh Cookie-to-Header
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.HttpContext.Request.Cookies["access_token"];
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
 
             });
@@ -95,14 +134,15 @@ namespace InventrySystem.Extensions
                 });
 
                 // Thêm cấu hình cho JWT Bearer Token
-                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
+                //s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                //{
+                //    In = ParameterLocation.Header,
+                //    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
+                //    Name = "Authorization",
+                //    Type = SecuritySchemeType.ApiKey,
+                //    Scheme = "Bearer"
+                //});
+
 
                 s.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {

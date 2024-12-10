@@ -8,28 +8,19 @@
         {
             _httpContextAccessor = httpContextAccessor;
         }
-        public void SetCookie(string key, string value, int expiryInMinutes)
+        public void Set(string key, string value, CookieOptions options)
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTimeOffset.Now.AddMinutes(expiryInMinutes)
-                };
-                httpContext.Response.Cookies.Append(key, value, cookieOptions);
-            }
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append(key, value, options);
         }
 
-        public string? GetCookie(string key)
+        public string? Get(string key)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
             return httpContext?.Request.Cookies[key];
         }
 
-        public void DeleteCookie(string key)
+        public void Delete(string key)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -40,3 +31,4 @@
         }
     }
 }
+

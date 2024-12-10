@@ -196,6 +196,14 @@ namespace Ecommerce_Wolmart.API.Controllers
                 await _repository.AccountRepository.UpdateAsync(refreshToken);
             }
 
+            HttpContext.Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(30)
+            });
+
             // Đặt lại số lần đăng nhập không thành công
             await _userManager.ResetAccessFailedCountAsync(user);
 
@@ -227,12 +235,12 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             // Tìm người dùng theo email
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
-            if (user == null)
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password!))
             {
                 return NotFound(new ApiResponse<Object>
                 {
                     Success = false,
-                    Message = $"Email chưa đăng ký!",
+                    Message = $"Thông tin đăng nhập không hợp lệ.",
                     Data = null
                 });
             }
@@ -305,6 +313,23 @@ namespace Ecommerce_Wolmart.API.Controllers
                 await _repository.AccountRepository.UpdateAsync(refreshToken);
             }
 
+            // Lưu token vào cookie
+            HttpContext.Response.Cookies.Append("access_token", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddMinutes(30)
+            });
+
+            //HttpContext.Response.Cookies.Append("refresh_token", refreshToken.RefreshTokens, new CookieOptions
+            //{
+            //    HttpOnly = true,
+            //    Secure = true,
+            //    SameSite = SameSiteMode.Strict,
+            //    Expires = refreshToken.Expiration
+            //});
+
             // Đặt lại số lần đăng nhập không thành công
             await _userManager.ResetAccessFailedCountAsync(user);
 
@@ -319,7 +344,31 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
+        [Route("Logout")]
+        public IActionResult Logout()
+        {
+            // Xóa token trong cookie bằng cách đặt giá trị cookie rỗng và hết hạn
+            Response.Cookies.Append("access_token", string.Empty, new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(-1), // Cookie hết hạn
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict // Bảo mật cookie
+            });
+
+            return Ok(new ApiResponse<Object>
+            {
+                Success = true,
+                Message = "Đăng xuất thành công.",
+                Data = null
+            });
+        }
+
+
+
+        [HttpPost]
         [Route("RefreshToken")]
+        [AllowAnonymous]
         [Authorize]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
@@ -362,6 +411,7 @@ namespace Ecommerce_Wolmart.API.Controllers
 
             // Đánh dấu refresh token là đã sử dụng
             existingRefreshToken.IsUsed = true;
+            existingRefreshToken.IsRevoked = true; // Đảm bảo không thể tái sử dụng
 
             await _repository.AccountRepository.UpdateAsync(existingRefreshToken);
 

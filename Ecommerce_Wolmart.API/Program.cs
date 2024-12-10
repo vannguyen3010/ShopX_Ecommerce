@@ -70,6 +70,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 
+
 // Đăng ký IHttpContextAccessor
 builder.Services.AddHttpContextAccessor(); // Khi link vào ảnh thì sẽ tạo ra url ảnh https://localhost:1234/images/image.png
 
@@ -86,6 +87,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("CorsPolicy");
 
+app.UseMiddleware<JwtCookieMiddleware>();
 
 app.UseSwagger();
 

@@ -16,6 +16,11 @@ builder.Services.AddScoped(sp =>
     return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
 });
 
+
+
+builder.Services.AddScoped<CookieService>();
+//builder.Services.AddScoped<ICookieService, CookieService>();
+
 builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<AccountServices>();
 builder.Services.AddScoped<OrderServices>();
@@ -28,20 +33,16 @@ builder.Services.AddScoped<BannerProductServices>();
 builder.Services.AddScoped<PaymentServices>();
 builder.Services.AddScoped<ProfileServices>();
 
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-//builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+//builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
-    provider.GetRequiredService<CustomAuthenticationStateProvider>());
 
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-builder.Services.AddScoped<CookieService>();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
 
+builder.Services.AddAuthorizationCore();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
