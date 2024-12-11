@@ -39,6 +39,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             _emailSender = emailSender;
             _logger = logger;
         }
+
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> RegisterUser([FromBody] RegisterDto registerDto)
@@ -364,11 +365,8 @@ namespace Ecommerce_Wolmart.API.Controllers
             });
         }
 
-
-
         [HttpPost]
         [Route("RefreshToken")]
-        [AllowAnonymous]
         [Authorize]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto refreshTokenDto)
         {
