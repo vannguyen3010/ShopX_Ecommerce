@@ -111,7 +111,7 @@ namespace InventrySystem.Extensions
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.HttpContext.Request.Cookies["access_token"];
+                        var accessToken = context.HttpContext.Request.Cookies["accesstoken_admin"] ?? context.HttpContext.Request.Cookies["accesstoken_user"];
                         if (!string.IsNullOrEmpty(accessToken))
                         {
                             context.Token = accessToken;

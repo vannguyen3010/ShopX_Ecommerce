@@ -197,7 +197,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 await _repository.AccountRepository.UpdateAsync(refreshToken);
             }
 
-            HttpContext.Response.Cookies.Append("access_token", token, new CookieOptions
+            HttpContext.Response.Cookies.Append("accesstoken_user", token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
@@ -315,7 +315,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             }
 
             // Lưu token vào cookie
-            HttpContext.Response.Cookies.Append("access_token", token, new CookieOptions
+            HttpContext.Response.Cookies.Append("accesstoken_admin", token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
@@ -345,11 +345,32 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
-        [Route("Logout")]
-        public IActionResult Logout()
+        [Route("LogoutAdmin")]
+        public IActionResult LogoutAdmin()
         {
             // Xóa token trong cookie bằng cách đặt giá trị cookie rỗng và hết hạn
-            Response.Cookies.Append("access_token", string.Empty, new CookieOptions
+            Response.Cookies.Append("accesstoken_admin", string.Empty, new CookieOptions
+            {
+                Expires = DateTime.UtcNow.AddDays(-1), // Cookie hết hạn
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict // Bảo mật cookie
+            });
+
+            return Ok(new ApiResponse<Object>
+            {
+                Success = true,
+                Message = "Đăng xuất thành công.",
+                Data = null
+            });
+        }
+
+        [HttpPost]
+        [Route("LogoutUser")]
+        public IActionResult LogoutUser()
+        {
+            // Xóa token trong cookie bằng cách đặt giá trị cookie rỗng và hết hạn
+            Response.Cookies.Append("accesstoken_user", string.Empty, new CookieOptions
             {
                 Expires = DateTime.UtcNow.AddDays(-1), // Cookie hết hạn
                 HttpOnly = true,
