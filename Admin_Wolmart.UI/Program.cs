@@ -3,6 +3,7 @@ using Admin_Wolmart.UI.Helpers;
 using Admin_Wolmart.UI.Services;
 using Blazored.LocalStorage;
 using Blazored.Toast;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Options;
@@ -16,10 +17,13 @@ builder.Services.AddScoped(sp =>
     return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
 });
 
-
-
-builder.Services.AddScoped<CookieService>();
-//builder.Services.AddScoped<ICookieService, CookieService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "accesstoken_admin";
+        options.LoginPath = "/account/login"; // Đường dẫn khi chưa đăng nhập
+        options.AccessDeniedPath = "/account/access-denied"; // Đường dẫn khi bị từ chối quyền truy cập
+    });
 
 builder.Services.AddScoped<ProductServices>();
 builder.Services.AddScoped<AccountServices>();
@@ -33,13 +37,10 @@ builder.Services.AddScoped<BannerProductServices>();
 builder.Services.AddScoped<PaymentServices>();
 builder.Services.AddScoped<ProfileServices>();
 
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-//builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
 
 builder.Services.AddAuthorizationCore();
@@ -53,18 +54,21 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
+//app.UseMiddleware<RedirectUnauthorizedMiddleware>();
+
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Lax,
-    HttpOnly = HttpOnlyPolicy.Always,
-    Secure = CookieSecurePolicy.SameAsRequest
+    MinimumSameSitePolicy = SameSiteMode.Strict,
 });
-
 
 app.Run();

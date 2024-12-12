@@ -1,19 +1,20 @@
 ﻿@page "/"
+@attribute [Authorize]
+
 
 @code {
 
-    [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; }
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationState).User;
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
-        if (user.Identity?.IsAuthenticated == true)
+        if (!authState.User.Identity.IsAuthenticated)
         {
-            NavigationManager.NavigateTo("/dashboard");
+            NavigationManager.NavigateTo("/account/login");
         }
         else
         {
-            NavigationManager.NavigateTo("/account/login");
+            NavigationManager.NavigateTo("/dashboard");
         }
     }
 }

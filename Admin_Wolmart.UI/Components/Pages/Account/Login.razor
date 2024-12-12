@@ -63,18 +63,19 @@
 </section>
 
 @code {
-    [CascadingParameter] public Task<AuthenticationState> AuthenticationState { get; set; }
-
     public LoginDto User = new();
     public bool ShowLoadingButton { get; set; } = false;
 
-    protected async override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        // if (AuthenticationState != null)
-        // {
-        //     await CheckUserAuthentication();
-        // }
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/dashboard");
+        }
     }
+
 
     public async Task HandleLogin()
     {
@@ -90,11 +91,4 @@
         ShowLoadingButton = false;
     }
 
-    private async Task CheckUserAuthentication()
-    {
-        var user = (await AuthenticationState).User;
-        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
-        if (isUserAuthenticated)
-            NavigationManager.NavigateTo("/dashboard");
-    }
 }
