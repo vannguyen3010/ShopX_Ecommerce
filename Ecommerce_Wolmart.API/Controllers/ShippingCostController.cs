@@ -133,7 +133,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         {
             try
             {
-                // Lấy tất cả sản phẩm có IsHot là true
                 var shippingCosts = await _repository.ShippingCost.GetAllShippingCostAsync(trackChanges: false);
 
                 if (shippingCosts == null)
@@ -149,11 +148,62 @@ namespace Ecommerce_Wolmart.API.Controllers
                 // Ánh xạ từ entity sang DTO nếu cần thiết
                 var shippingCostsDto = _mapper.Map<IEnumerable<ShippingCostDto>>(shippingCosts);
 
+                foreach (var shippingCost in shippingCostsDto)
+                {
+                    var province = await _repository.Province.GetProvinceByCodeAsync(shippingCost.ProvinceCode);
+                    var shippingCostDto = _mapper.Map<ShippingCostDto>(shippingCost);
+
+                    // Nếu tìm thấy Province, thêm tên tỉnh thành vào DTO
+                    if(province != null)
+                    {
+                        shippingCostDto.ProvinceName = province.Name;
+                    }
+                }
+
                 return Ok(new ApiResponse<IEnumerable<ShippingCostDto>>
                 {
                     Success = true,
                     Message = "Danh sách phí vận chuyển !.",
                     Data = shippingCostsDto
+                });
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GetAllProductIsHot action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllShippingCostPagination")]
+        public async Task<IActionResult> GetAllShippingCostPagination([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, string? keyword = null)
+        {
+            try
+            {
+                var (shippingCosts, totalCount) = await _repository.ShippingCost.GetAllShippingCostPaginationAsync(pageNumber, pageSize, keyword);
+
+                if (!shippingCosts.Any())
+                {
+                    return NotFound(new ApiResponse<object>
+                    {
+                        Success = false,
+                        Message = "Không tìm thấy phí vận chuyển",
+                        Data = null
+                    });
+                }
+
+                var shippingCostsDto = _mapper.Map<IEnumerable<ShippingCostDto>>(shippingCosts);
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Shipping retrieved successfully.",
+                    data = new
+                    {
+                        totalCount,
+                        shippingCosts = shippingCostsDto
+                    }
                 });
             }
             catch (Exception ex)

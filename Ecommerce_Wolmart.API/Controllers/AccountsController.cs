@@ -223,17 +223,6 @@ namespace Ecommerce_Wolmart.API.Controllers
         [Route("LoginAdmin")]
         public async Task<IActionResult> LoginAdmin([FromBody] LoginDto loginDto)
         {
-            // Kiểm tra Email và Mật khẩu
-            if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
-            {
-                return NotFound(new ApiResponse<Object>
-                {
-                    Success = false,
-                    Message = $"Kiểm tra Email và Mật khẩu!",
-                    Data = null
-                });
-            }
-
             // Tìm người dùng theo email
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password!))
@@ -319,17 +308,9 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddMinutes(30)
             });
-
-            //HttpContext.Response.Cookies.Append("refresh_token", refreshToken.RefreshTokens, new CookieOptions
-            //{
-            //    HttpOnly = true,
-            //    Secure = true,
-            //    SameSite = SameSiteMode.Strict,
-            //    Expires = refreshToken.Expiration
-            //});
 
             // Đặt lại số lần đăng nhập không thành công
             await _userManager.ResetAccessFailedCountAsync(user);

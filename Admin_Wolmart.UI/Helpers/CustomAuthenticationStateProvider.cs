@@ -19,12 +19,14 @@ namespace Admin_Wolmart.UI.Helpers
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var httpContext = _httpContextAccessor.HttpContext;
+
             if (httpContext == null)
             {
                 var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
                 return Task.FromResult(new AuthenticationState(anonymous));
             }
 
+            // Kiểm tra cookie token
             var token = httpContext.Request.Cookies["accesstoken_admin"];
             if (string.IsNullOrEmpty(token))
             {
@@ -32,6 +34,7 @@ namespace Admin_Wolmart.UI.Helpers
                 return Task.FromResult(new AuthenticationState(anonymous));
             }
 
+            // Đọc và kiểm tra token
             var tokenHandler = new JwtSecurityTokenHandler();
             if (!tokenHandler.CanReadToken(token))
             {

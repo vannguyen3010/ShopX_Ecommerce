@@ -40,5 +40,16 @@ namespace Admin_Wolmart.UI.Services
             return false;
         }
 
+        public async Task<bool> LogoutAdminAsync()
+        {
+            var response = await _httpClient.PostAsync("/api/Accounts/LogoutAdmin", null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

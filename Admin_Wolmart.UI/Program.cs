@@ -7,9 +7,16 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Options;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
+var handler = new HttpClientHandler
+{
+    UseCookies = true,
+    CookieContainer = new CookieContainer()
+};
 
 builder.Services.AddScoped(sp =>
 {
@@ -17,12 +24,15 @@ builder.Services.AddScoped(sp =>
     return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
 });
 
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.Cookie.Name = "accesstoken_admin";
         options.LoginPath = "/account/login"; // Đường dẫn khi chưa đăng nhập
         options.AccessDeniedPath = "/account/access-denied"; // Đường dẫn khi bị từ chối quyền truy cập
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
 builder.Services.AddScoped<ProductServices>();
@@ -69,6 +79,7 @@ app.MapRazorComponents<App>()
 app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.Strict,
+    HttpOnly = HttpOnlyPolicy.Always
 });
 
 app.Run();
