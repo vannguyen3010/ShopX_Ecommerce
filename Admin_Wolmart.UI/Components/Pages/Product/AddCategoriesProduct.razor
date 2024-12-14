@@ -97,17 +97,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await CheckUserAuthentication();
         await LoadCategories();
     }
 
-    private async Task CheckUserAuthentication()
-    {
-        var user = (await AuthenticationState!).User;
-        bool isUserAuthenticated = user.Identity!.IsAuthenticated;
-        if (!isUserAuthenticated)
-            NavigationManager.NavigateTo("/account/login");
-    }
+  
 
     private async Task HandleSubmit()
     {

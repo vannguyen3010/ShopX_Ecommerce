@@ -29,6 +29,17 @@ builder.Services.AddScoped<JwtHandler>();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureSwagger();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()
+              .WithOrigins("https://localhost:7144/");
+    });
+});
+
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromHours(2));

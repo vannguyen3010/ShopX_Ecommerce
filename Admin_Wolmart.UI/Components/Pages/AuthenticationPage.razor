@@ -1,12 +1,10 @@
 ﻿@page "/"
-@attribute [Authorize]
-
 
 @code {
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
 
         if (!authState.User.Identity.IsAuthenticated)
         {
