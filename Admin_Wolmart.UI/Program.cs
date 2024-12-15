@@ -46,6 +46,7 @@ builder.Services.AddScoped<BannerServices>();
 builder.Services.AddScoped<BannerProductServices>();
 builder.Services.AddScoped<PaymentServices>();
 builder.Services.AddScoped<ProfileServices>();
+builder.Services.AddScoped<ShippingCostServices>();
 
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
