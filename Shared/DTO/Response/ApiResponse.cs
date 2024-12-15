@@ -4,6 +4,7 @@ using Shared.DTO.Contact;
 using Shared.DTO.Introduce;
 using Shared.DTO.Order;
 using Shared.DTO.Product;
+using Shared.DTO.ShippingCost;
 
 namespace Shared.DTO.Response
 {
@@ -55,5 +56,10 @@ namespace Shared.DTO.Response
     {
         public int TotalCount { get; set; }
         public IEnumerable<OrderDto> Orders { get; set; }
+    }
+    public class ShippingCostResponse
+    {
+        public int TotalCount { get; set; }
+        public IEnumerable<ShippingCostDto> ShippingCosts { get; set; }
     }
 }

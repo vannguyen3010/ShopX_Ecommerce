@@ -27,6 +27,7 @@
 @using global::Shared.DTO.BannerProduct
 @using global::Shared.DTO.Payment
 @using global::Shared.DTO.SocialMediaInfo
+@using global::Shared.DTO.ShippingCost
 
 @using Admin_Wolmart.UI.Components.Pages.OtherPage
 @using Microsoft.AspNetCore.WebUtilities
@@ -41,3 +42,6 @@
 @inject AuthenticationStateProvider _authStateProvider
 
 @inject AccountServices _accountServices
+@inject ShippingCostServices _shippingCostServices
+@inject IntroduceServices _introduceServices
+@inject CateIntroduceServices _cateIntroduceServices
