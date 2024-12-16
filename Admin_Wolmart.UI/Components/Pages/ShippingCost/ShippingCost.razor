@@ -1,5 +1,7 @@
 ﻿@page "/shippingCost"
 
+<link href="/css/all_page.css" rel="stylesheet" />
+
 @rendermode InteractiveServer
 
 <div class="page-body">
@@ -8,14 +10,15 @@
             <div class="col-sm-12">
                 <div class="card card-table">
                     <div class="card-body">
-                        <div class="title-header option-title">
+                        <div class="title-header option-title" style="font-size: unset!important">
                             <h5>Coupon List</h5>
                             <div class="right-options">
-                                <ul>
-                                    <li>
-                                        <a class="btn btn-solid" href="add-new-product.html">Add Coupon</a>
-                                    </li>
-                                </ul>
+                                <form @onsubmit="HandleSearch" class="search_box">
+                                    <input type="text" class="search_input" placeholder="Tìm kiếm..." @bind="keyword">
+                                    <button type="submit" class="search_button">
+                                        <i class="fa-solid fa-magnifying-glass fs-6"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         <div>
@@ -28,7 +31,7 @@
                                             <th>Tỉnh</th>
                                             <th>Phí vận chuyển</th>
                                             <th>Trạng thái</th>
-                                            <th>Option</th>
+                                            <th>Hành động</th>
                                         </tr>
                                     </thead>
 
@@ -38,22 +41,37 @@
                                             foreach (var item in listShippingCost)
                                             {
                                                 <tr>
-                                                    <td>@item.ProvinceCode</td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.ProvinceCode</td>
 
-                                                    <td class="menu-status">
+                                                    <td class="menu-status @(item.Status ? "" : "table_row_disabled")">
                                                         <span class="danger">@item.ProvinceName</span>
                                                     </td>
 
-                                                    <td>@item.Cost.ToString("N0") <span class="currency-symbol">đ</span></td>
+                                                    <td class="@(item.Status ? "" : "table_row_disabled")">@item.Cost.ToString("N0") <span class="currency-symbol">đ</span></td>
 
-                                                    <td class="menu-status">
-                                                        <span class="danger">Restitute</span>
-                                                    </td>
+                                                    @if (item.Status == true)
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" checked @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, false))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <label class="switch">
+                                                                <input type="checkbox" @onchange="@((ChangeEventArgs e) => UpdateStatus(item.Id, true))">
+                                                                <span class="slider round"></span>
+                                                            </label>
+                                                        </td>
+                                                    }
 
                                                     <td>
                                                         <ul>
                                                             <li>
-                                                                <a href="javascript:void(0)">
+                                                                <a href="javascript:void(0)" @onclick="() => GetShippingCostOrUpdate(item.Id)">
                                                                     <i class="ri-pencil-line"></i>
                                                                 </a>
                                                             </li>
@@ -190,6 +208,22 @@
         await UpdateUrlAndLoadShippingCost();
 
     }
+
+    private async Task UpdateStatus(Guid id, bool status)
+    {
+        bool isSuccess = await _shippingCostServices.UpdateShippingCostStatusAsync(id, status);
+
+        if (isSuccess)
+        {
+            await LoadListShippingCosts();
+        }
+    }
+
+    private async Task GetShippingCostOrUpdate(Guid id)
+    {
+        NavigationManager.NavigateTo($"/update-shippingCost/{id}", forceLoad: true);
+    }
+
 
     private async Task UpdateUrlAndLoadShippingCost()
     {

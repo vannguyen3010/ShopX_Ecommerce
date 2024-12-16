@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
+using Shared.DTO.CategoryIntroduce;
 using Shared.DTO.Response;
+using Shared.DTO.ShippingCost;
 
 namespace Admin_Wolmart.UI.Services
 {
@@ -36,5 +38,31 @@ namespace Admin_Wolmart.UI.Services
             }
             return null;
         }
+
+        public async Task<bool> UpdateShippingCostStatusAsync(Guid id, bool status)
+        {
+            var updateStatus = new UpdateStatusCostDto { Status = status };
+            var query = $"/api/ShippingCost/UpdateStatusShippingCost/{id}?Status={status}";
+            var response = await _httpClient.PutAsJsonAsync(query, updateStatus);
+
+            return response.IsSuccessStatusCode;
+        }
+        public async Task<ApiResponse<ShippingCostDto>> GetCategoryIntroduceByIdAsync(Guid Id)
+        {
+            var response = await _httpClient.GetAsync($"/api/ShippingCost/GetShippingCostById/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var category = await response.Content.ReadFromJsonAsync<ApiResponse<ShippingCostDto>>();
+                return category;
+            }
+            return null;
+        }
+
+        public async Task<bool> UpdateShippingCostAsync(Guid id, UpdateCostDto request)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/ShippingCost/UpdateShippingCost/{id}", request);
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }
