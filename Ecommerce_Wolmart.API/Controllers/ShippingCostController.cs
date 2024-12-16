@@ -213,5 +213,39 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpPut]
+        [Route("UpdateStatusShippingCost/{Id}")]
+        //[Authorize]
+        public async Task<IActionResult> UpdateStatusShippingCost(Guid Id, [FromQuery] UpdateStatusCostDto updateCostDto)
+        {
+            try
+            {
+                var costEntity = await _repository.ShippingCost.GetShippingCostByIdAsync(Id, trackChanges: true);
+                if (costEntity == null)
+                {
+                    _logger.LogError($"ShippingCost with id: {Id}, hasn't been found in db.");
+                    return NotFound(new ApiResponse<Object>
+                    {
+                        Success = false,
+                        Message = $"Không tìm thấy {Id}.",
+                        Data = null
+                    });
+                }
+
+                _mapper.Map(updateCostDto, costEntity);
+
+                _repository.ShippingCost.UpdateShippingCost(costEntity);
+                _repository.SaveAsync();
+
+                return Ok(_mapper.Map<ShippingCostDto>(costEntity));
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside ShippingCost action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

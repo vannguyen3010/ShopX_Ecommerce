@@ -4,4 +4,8 @@
     {
         public decimal Cost { get; set; }
     }
+    public class UpdateStatusCostDto
+    {
+        public bool Status { get; set; }
+    }
 }

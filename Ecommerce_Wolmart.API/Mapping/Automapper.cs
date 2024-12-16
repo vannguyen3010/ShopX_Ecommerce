@@ -132,6 +132,8 @@ namespace Ecommerce_Wolmart.API.Mapping
 
             CreateMap<UpdateCostDto, ShippingCost>();
 
+            CreateMap<UpdateStatusCostDto, ShippingCost>();
+
             CreateMap<CreateOrderDto, Order>();
 
             CreateMap<OrderItemDto, OrderItem>();
