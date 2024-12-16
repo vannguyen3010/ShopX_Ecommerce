@@ -101,7 +101,7 @@ namespace Ecommerce_Wolmart.API.Controllers
         [HttpPut]
         [Route("UpdateShippingCost/{Id}")]
         //[Authorize]
-        public async Task<IActionResult> UpdateShippingCost(Guid Id, [FromQuery] UpdateCostDto updateCostDto)
+        public async Task<IActionResult> UpdateShippingCost(Guid Id, [FromBody] UpdateCostDto updateCostDto)
         {
             try
             {
