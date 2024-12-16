@@ -1,0 +1,116 @@
+﻿@page "/update-shippingCost/{Id:guid}"
+
+@rendermode InteractiveServer
+
+@if (shippingCost != null)
+{
+    <div class="page-body">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-sm-8 m-auto">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="card-header-2">
+                                        <h5>Cập nhật phí vận chuyển</h5>
+                                    </div>
+
+                                    <form class="theme-form theme-form-2 mega-form">
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Tỉnh</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" @bind="shippingCost.ProvinceName" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4 row align-items-center">
+                                            <label class="form-label-title col-sm-3 mb-0">Phí vận chuyển</label>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text" @bind="FormattedCost" @oninput="OnCostInput">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                @if (ShowLoadingButton)
+                                {
+                                    <ButtonLoad></ButtonLoad>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-primary buttonload" @onclick="HandleUpdate">Cập nhật</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code{
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private ShippingCostDto shippingCost;
+
+    public bool ShowLoadingButton { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetShippingCostById();
+    }
+
+    // Mã định dạng
+    private string FormattedCost
+    {
+        get => shippingCost.Cost.ToString("#,0");  // Định dạng có dấu chấm phân tách hàng nghìn
+        set
+        {
+            if (decimal.TryParse(value, out var cost))
+            {
+                shippingCost.Cost = cost;
+            }
+        }
+    }
+
+    private async Task GetShippingCostById()
+    {
+        var response = await _shippingCostServices.GetCategoryIntroduceByIdAsync(Id);
+
+        if (response != null && response.Success)
+        {
+            shippingCost = response.Data;
+        }
+    }
+
+
+    private async Task HandleUpdate()
+    {
+        ShowLoadingButton = true;
+
+        var updateDto = new UpdateCostDto { Cost = shippingCost.Cost };
+        bool isSuccess = await _shippingCostServices.UpdateShippingCostAsync(shippingCost.Id, updateDto);
+        if (isSuccess)
+        {
+            NavigationManager.NavigateTo("/shippingCost", forceLoad: true);
+        }
+
+        ShowLoadingButton = false;
+    }
+
+    private void OnCostInput(ChangeEventArgs e)
+    {
+        // Lấy giá trị nhập vào từ sự kiện
+        var input = e.Value.ToString();
+
+        // Nếu nhập đúng định dạng
+        if (decimal.TryParse(input, out var cost))
+        {
+            shippingCost.Cost = cost;
+        }
+    }
+}

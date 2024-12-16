@@ -72,10 +72,36 @@ namespace Ecommerce_Wolmart.API.Controllers
             });
         }
 
+        [HttpGet]
+        [Route("GetShippingCostById/{Id}")]
+        public async Task<IActionResult> GetShippingCostById(Guid Id)
+        {
+            //Lấy id địa chỉ
+            var shippingCost = await _repository.ShippingCost.GetShippingCostByIdAsync(Id, trackChanges: false);
+            if (shippingCost == null)
+            {
+                return NotFound(new ApiResponse<Object>
+                {
+                    Success = false,
+                    Message = $"Không tìm thấy địa chỉ này {Id}",
+                    Data = null
+                });
+            }
+
+            var shippingCostDto = _mapper.Map<ShippingCostDto>(shippingCost);
+            //Chuyển đổi model thành DTO
+            return Ok(new ApiResponse<ShippingCostDto>
+            {
+                Success = true,
+                Message = "Address retrieved successfully.",
+                Data = shippingCostDto
+            });
+        }
+
         [HttpPut]
         [Route("UpdateShippingCost/{Id}")]
-        [Authorize]
-        public async Task<IActionResult> UpdateShippingCost(Guid Id, [FromBody] UpdateCostDto updateCostDto)
+        //[Authorize]
+        public async Task<IActionResult> UpdateShippingCost(Guid Id, [FromQuery] UpdateCostDto updateCostDto)
         {
             try
             {
