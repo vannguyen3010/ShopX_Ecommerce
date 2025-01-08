@@ -6,15 +6,11 @@
     {
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
 
-        // if (!authState.User.Identity.IsAuthenticated)
-        // {
-        //     NavigationManager.NavigateTo("/account/login");
-        // }
-        // else
-        // {
-        //     NavigationManager.NavigateTo("/dashboard");
-        // }
-        if (authState.User.Identity.IsAuthenticated)
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/account/login");
+        }
+        else
         {
             NavigationManager.NavigateTo("/dashboard");
         }

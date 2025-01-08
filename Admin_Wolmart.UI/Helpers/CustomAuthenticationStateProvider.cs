@@ -53,6 +53,17 @@ namespace Admin_Wolmart.UI.Helpers
             var user = new ClaimsPrincipal(identity);
             return Task.FromResult(new AuthenticationState(user));
         }
+
+        public void MarkUserAsAuthenticated(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            var identity = new ClaimsIdentity(jwtToken.Claims, "accesstoken_admin");
+            var user = new ClaimsPrincipal(identity);
+
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        }
+
     }
 }
 

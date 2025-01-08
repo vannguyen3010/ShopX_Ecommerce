@@ -29,17 +29,25 @@ builder.Services.AddScoped<JwtHandler>();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureSwagger();
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddDefaultPolicy(policy =>
+//    {
+//        policy.AllowAnyHeader()
+//              .AllowAnyMethod()
+//              .AllowCredentials()
+//              .WithOrigins("https://localhost:7144/");
+//    });
+//});
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials()
-              .WithOrigins("https://localhost:7144/");
-    });
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+        .WithOrigins("https://localhost:5205", "https://localhost:7144")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
 });
-
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
     opt.TokenLifespan = TimeSpan.FromHours(2));
@@ -116,12 +124,6 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Authorization Header: {context.Request.Headers["Authorization"]}");
-    await next();
-});
 
 app.MapControllers();
 

@@ -112,7 +112,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return NotFound(new ApiResponse<Object>
                 {
                     Success = false,
-                    Message = $"Kiểm tra Email và Mật khẩu!",
+                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại.!",
                     Data = null
                 });
             }
@@ -143,16 +143,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 });
             }
 
-            // Kiểm tra mật khẩu
-            if (!await _userManager.CheckPasswordAsync(user, loginDto.Password!))
-            {
-                return NotFound(new ApiResponse<Object>
-                {
-                    Success = false,
-                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại.",
-                    Data = null
-                });
-            }
 
             // Kiểm tra xác nhận email
             if (user.EmailConfirmed == false)
@@ -230,7 +220,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return NotFound(new ApiResponse<Object>
                 {
                     Success = false,
-                    Message = $"Thông tin đăng nhập không hợp lệ.",
+                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại..",
                     Data = null
                 });
             }
@@ -246,17 +236,6 @@ namespace Ecommerce_Wolmart.API.Controllers
                 {
                     Success = false,
                     Message = $"Tài khoản này không có quyền truy cập.",
-                    Data = null
-                });
-            }
-
-            // Kiểm tra mật khẩu
-            if (!await _userManager.CheckPasswordAsync(user, loginDto.Password!))
-            {
-                return NotFound(new ApiResponse<Object>
-                {
-                    Success = false,
-                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại.",
                     Data = null
                 });
             }
@@ -312,6 +291,15 @@ namespace Ecommerce_Wolmart.API.Controllers
                 Expires = DateTime.UtcNow.AddMinutes(30)
             });
 
+            //HttpContext.Response.Cookies.Append("refreshtoken", refreshToken.RefreshTokens, new CookieOptions
+            //{
+            //    HttpOnly = true,
+            //    Secure = true,
+            //    SameSite = SameSiteMode.None,
+            //    Expires = refreshToken.Expiration
+            //});
+
+
             // Đặt lại số lần đăng nhập không thành công
             await _userManager.ResetAccessFailedCountAsync(user);
 
@@ -320,8 +308,7 @@ namespace Ecommerce_Wolmart.API.Controllers
             {
                 IsAuthSuccessful = true,
                 Token = token,
-                RefreshTokens = refreshToken.RefreshTokens,
-                UserId = user.Id
+                RefreshTokens = refreshToken.RefreshTokens
             });
         }
 

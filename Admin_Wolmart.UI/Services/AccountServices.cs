@@ -10,10 +10,13 @@ namespace Admin_Wolmart.UI.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public AccountServices(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        private readonly CustomAuthenticationStateProvider _customAuthenticationStateProvider;
+
+        public AccountServices(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, CustomAuthenticationStateProvider customAuthenticationStateProvider)
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
+            _customAuthenticationStateProvider = customAuthenticationStateProvider;
         }
 
         public async Task<ApiResponse<IEnumerable<UserDto>>> GetAllUsers()
@@ -34,7 +37,19 @@ namespace Admin_Wolmart.UI.Services
 
             if (response.IsSuccessStatusCode)
             {
-                return true;
+                var token = await response.Content.ReadAsStringAsync();
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _customAuthenticationStateProvider.MarkUserAsAuthenticated(token);
+                    // Lưu token vào Cookie
+                    _httpContextAccessor.HttpContext.Response.Cookies.Append("accesstoken_admin", token, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.None
+                    });
+                    return true;
+                }
             }
 
             return false;
