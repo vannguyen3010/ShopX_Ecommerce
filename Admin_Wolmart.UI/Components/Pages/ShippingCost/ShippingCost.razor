@@ -43,9 +43,18 @@
                                                 <tr>
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.ProvinceCode</td>
 
-                                                    <td class="menu-status @(item.Status ? "" : "table_row_disabled")">
-                                                        <span class="danger">@item.ProvinceName</span>
-                                                    </td>
+                                                    @if(item.Status == false)
+                                                    {
+                                                        <td class="menu-status @(item.Status ? "" : "table_row_disabled")">
+                                                            <span class="danger">@item.ProvinceName</span>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="menu-status @(item.Status ? "" : "table_row_disabled")">
+                                                            <span class="success">@item.ProvinceName</span>
+                                                        </td>
+                                                    }
 
                                                     <td class="@(item.Status ? "" : "table_row_disabled")">@item.Cost.ToString("N0") <span class="currency-symbol">đ</span></td>
 
