@@ -27,8 +27,8 @@ namespace Admin_Wolmart.UI.Services
             {
                 var data = await response.Content.ReadFromJsonAsync<ApiResponse<IEnumerable<UserDto>>>();
                 return data!;
-            }
-            return null;
+            } 
+            return null; 
         }
 
         public async Task<bool> LoginAsync(LoginDto request)
