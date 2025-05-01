@@ -17,9 +17,11 @@ namespace InventrySystem.Extensions
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
-                    builder.AllowAnyOrigin()
+                    //builder.AllowAnyOrigin()
+                    builder.WithOrigins("https://localhost:7144")
                     .AllowAnyMethod()
-                    .AllowAnyHeader());
+                    .AllowAnyHeader()
+                    .AllowCredentials());
             });
 
         public static void ConfigureIISIntegration(this IServiceCollection services) =>
@@ -84,7 +86,8 @@ namespace InventrySystem.Extensions
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.HttpContext.Request.Cookies["accesstoken_admin"] ?? context.HttpContext.Request.Cookies["accesstoken_user"];
+                        //var accessToken = context.HttpContext.Request.Cookies["accesstoken_admin"] ?? context.HttpContext.Request.Cookies["accesstoken_user"];
+                        var accessToken = context.HttpContext.Request.Cookies["accesstoken_admin"];
                         if (!string.IsNullOrEmpty(accessToken))
                         {
                             context.Token = accessToken;
