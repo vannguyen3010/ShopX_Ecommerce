@@ -29,16 +29,6 @@ builder.Services.AddScoped<JwtHandler>();
 builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureSwagger();
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddDefaultPolicy(policy =>
-//    {
-//        policy.AllowAnyHeader()
-//              .AllowAnyMethod()
-//              .AllowCredentials()
-//              .WithOrigins("https://localhost:7144/");
-//    });
-//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",

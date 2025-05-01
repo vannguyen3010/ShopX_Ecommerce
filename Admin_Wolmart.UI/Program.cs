@@ -18,10 +18,28 @@ var handler = new HttpClientHandler
     CookieContainer = new CookieContainer()
 };
 
+builder.Services.AddSingleton(handler); // Add vào DI
+
 builder.Services.AddScoped(sp =>
 {
     var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
-    return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
+    var handler = new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+    };
+
+    return new HttpClient(handler)
+    {
+        BaseAddress = new Uri(apiSettings.BaseUrl)
+    };
+    //var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+    //var handler = sp.GetRequiredService<HttpClientHandler>();
+
+    //return new HttpClient(handler)
+    //{
+    //    BaseAddress = new Uri(apiSettings.BaseUrl)
+    //};
 });
 
 
@@ -67,21 +85,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-//app.UseMiddleware<RedirectUnauthorizedMiddleware>();
-
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Strict,
-    HttpOnly = HttpOnlyPolicy.Always
+    MinimumSameSitePolicy = SameSiteMode.None,
+    HttpOnly = HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();

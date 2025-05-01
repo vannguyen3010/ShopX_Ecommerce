@@ -81,9 +81,9 @@
     {
         ShowLoadingButton = true;
 
-        var isSuccess = await _accountServices.LoginAsync(User);
+        var result = await _accountServices.LoginAsync(User);
 
-        if (isSuccess)
+        if (result)
         {
             NavigationManager.NavigateTo("/", forceLoad: true);
         }

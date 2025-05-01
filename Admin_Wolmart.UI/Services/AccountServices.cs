@@ -33,26 +33,12 @@ namespace Admin_Wolmart.UI.Services
 
         public async Task<bool> LoginAsync(LoginDto request)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/Accounts/LoginAdmin", request);
+            var response = await _httpClient.PostAsJsonAsync("api/Accounts/Login", request);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var token = await response.Content.ReadAsStringAsync();
-                if (!string.IsNullOrEmpty(token))
-                {
-                    _customAuthenticationStateProvider.MarkUserAsAuthenticated(token);
-                    // Lưu token vào Cookie
-                    _httpContextAccessor.HttpContext.Response.Cookies.Append("accesstoken_admin", token, new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = SameSiteMode.None
-                    });
-                    return true;
-                }
-            }
-
-            return false;
+            if(!response.IsSuccessStatusCode)
+                return false;
+           
+            return true;
         }
 
         public async Task<bool> LogoutAdminAsync()
