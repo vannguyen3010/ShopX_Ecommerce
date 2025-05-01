@@ -210,8 +210,8 @@ namespace Ecommerce_Wolmart.API.Controllers
         }
 
         [HttpPost]
-        [Route("LoginAdmin")]
-        public async Task<IActionResult> LoginAdmin([FromBody] LoginDto loginDto)
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             // Tìm người dùng theo email
             var user = await _userManager.FindByEmailAsync(loginDto.Email!);
@@ -220,7 +220,7 @@ namespace Ecommerce_Wolmart.API.Controllers
                 return NotFound(new ApiResponse<Object>
                 {
                     Success = false,
-                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại..",
+                    Message = $"Sai Email hoặc mật khẩu. Vui lòng kiểm tra lại...",
                     Data = null
                 });
             }
@@ -291,13 +291,13 @@ namespace Ecommerce_Wolmart.API.Controllers
                 Expires = DateTime.UtcNow.AddMinutes(30)
             });
 
-            //HttpContext.Response.Cookies.Append("refreshtoken", refreshToken.RefreshTokens, new CookieOptions
-            //{
-            //    HttpOnly = true,
-            //    Secure = true,
-            //    SameSite = SameSiteMode.None,
-            //    Expires = refreshToken.Expiration
-            //});
+            HttpContext.Response.Cookies.Append("refreshtoken", refreshToken.RefreshTokens, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = refreshToken.Expiration
+            });
 
 
             // Đặt lại số lần đăng nhập không thành công

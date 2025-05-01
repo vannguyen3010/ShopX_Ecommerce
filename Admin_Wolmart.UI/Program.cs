@@ -10,20 +10,53 @@ using Microsoft.Extensions.Options;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Cấu hình AppSettings
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
-var handler = new HttpClientHandler
+//var handler = new HttpClientHandler
+//{
+//    UseCookies = true,
+//    CookieContainer = new CookieContainer()
+//};
+
+//builder.Services.AddSingleton(handler); // Add vào DI
+
+//builder.Services.AddScoped(sp =>
+//{
+//    var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+//    var handler = new HttpClientHandler
+//    {
+//        UseCookies = true,
+//        CookieContainer = new CookieContainer()
+//    };
+
+//    return new HttpClient(handler)
+//    {
+//        BaseAddress = new Uri(apiSettings.BaseUrl)
+//    };
+//});
+
+// Đăng ký HttpClientHandler và HttpClient với vòng đời Scoped 
+builder.Services.AddScoped<HttpClientHandler>(sp =>
 {
-    UseCookies = true,
-    CookieContainer = new CookieContainer()
-};
+    return new HttpClientHandler
+    {
+        UseCookies = true,
+        CookieContainer = new CookieContainer()
+    };
+});
 
 builder.Services.AddScoped(sp =>
 {
     var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
-    return new HttpClient { BaseAddress = new Uri(apiSettings.BaseUrl) };
-});
+    var handler = sp.GetRequiredService<HttpClientHandler>();
 
+    return new HttpClient(handler)
+    {
+        BaseAddress = new Uri(apiSettings.BaseUrl)
+    };
+});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -60,15 +93,12 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// // Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -76,12 +106,16 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-//app.UseMiddleware<RedirectUnauthorizedMiddleware>();
 
+// Cấu hình CookiePolicy
 app.UseCookiePolicy(new CookiePolicyOptions
 {
-    MinimumSameSitePolicy = SameSiteMode.Strict,
-    HttpOnly = HttpOnlyPolicy.Always
+    MinimumSameSitePolicy = SameSiteMode.None,
+    HttpOnly = HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();
