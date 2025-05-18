@@ -39,9 +39,6 @@ builder.Services.AddCors(options =>
             .AllowCredentials());
 });
 
-builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
-    opt.TokenLifespan = TimeSpan.FromHours(2));
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
