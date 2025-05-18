@@ -110,14 +110,14 @@ namespace InventrySystem.Extensions
                 });
 
                 // Thêm cấu hình cho JWT Bearer Token
-                //s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                //{
-                //    In = ParameterLocation.Header,
-                //    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
-                //    Name = "Authorization",
-                //    Type = SecuritySchemeType.ApiKey,
-                //    Scheme = "Bearer"
-                //});
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
 
 
                 s.AddSecurityRequirement(new OpenApiSecurityRequirement

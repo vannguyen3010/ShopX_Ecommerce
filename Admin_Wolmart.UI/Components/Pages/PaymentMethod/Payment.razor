@@ -46,7 +46,7 @@
                                                 </td>
                                             </tr>
                                         }
-                                        else if(listPayment != null && listPayment.Any())
+                                        else if (listPayment != null && listPayment.Any())
                                         {
                                             @foreach (var item in listPayment)
                                             {
@@ -135,7 +135,7 @@
     </div>
 </div>
 
-@code{
+@code {
     [CascadingParameter]
     public Task<AuthenticationState>? AuthenticationState { get; set; }
 
@@ -146,7 +146,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await CheckUserAuthentication();
+        // await CheckUserAuthentication();
         await LoadListOrders();
     }
 

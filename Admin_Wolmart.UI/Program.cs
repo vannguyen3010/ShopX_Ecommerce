@@ -38,12 +38,36 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 //});
 
 // Đăng ký HttpClientHandler và HttpClient với vòng đời Scoped 
+//builder.Services.AddScoped<HttpClientHandler>(sp =>
+//{
+//    return new HttpClientHandler
+//    {
+//        UseCookies = true,
+//        CookieContainer = new CookieContainer()
+//    };
+//});
+
+//builder.Services.AddScoped(sp =>
+//{
+//    var apiSettings = sp.GetRequiredService<IOptions<ApiSettings>>().Value;
+//    var handler = sp.GetRequiredService<HttpClientHandler>();
+
+//    return new HttpClient(handler)
+//    {
+//        BaseAddress = new Uri(apiSettings.BaseUrl)
+//    };
+//});
+
+builder.Services.AddSingleton(new CookieContainer());
+
 builder.Services.AddScoped<HttpClientHandler>(sp =>
 {
+    var container = sp.GetRequiredService<CookieContainer>();
+
     return new HttpClientHandler
     {
         UseCookies = true,
-        CookieContainer = new CookieContainer()
+        CookieContainer = container
     };
 });
 
@@ -57,6 +81,7 @@ builder.Services.AddScoped(sp =>
         BaseAddress = new Uri(apiSettings.BaseUrl)
     };
 });
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
